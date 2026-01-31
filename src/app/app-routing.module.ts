@@ -26,6 +26,10 @@ const routes: Routes = [
     path: 'register',
     loadChildren: () => import('./features/auth/register/register.module').then( m => m.RegisterPageModule)
   },
+  {
+    path: 'settings',
+    loadChildren: () => import('./features/settings/settings.module').then( m => m.SettingsPageModule)
+  },
 ];
 
 @NgModule({

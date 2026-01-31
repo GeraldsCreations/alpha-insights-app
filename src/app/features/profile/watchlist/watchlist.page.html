@@ -1,0 +1,97 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/profile"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Watchlist</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="addTicker()">
+        <ion-icon name="add"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading watchlist...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && watchlist.length === 0" class="empty-container">
+    <ion-icon name="eye-outline"></ion-icon>
+    <h2>No Tickers in Watchlist</h2>
+    <p>Add tickers to track their analysis and updates</p>
+    <ion-button (click)="addTicker()" fill="outline">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Add Ticker
+    </ion-button>
+  </div>
+
+  <!-- Watchlist -->
+  <div *ngIf="!loading && watchlist.length > 0">
+    <ion-list>
+      <ion-list-header>
+        <ion-label>
+          {{ watchlist.length }} Ticker{{ watchlist.length !== 1 ? 's' : '' }}
+        </ion-label>
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          color="danger" 
+          (click)="clearWatchlist()">
+          Clear All
+        </ion-button>
+      </ion-list-header>
+
+      <ion-item-sliding *ngFor="let ticker of watchlist">
+        <ion-item>
+          <ion-avatar slot="start">
+            <div class="ticker-avatar">{{ ticker.substring(0, 2) }}</div>
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ ticker }}</h2>
+            <p>Ticker Symbol</p>
+          </ion-label>
+          <ion-chip slot="end" color="primary">
+            <ion-icon name="eye"></ion-icon>
+            <ion-label>Watching</ion-label>
+          </ion-chip>
+        </ion-item>
+
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="removeTicker(ticker)">
+            <ion-icon name="trash" slot="icon-only"></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+      </ion-item-sliding>
+    </ion-list>
+
+    <!-- Info Card -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-subtitle>
+          <ion-icon name="information-circle-outline"></ion-icon>
+          About Watchlist
+        </ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p>• Get notified when new analysis is posted for watched tickers</p>
+        <p>• Swipe left to remove a ticker</p>
+        <p>• Tap + to add more tickers</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+
+<ion-fab vertical="bottom" horizontal="end" slot="fixed" *ngIf="!loading">
+  <ion-fab-button (click)="addTicker()">
+    <ion-icon name="add"></ion-icon>
+  </ion-fab-button>
+</ion-fab>

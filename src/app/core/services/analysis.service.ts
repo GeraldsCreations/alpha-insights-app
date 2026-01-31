@@ -83,4 +83,53 @@ export class AnalysisService {
     // TODO: Implement bookmark functionality
     console.log('Bookmarking post:', postId);
   }
+
+  /**
+   * Get multiple posts by IDs
+   */
+  getPostsByIds(postIds: string[]): Observable<AnalysisPost[]> {
+    if (postIds.length === 0) {
+      return new Observable(subscriber => {
+        subscriber.next([]);
+        subscriber.complete();
+      });
+    }
+
+    // Firestore 'in' query supports max 10 items, so we batch
+    const batchSize = 10;
+    const batches: Observable<AnalysisPost[]>[] = [];
+
+    for (let i = 0; i < postIds.length; i += batchSize) {
+      const batchIds = postIds.slice(i, i + batchSize);
+      const batchQuery = this.firestoreService.streamCollection<AnalysisPost>(
+        this.COLLECTION_PATH,
+        where('id', 'in', batchIds)
+      );
+      batches.push(batchQuery);
+    }
+
+    // Combine all batches
+    return new Observable(subscriber => {
+      const results: AnalysisPost[] = [];
+      let completed = 0;
+
+      batches.forEach(batch => {
+        batch.subscribe({
+          next: (posts) => {
+            results.push(...posts);
+          },
+          error: (error) => {
+            subscriber.error(error);
+          },
+          complete: () => {
+            completed++;
+            if (completed === batches.length) {
+              subscriber.next(results);
+              subscriber.complete();
+            }
+          }
+        });
+      });
+    });
+  }
 }

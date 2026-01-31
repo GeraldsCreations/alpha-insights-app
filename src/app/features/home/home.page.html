@@ -143,18 +143,9 @@
             <ion-icon slot="start" name="eye-outline"></ion-icon>
             {{ post.views || 0 }}
           </ion-button>
-          <ion-button fill="clear" size="small">
-            <ion-icon slot="start" name="heart-outline"></ion-icon>
-            {{ post.likes || 0 }}
-          </ion-button>
-          <ion-button fill="clear" size="small">
-            <ion-icon slot="start" name="bookmark-outline"></ion-icon>
-            Save
-          </ion-button>
-          <ion-button fill="clear" size="small">
-            <ion-icon slot="start" name="share-outline"></ion-icon>
-            Share
-          </ion-button>
+          <app-bookmark-button [postId]="post.id" [showToast]="false"></app-bookmark-button>
+          <app-watchlist-button [ticker]="post.ticker" [showToast]="false"></app-watchlist-button>
+          <app-share-button [post]="post"></app-share-button>
         </div>
       </ion-card-content>
     </ion-card>

@@ -1,0 +1,122 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/profile"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Price Alerts</ion-title>
+    <ion-buttons slot="end" *ngIf="alerts.length > 0">
+      <ion-button (click)="clearAllAlerts()">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Stats Cards -->
+  <div *ngIf="!loading && alerts.length > 0" class="stats-container">
+    <ion-card class="stat-card">
+      <ion-card-content>
+        <ion-icon name="log-in-outline" color="primary"></ion-icon>
+        <div class="stat-value">{{ entryAlerts }}</div>
+        <div class="stat-label">Entry</div>
+      </ion-card-content>
+    </ion-card>
+    
+    <ion-card class="stat-card">
+      <ion-card-content>
+        <ion-icon name="stop-circle-outline" color="danger"></ion-icon>
+        <div class="stat-value">{{ stopAlerts }}</div>
+        <div class="stat-label">Stop</div>
+      </ion-card-content>
+    </ion-card>
+    
+    <ion-card class="stat-card">
+      <ion-card-content>
+        <ion-icon name="flag-outline" color="success"></ion-icon>
+        <div class="stat-value">{{ targetAlerts }}</div>
+        <div class="stat-label">Target</div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading alerts...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && alerts.length === 0" class="empty-container">
+    <ion-icon name="notifications-outline"></ion-icon>
+    <h2>No Active Alerts</h2>
+    <p>Set price alerts from analysis posts to track entry, stop, and target levels</p>
+    <ion-button routerLink="/home" fill="outline">
+      Browse Analysis
+    </ion-button>
+  </div>
+
+  <!-- Alerts List -->
+  <ion-list *ngIf="!loading && alerts.length > 0">
+    <ion-item-sliding *ngFor="let alert of alerts">
+      <ion-item>
+        <ion-icon 
+          [name]="getAlertTypeIcon(alert.alertType)" 
+          [color]="getAlertTypeColor(alert.alertType)"
+          slot="start">
+        </ion-icon>
+        
+        <ion-label>
+          <h2>{{ alert.ticker }}</h2>
+          <p>{{ alert.alertType }} Alert</p>
+        </ion-label>
+        
+        <div class="alert-prices">
+          <div class="price-row">
+            <span class="price-label">Target:</span>
+            <span class="price-value">${{ alert.targetPrice.toFixed(2) }}</span>
+          </div>
+          <div class="price-row">
+            <span class="price-label">Current:</span>
+            <span class="price-value">${{ alert.currentPrice.toFixed(2) }}</span>
+          </div>
+          <ion-chip [color]="getAlertTypeColor(alert.alertType)" size="small">
+            {{ getPriceDifference(alert) }}
+          </ion-chip>
+        </div>
+      </ion-item>
+
+      <ion-item-options side="start">
+        <ion-item-option color="primary" (click)="editAlert(alert)">
+          <ion-icon name="create" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+
+      <ion-item-options side="end">
+        <ion-item-option color="danger" (click)="deleteAlert(alert)">
+          <ion-icon name="trash" slot="icon-only"></ion-icon>
+        </ion-item-option>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <!-- Info Card -->
+  <ion-card *ngIf="!loading && alerts.length > 0">
+    <ion-card-header>
+      <ion-card-subtitle>
+        <ion-icon name="information-circle-outline"></ion-icon>
+        About Price Alerts
+      </ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>• <strong>Entry:</strong> Notifies when price reaches recommended entry point</p>
+      <p>• <strong>Stop:</strong> Alerts when stop-loss level is hit</p>
+      <p>• <strong>Target:</strong> Notifies when target price is reached</p>
+      <p>• Swipe left to delete, swipe right to edit</p>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

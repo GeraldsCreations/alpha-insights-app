@@ -1,6 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { Subject, combineLatest } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../core/auth/auth.service';
+import { BookmarkService } from '../../core/services/bookmark.service';
+import { WatchlistService } from '../../core/services/watchlist.service';
+import { PriceAlertService } from '../../core/services/price-alert.service';
+import { User } from '../../core/models';
 
 @Component({
   selector: 'app-profile',
@@ -8,13 +14,109 @@ import { AuthService } from '../../core/auth/auth.service';
   styleUrls: ['./profile.page.scss'],
   standalone: false
 })
-export class ProfilePage {
+export class ProfilePage implements OnInit, OnDestroy {
+  private destroy$ = new Subject<void>();
+
+  // User data
+  currentUser: User | null = null;
+  
+  // Stats
+  bookmarkCount = 0;
+  watchlistCount = 0;
+  alertCount = 0;
 
   constructor(
     private authService: AuthService,
+    private bookmarkService: BookmarkService,
+    private watchlistService: WatchlistService,
+    private priceAlertService: PriceAlertService,
     private router: Router
   ) {}
 
+  ngOnInit() {
+    this.loadUserData();
+    this.loadStats();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  /**
+   * Load user data
+   */
+  loadUserData() {
+    this.authService.user$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(user => {
+        this.currentUser = user;
+      });
+  }
+
+  /**
+   * Load user stats
+   */
+  loadStats() {
+    combineLatest([
+      this.bookmarkService.getBookmarkCount(),
+      this.watchlistService.getWatchlistCount(),
+      this.priceAlertService.getAlertStats()
+    ])
+    .pipe(takeUntil(this.destroy$))
+    .subscribe(([bookmarks, watchlist, alerts]) => {
+      this.bookmarkCount = bookmarks;
+      this.watchlistCount = watchlist;
+      this.alertCount = alerts.total;
+    });
+  }
+
+  /**
+   * Navigate to saved posts
+   */
+  viewSavedPosts() {
+    this.router.navigate(['/profile/saved']);
+  }
+
+  /**
+   * Navigate to watchlist
+   */
+  viewWatchlist() {
+    this.router.navigate(['/profile/watchlist']);
+  }
+
+  /**
+   * Navigate to alerts
+   */
+  viewAlerts() {
+    this.router.navigate(['/profile/alerts']);
+  }
+
+  /**
+   * Navigate to settings
+   */
+  viewSettings() {
+    this.router.navigate(['/settings']);
+  }
+
+  /**
+   * Navigate to edit profile
+   */
+  editProfile() {
+    this.router.navigate(['/profile/edit']);
+  }
+
+  /**
+   * Navigate to help
+   */
+  viewHelp() {
+    // TODO: Implement help page
+    console.log('Help & Support - Coming soon');
+  }
+
+  /**
+   * Logout user
+   */
   async logout() {
     try {
       await this.authService.signOut();
@@ -22,5 +124,26 @@ export class ProfilePage {
     } catch (error) {
       console.error('Logout error:', error);
     }
+  }
+
+  /**
+   * Get user initials for avatar
+   */
+  getUserInitials(): string {
+    if (!this.currentUser?.displayName) {
+      return '?';
+    }
+    const names = this.currentUser.displayName.split(' ');
+    if (names.length >= 2) {
+      return `${names[0][0]}${names[1][0]}`.toUpperCase();
+    }
+    return this.currentUser.displayName.substring(0, 2).toUpperCase();
+  }
+
+  /**
+   * Get avatar URL or default
+   */
+  getAvatarUrl(): string {
+    return this.currentUser?.photoURL || 'assets/img/default-avatar.png';
   }
 }

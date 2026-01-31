@@ -4,19 +4,17 @@ import { FormsModule } from '@angular/forms';
 
 import { IonicModule } from '@ionic/angular';
 
-import { HomePageRoutingModule } from './home-routing.module';
-import { SharedModule } from '../../shared/shared.module';
+import { WatchlistPageRoutingModule } from './watchlist-routing.module';
 
-import { HomePage } from './home.page';
+import { WatchlistPage } from './watchlist.page';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    HomePageRoutingModule,
-    SharedModule
+    WatchlistPageRoutingModule
   ],
-  declarations: [HomePage]
+  declarations: [WatchlistPage]
 })
-export class HomePageModule {}
+export class WatchlistPageModule {}

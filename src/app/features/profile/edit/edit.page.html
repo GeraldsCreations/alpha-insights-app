@@ -1,0 +1,120 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Edit Profile</ion-title>
+    <ion-buttons slot="end">
+      <ion-button 
+        (click)="onSubmit()" 
+        [disabled]="editForm.invalid || isSubmitting"
+        color="primary"
+        strong="true">
+        Save
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="editForm" (ngSubmit)="onSubmit()">
+    <!-- Profile Photo Section -->
+    <div class="profile-photo-section">
+      <div class="photo-container">
+        <ion-avatar class="profile-avatar">
+          <img 
+            [src]="editForm.value.photoURL || 'assets/img/default-avatar.png'" 
+            alt="Profile Photo"
+            (error)="$any($event.target).src='assets/img/default-avatar.png'">
+        </ion-avatar>
+      </div>
+      
+      <div class="photo-actions">
+        <ion-button fill="outline" size="small" (click)="uploadPhoto()">
+          <ion-icon name="camera-outline" slot="start"></ion-icon>
+          Upload Photo
+        </ion-button>
+        <ion-button 
+          fill="clear" 
+          size="small" 
+          color="danger"
+          (click)="removePhoto()"
+          *ngIf="editForm.value.photoURL">
+          Remove
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Form Fields -->
+    <ion-list>
+      <ion-item>
+        <ion-label position="stacked">Display Name *</ion-label>
+        <ion-input
+          formControlName="displayName"
+          type="text"
+          placeholder="Enter your name"
+          [class.ion-invalid]="f['displayName'].invalid && f['displayName'].touched">
+        </ion-input>
+      </ion-item>
+      <ion-note 
+        color="danger" 
+        *ngIf="f['displayName'].invalid && f['displayName'].touched">
+        <span *ngIf="f['displayName'].errors?.['required']">Name is required</span>
+        <span *ngIf="f['displayName'].errors?.['minlength']">Name must be at least 2 characters</span>
+      </ion-note>
+
+      <ion-item>
+        <ion-label position="stacked">Email *</ion-label>
+        <ion-input
+          formControlName="email"
+          type="email"
+          placeholder="Enter your email"
+          [class.ion-invalid]="f['email'].invalid && f['email'].touched">
+        </ion-input>
+      </ion-item>
+      <ion-note 
+        color="danger" 
+        *ngIf="f['email'].invalid && f['email'].touched">
+        <span *ngIf="f['email'].errors?.['required']">Email is required</span>
+        <span *ngIf="f['email'].errors?.['email']">Invalid email format</span>
+      </ion-note>
+      <ion-note color="medium" *ngIf="editForm.value.email !== currentUser?.email">
+        Changing email requires password confirmation
+      </ion-note>
+
+      <ion-item>
+        <ion-label position="stacked">Photo URL (Optional)</ion-label>
+        <ion-input
+          formControlName="photoURL"
+          type="url"
+          placeholder="https://example.com/photo.jpg"
+          [class.ion-invalid]="f['photoURL'].invalid && f['photoURL'].touched">
+        </ion-input>
+      </ion-item>
+      <ion-note 
+        color="danger" 
+        *ngIf="f['photoURL'].invalid && f['photoURL'].touched">
+        <span *ngIf="f['photoURL'].errors?.['pattern']">Please enter a valid URL</span>
+      </ion-note>
+    </ion-list>
+
+    <!-- Info Section -->
+    <div class="info-section">
+      <ion-card>
+        <ion-card-header>
+          <ion-card-subtitle>
+            <ion-icon name="information-circle-outline"></ion-icon>
+            Profile Information
+          </ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p>• Your display name will be visible to other users</p>
+          <p>• Email is used for login and notifications</p>
+          <p>• Profile photo can be updated via URL or upload</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </form>
+</ion-content>

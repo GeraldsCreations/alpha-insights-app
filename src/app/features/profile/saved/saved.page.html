@@ -1,0 +1,85 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/profile"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Saved Posts</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading saved posts...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="error && !loading" class="error-container">
+    <ion-icon name="alert-circle-outline"></ion-icon>
+    <p>{{ error }}</p>
+    <ion-button (click)="loadSavedPosts()">Retry</ion-button>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!loading && !error && savedPosts.length === 0" class="empty-container">
+    <ion-icon name="bookmark-outline"></ion-icon>
+    <h2>No Saved Posts</h2>
+    <p>Posts you bookmark will appear here</p>
+    <ion-button routerLink="/home" fill="outline">
+      Explore Posts
+    </ion-button>
+  </div>
+
+  <!-- Posts List -->
+  <div *ngIf="!loading && !error && savedPosts.length > 0">
+    <ion-card *ngFor="let post of savedPosts" (click)="viewPost(post)" button>
+      <img [src]="post.heroImage" [alt]="post.title" />
+      
+      <ion-card-header>
+        <div class="card-header-top">
+          <ion-chip [color]="getRecommendationColor(post.recommendation)">
+            {{ post.recommendation }}
+          </ion-chip>
+          <ion-chip color="primary">
+            {{ post.ticker }}
+          </ion-chip>
+        </div>
+        
+        <ion-card-title>{{ post.title }}</ion-card-title>
+        <ion-card-subtitle>{{ formatDate(post.timestamp) }}</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p class="description">{{ post.description }}</p>
+        
+        <div class="post-stats">
+          <div class="stat">
+            <ion-icon name="star"></ion-icon>
+            <span>{{ post.confidenceLevel }}/10</span>
+          </div>
+          <div class="stat">
+            <ion-icon name="trending-up"></ion-icon>
+            <span>R/R {{ post.riskRewardRatio.toFixed(1) }}</span>
+          </div>
+        </div>
+      </ion-card-content>
+      
+      <ion-row class="post-actions">
+        <ion-col>
+          <app-bookmark-button [postId]="post.id"></app-bookmark-button>
+        </ion-col>
+        <ion-col>
+          <app-share-button [post]="post"></app-share-button>
+        </ion-col>
+        <ion-col>
+          <app-watchlist-button [ticker]="post.ticker"></app-watchlist-button>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+  </div>
+</ion-content>
