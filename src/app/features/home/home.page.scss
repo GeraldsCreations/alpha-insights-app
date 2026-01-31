@@ -1,0 +1,44 @@
+.feed-container {
+  padding: 16px;
+  max-width: 768px;
+  margin: 0 auto;
+}
+
+.card-header {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.trade-info {
+  margin: 16px 0;
+  padding: 12px;
+  background: var(--ion-color-light);
+  border-radius: 8px;
+}
+
+.trade-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  
+  span {
+    color: var(--ion-color-medium);
+  }
+}
+
+.text-success {
+  color: var(--ion-color-success);
+}
+
+.text-danger {
+  color: var(--ion-color-danger);
+}
+
+.card-actions {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--ion-color-light);
+}

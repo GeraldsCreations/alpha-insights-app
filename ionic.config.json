@@ -1,0 +1,7 @@
+{
+  "name": "alpha-insights-app",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

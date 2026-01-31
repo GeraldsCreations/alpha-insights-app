@@ -1,0 +1,51 @@
+.profile-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.user-section {
+  text-align: center;
+  padding: 32px 16px;
+
+  h2 {
+    margin: 16px 0 4px 0;
+    font-weight: bold;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+.profile-avatar {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto;
+
+  ion-icon {
+    font-size: 100px;
+    color: var(--ion-color-primary);
+  }
+}
+
+.stat-col {
+  text-align: center;
+  padding: 12px;
+}
+
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--ion-color-primary);
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+  margin-top: 4px;
+}
+
+.version-info {
+  margin-top: 24px;
+}

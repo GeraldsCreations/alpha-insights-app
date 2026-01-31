@@ -1,0 +1,88 @@
+# Alpha Insights - Git Ignore
+
+# Dependencies
+node_modules/
+package-lock.json
+
+# Environment files (NEVER commit these!)
+# src/environments/environment.ts
+# src/environments/environment.prod.ts
+.env
+.env.local
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+*-debug.log
+
+# Firebase Service Account Keys (CRITICAL - NEVER COMMIT!)
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
+# Ionic
+www/
+platforms/
+plugins/
+.sourcemaps/
+
+# Capacitor
+ios/App/Pods/
+ios/App/App.xcworkspace/
+android/.gradle/
+android/app/build/
+android/build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build outputs
+dist/
+build/
+.angular/
+.cache/
+
+# Testing
+coverage/
+*.log
+
+# Misc
+.tmp/
+temp/
+*.bak
+*.tmp
+
+# iOS
+*.ipa
+*.dSYM.zip
+*.dSYM
+DerivedData/
+*.moved-aside
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+
+# Android
+*.apk
+*.aab
+*.ap_
+local.properties
+.gradle/
+captures/
+.externalNativeBuild
+.cxx
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Thumbnails
+._*

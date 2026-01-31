@@ -1,0 +1,97 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Alpha Insights</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/profile">
+        <ion-icon name="person-circle-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+
+  <ion-toolbar>
+    <ion-segment [(ngModel)]="filterSegment" (ionChange)="onFilterChange()">
+      <ion-segment-button value="all">
+        <ion-label>All</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="crypto">
+        <ion-label>Crypto</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="stock">
+        <ion-label>Stocks</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="feed-container">
+    <!-- Welcome Message -->
+    <ion-card color="primary">
+      <ion-card-content>
+        <h2>🚀 Welcome to Alpha Insights</h2>
+        <p>Your professional trading analysis platform</p>
+        <ion-text color="light">
+          <small>Firebase connected and ready!</small>
+        </ion-text>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Demo Analysis Cards -->
+    <ion-card *ngFor="let post of demoPosts">
+      <ion-card-header>
+        <div class="card-header">
+          <ion-chip [color]="post.assetType === 'crypto' ? 'primary' : 'secondary'">
+            {{ post.ticker }}
+          </ion-chip>
+          <ion-chip [color]="post.recommendation === 'LONG' ? 'success' : 'danger'">
+            {{ post.recommendation }}
+          </ion-chip>
+        </div>
+        <ion-card-title>{{ post.title }}</ion-card-title>
+        <ion-card-subtitle>Confidence: {{ post.confidenceLevel }}/10</ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <p>{{ post.description }}</p>
+        
+        <div class="trade-info">
+          <div class="trade-row">
+            <span>Entry:</span>
+            <strong>${{ post.entry }}</strong>
+          </div>
+          <div class="trade-row">
+            <span>Target:</span>
+            <strong class="text-success">${{ post.target }}</strong>
+          </div>
+          <div class="trade-row">
+            <span>Stop:</span>
+            <strong class="text-danger">${{ post.stop }}</strong>
+          </div>
+          <div class="trade-row">
+            <span>R:R:</span>
+            <strong>{{ post.riskRewardRatio }}:1</strong>
+          </div>
+        </div>
+
+        <div class="card-actions">
+          <ion-button fill="clear" size="small">
+            <ion-icon slot="start" name="eye-outline"></ion-icon>
+            {{ post.views }}
+          </ion-button>
+          <ion-button fill="clear" size="small">
+            <ion-icon slot="start" name="bookmark-outline"></ion-icon>
+            Save
+          </ion-button>
+          <ion-button fill="clear" size="small">
+            <ion-icon slot="start" name="share-outline"></ion-icon>
+            Share
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

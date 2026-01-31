@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-title>Alpha Insights</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="login-container">
+    <div class="logo-section">
+      <h1>📊 Alpha Insights</h1>
+      <p>Professional Trading Analysis</p>
+    </div>
+
+    <ion-card>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">Email</ion-label>
+          <ion-input type="email" [(ngModel)]="email"></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label position="floating">Password</ion-label>
+          <ion-input type="password" [(ngModel)]="password"></ion-input>
+        </ion-item>
+
+        <div class="ion-padding-top">
+          <ion-button expand="block" (click)="login()" [disabled]="!email || !password">
+            Sign In
+          </ion-button>
+        </div>
+
+        <div class="ion-text-center ion-padding-top">
+          <ion-text color="medium">
+            <small>Demo credentials: test@example.com / password123</small>
+          </ion-text>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <div class="ion-text-center ion-padding-top">
+      <p>Don't have an account? <ion-text color="primary"><strong>Sign Up</strong></ion-text></p>
+    </div>
+  </div>
+</ion-content>
