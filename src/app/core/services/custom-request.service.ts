@@ -1,6 +1,6 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Optional } from '@angular/core';
 import { Functions, httpsCallable } from '@angular/fire/functions';
-import { Observable, from, BehaviorSubject } from 'rxjs';
+import { Observable, from, BehaviorSubject, of, throwError } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { CustomReportRequest } from '../models';
 
@@ -31,12 +31,17 @@ export interface SubmitRequestResult {
 export class CustomRequestService {
   private quotaStatus$ = new BehaviorSubject<QuotaStatus | null>(null);
   
-  constructor(private functions: Functions) {}
+  constructor(@Optional() private functions?: Functions) {}
   
   /**
    * Get user's current quota status
    */
   getUserQuota(): Observable<QuotaStatus> {
+    if (!this.functions) {
+      console.warn('Firebase Functions not configured - custom requests disabled');
+      return throwError(() => new Error('Firebase Functions not available'));
+    }
+    
     const callable = httpsCallable<void, QuotaStatus>(this.functions, 'getUserQuota');
     
     return from(callable()).pipe(
@@ -56,6 +61,11 @@ export class CustomRequestService {
    * Check and decrement quota for a ticker
    */
   checkAndDecrementQuota(ticker: string): Observable<QuotaCheckResult> {
+    if (!this.functions) {
+      console.warn('Firebase Functions not configured - custom requests disabled');
+      return throwError(() => new Error('Firebase Functions not available'));
+    }
+    
     const callable = httpsCallable<{ ticker: string }, QuotaCheckResult>(
       this.functions,
       'checkAndDecrementQuota'
@@ -76,6 +86,11 @@ export class CustomRequestService {
    * Submit custom report request
    */
   submitCustomRequest(ticker: string, assetType: 'crypto' | 'stock'): Observable<SubmitRequestResult> {
+    if (!this.functions) {
+      console.warn('Firebase Functions not configured - custom requests disabled');
+      return throwError(() => new Error('Firebase Functions not available'));
+    }
+    
     const callable = httpsCallable<
       { ticker: string; assetType: string },
       SubmitRequestResult
@@ -97,6 +112,11 @@ export class CustomRequestService {
     limit: number = 10,
     status?: 'pending' | 'processing' | 'complete' | 'failed'
   ): Observable<CustomReportRequest[]> {
+    if (!this.functions) {
+      console.warn('Firebase Functions not configured - custom requests disabled');
+      return of([]);
+    }
+    
     const callable = httpsCallable<
       { limit: number; status?: string },
       { requests: CustomReportRequest[] }
