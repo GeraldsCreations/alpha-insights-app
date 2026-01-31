@@ -35,6 +35,11 @@ const routes: Routes = [
     loadChildren: () => import('./features/analysis-detail/analysis-detail.module').then( m => m.AnalysisDetailPageModule),
     canActivate: [AuthGuard]
   },
+  {
+    path: 'request-analysis',
+    loadChildren: () => import('./features/request-analysis/request-analysis.module').then( m => m.RequestAnalysisPageModule),
+    canActivate: [AuthGuard]
+  },
 ];
 
 @NgModule({

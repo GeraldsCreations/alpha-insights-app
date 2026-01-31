@@ -4,18 +4,44 @@
  * Scheduled functions:
  * - publishDailyReports: Run research pipeline and publish analyses
  * - checkPriceAlerts: Monitor price alerts and send notifications
+ * - resetMonthlyQuotas: Reset user quotas monthly
  * 
  * Triggered functions:
  * - onAnalysisPublished: Notify users when new analysis is published
  * - onBookmarkCreated: Update bookmark count
  * - onBookmarkDeleted: Update bookmark count
  * - onUserCreated: Initialize user document in Firestore
+ * - onCustomReportRequestCreated: Process custom research requests
+ * - onResearchTriggerCompleted: Update requests when research completes
+ * 
+ * Callable functions:
+ * - checkAndDecrementQuota: Check and decrement user quota
+ * - getUserQuota: Get user's current quota status
+ * - setUserPremium: Admin function to upgrade users
+ * - submitCustomReportRequest: Submit custom research request
+ * - getUserCustomRequests: Get user's custom request history
  */
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 admin.initializeApp();
+
+// Import quota and custom request functions
+import * as quotaFunctions from './quota-functions';
+import * as customRequestFunctions from './custom-request-functions';
+
+// Export quota functions
+export const checkAndDecrementQuota = quotaFunctions.checkAndDecrementQuota;
+export const getUserQuota = quotaFunctions.getUserQuota;
+export const resetMonthlyQuotas = quotaFunctions.resetMonthlyQuotas;
+export const setUserPremium = quotaFunctions.setUserPremium;
+
+// Export custom request functions
+export const onCustomReportRequestCreated = customRequestFunctions.onCustomReportRequestCreated;
+export const onResearchTriggerCompleted = customRequestFunctions.onResearchTriggerCompleted;
+export const submitCustomReportRequest = customRequestFunctions.submitCustomReportRequest;
+export const getUserCustomRequests = customRequestFunctions.getUserCustomRequests;
 
 const db = admin.firestore();
 const auth = admin.auth();
@@ -347,6 +373,9 @@ export const onUserCreated = functions.auth.user()
     console.log(`Creating Firestore document for user ${user.uid}`);
     
     try {
+      const nextResetDate = new Date();
+      nextResetDate.setDate(nextResetDate.getDate() + 30);
+      
       await db.collection('Users').doc(user.uid).set({
         id: user.uid,
         email: user.email || '',
@@ -365,6 +394,12 @@ export const onUserCreated = functions.auth.user()
         // User data
         watchlist: [],
         fcmToken: null,
+        
+        // Freemium quota system
+        plan: 'free',
+        customReportsRemaining: 5,
+        customReportsResetDate: admin.firestore.Timestamp.fromDate(nextResetDate),
+        totalCustomReports: 0,
         
         // Metadata
         createdAt: admin.firestore.FieldValue.serverTimestamp(),

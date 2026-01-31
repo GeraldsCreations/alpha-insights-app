@@ -1,0 +1,193 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Request Custom Analysis</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="viewHistory()">
+        <ion-icon slot="icon-only" name="time-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="request-container">
+    
+    <!-- Header Section -->
+    <div class="header-section">
+      <ion-icon name="analytics-outline" class="main-icon"></ion-icon>
+      <h1>Custom Research Request</h1>
+      <p class="subtitle">Get AI-powered analysis for any ticker</p>
+    </div>
+    
+    <!-- Quota Display -->
+    <ion-card *ngIf="quotaStatus" class="quota-card">
+      <ion-card-content>
+        <div class="quota-display">
+          <div class="quota-info">
+            <div class="quota-count">
+              <span class="remaining">{{ quotaStatus.quotaRemaining }}</span>
+              <span class="total">/{{ quotaStatus.quotaLimit }}</span>
+            </div>
+            <p class="quota-label">Reports Remaining</p>
+          </div>
+          
+          <div class="plan-badge" [class.premium]="quotaStatus.plan === 'premium'">
+            <ion-icon [name]="quotaStatus.plan === 'premium' ? 'star' : 'person-outline'"></ion-icon>
+            {{ quotaStatus.plan === 'premium' ? 'Premium' : 'Free' }}
+          </div>
+        </div>
+        
+        <ion-note *ngIf="quotaStatus.resetDate" class="reset-date">
+          Resets on {{ quotaStatus.resetDate | date:'mediumDate' }}
+        </ion-note>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- No Quota Warning -->
+    <ion-card *ngIf="quotaStatus && quotaStatus.quotaRemaining === 0" color="warning" class="warning-card">
+      <ion-card-content>
+        <div class="warning-content">
+          <ion-icon name="alert-circle-outline"></ion-icon>
+          <div>
+            <h3>No Reports Remaining</h3>
+            <p>Upgrade to Premium for {{ quotaStatus.plan === 'free' ? '10' : '20' }} monthly reports!</p>
+          </div>
+        </div>
+        <ion-button expand="block" color="light" (click)="showUpgradePrompt()">
+          Upgrade Now
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Request Form -->
+    <ion-card class="request-form-card">
+      <ion-card-content>
+        <form (ngSubmit)="submitRequest()">
+          
+          <!-- Asset Type Selector -->
+          <div class="asset-type-selector">
+            <ion-segment [(ngModel)]="assetType" name="assetType" [disabled]="loading">
+              <ion-segment-button value="stock">
+                <ion-label>Stock</ion-label>
+                <ion-icon name="trending-up-outline"></ion-icon>
+              </ion-segment-button>
+              <ion-segment-button value="crypto">
+                <ion-label>Crypto</ion-label>
+                <ion-icon name="logo-bitcoin"></ion-icon>
+              </ion-segment-button>
+            </ion-segment>
+          </div>
+          
+          <!-- Ticker Input -->
+          <ion-item lines="none" class="ticker-input">
+            <ion-label position="stacked">
+              Ticker Symbol
+              <ion-text color="danger">*</ion-text>
+            </ion-label>
+            <ion-input
+              [(ngModel)]="ticker"
+              name="ticker"
+              type="text"
+              placeholder="e.g., AAPL, TSLA, BTC"
+              (ionInput)="onTickerInput($event)"
+              [disabled]="loading"
+              maxlength="5"
+              required
+            ></ion-input>
+          </ion-item>
+          
+          <!-- Validation Error -->
+          <ion-note *ngIf="getValidationError()" color="danger" class="validation-error">
+            {{ getValidationError() }}
+          </ion-note>
+          
+          <!-- Info Box -->
+          <div class="info-box">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            <div>
+              <p><strong>What you'll get:</strong></p>
+              <ul>
+                <li>Multi-timeframe technical analysis</li>
+                <li>News sentiment & fundamental analysis</li>
+                <li>AI-powered trading verdict</li>
+                <li>Entry, stop, and target recommendations</li>
+              </ul>
+              <p class="processing-time">
+                <ion-icon name="time-outline"></ion-icon>
+                Processing takes 2-5 minutes
+              </p>
+            </div>
+          </div>
+          
+          <!-- Submit Button -->
+          <ion-button
+            expand="block"
+            type="submit"
+            [disabled]="!isFormValid() || loading"
+            class="submit-button"
+          >
+            <ion-icon slot="start" name="rocket-outline"></ion-icon>
+            {{ loading ? 'Submitting...' : 'Request Analysis' }}
+          </ion-button>
+          
+        </form>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- Success Message -->
+    <ion-card *ngIf="submitted" color="success" class="success-card">
+      <ion-card-content>
+        <div class="success-content">
+          <ion-icon name="checkmark-circle-outline"></ion-icon>
+          <div>
+            <h3>Request Submitted! 🎉</h3>
+            <p>We'll notify you when your {{ ticker }} analysis is ready.</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+    
+    <!-- How It Works -->
+    <div class="how-it-works">
+      <h2>How It Works</h2>
+      
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-content">
+            <h3>Submit Request</h3>
+            <p>Enter any ticker symbol and submit</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-content">
+            <h3>AI Analysis</h3>
+            <p>Our agents research and analyze in real-time</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-content">
+            <h3>Get Notified</h3>
+            <p>Receive push notification when ready</p>
+          </div>
+        </div>
+        
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-content">
+            <h3>Read & Trade</h3>
+            <p>View insights and make informed decisions</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</ion-content>

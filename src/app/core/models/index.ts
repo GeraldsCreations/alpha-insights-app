@@ -12,6 +12,12 @@ export interface User {
   watchlist: string[];  // Array of ticker symbols
   notificationPreferences: NotificationPreferences;
   fcmToken?: string;
+  
+  // Freemium quota system
+  plan: 'free' | 'premium';
+  customReportsRemaining: number;
+  customReportsResetDate: Date;
+  totalCustomReports: number;  // lifetime counter
 }
 
 export interface NotificationPreferences {
@@ -150,6 +156,21 @@ export interface Bookmark {
   userId: string;
   postId: string;
   createdAt: Date;
+}
+
+/**
+ * Custom Report Request Model
+ */
+export interface CustomReportRequest {
+  id: string;
+  userId: string;
+  ticker: string;
+  assetType: 'crypto' | 'stock';
+  status: 'pending' | 'processing' | 'complete' | 'failed';
+  createdAt: Date;
+  completedAt?: Date;
+  reportId?: string;  // Reference to published AnalysisPost
+  error?: string;
 }
 
 /**

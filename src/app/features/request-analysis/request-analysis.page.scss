@@ -1,0 +1,333 @@
+.request-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: 40px;
+}
+
+.header-section {
+  text-align: center;
+  margin: 32px 0;
+  
+  .main-icon {
+    font-size: 64px;
+    color: var(--ion-color-primary);
+    margin-bottom: 16px;
+  }
+  
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin: 0 0 8px;
+  }
+  
+  .subtitle {
+    font-size: 16px;
+    color: var(--ion-color-medium);
+    margin: 0;
+  }
+}
+
+// Quota Card
+.quota-card {
+  margin-bottom: 24px;
+  
+  .quota-display {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  .quota-info {
+    .quota-count {
+      font-size: 36px;
+      font-weight: 700;
+      
+      .remaining {
+        color: var(--ion-color-primary);
+      }
+      
+      .total {
+        color: var(--ion-color-medium);
+        font-size: 24px;
+      }
+    }
+    
+    .quota-label {
+      margin: 4px 0 0;
+      font-size: 14px;
+      color: var(--ion-color-medium);
+    }
+  }
+  
+  .plan-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    background: var(--ion-color-light);
+    color: var(--ion-color-dark);
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    
+    &.premium {
+      background: linear-gradient(135deg, #ffd700, #ffed4e);
+      color: #000;
+      
+      ion-icon {
+        color: #000;
+      }
+    }
+    
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+  
+  .reset-date {
+    display: block;
+    font-size: 12px;
+    margin-top: 8px;
+  }
+}
+
+// Warning Card
+.warning-card {
+  margin-bottom: 24px;
+  
+  .warning-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 16px;
+    
+    ion-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    
+    h3 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+// Request Form Card
+.request-form-card {
+  margin-bottom: 24px;
+  
+  .asset-type-selector {
+    margin-bottom: 24px;
+    
+    ion-segment {
+      ion-segment-button {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        padding: 12px;
+        
+        ion-icon {
+          font-size: 24px;
+        }
+        
+        ion-label {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+  
+  .ticker-input {
+    margin-bottom: 8px;
+    
+    ion-input {
+      font-size: 20px;
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+  }
+  
+  .validation-error {
+    display: block;
+    margin: 4px 0 16px;
+    font-size: 13px;
+  }
+  
+  .info-box {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    margin: 24px 0;
+    border-radius: 12px;
+    background: var(--ion-color-light);
+    
+    > ion-icon {
+      font-size: 24px;
+      color: var(--ion-color-primary);
+      flex-shrink: 0;
+    }
+    
+    p {
+      margin: 0 0 8px;
+      font-size: 14px;
+      
+      strong {
+        font-weight: 600;
+      }
+    }
+    
+    ul {
+      margin: 8px 0;
+      padding-left: 20px;
+      
+      li {
+        margin: 4px 0;
+        font-size: 13px;
+        color: var(--ion-color-dark);
+      }
+    }
+    
+    .processing-time {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--ion-color-medium-tint);
+      color: var(--ion-color-medium);
+      font-size: 13px;
+      
+      ion-icon {
+        font-size: 16px;
+      }
+    }
+  }
+  
+  .submit-button {
+    margin-top: 24px;
+    height: 52px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+}
+
+// Success Card
+.success-card {
+  margin-bottom: 24px;
+  
+  .success-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    
+    ion-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    
+    h3 {
+      margin: 0 0 4px;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    p {
+      margin: 0;
+      font-size: 14px;
+    }
+  }
+}
+
+// How It Works
+.how-it-works {
+  margin-top: 40px;
+  padding: 24px;
+  border-radius: 16px;
+  background: var(--ion-color-light);
+  
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 24px;
+    text-align: center;
+  }
+  
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    
+    .step-number {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--ion-color-primary);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    
+    .step-content {
+      flex: 1;
+      
+      h3 {
+        margin: 0 0 4px;
+        font-size: 16px;
+        font-weight: 600;
+      }
+      
+      p {
+        margin: 0;
+        font-size: 14px;
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+}
+
+// Responsive
+@media (max-width: 576px) {
+  .header-section {
+    margin: 24px 0;
+    
+    .main-icon {
+      font-size: 48px;
+    }
+    
+    h1 {
+      font-size: 24px;
+    }
+  }
+  
+  .quota-card {
+    .quota-info {
+      .quota-count {
+        font-size: 28px;
+        
+        .total {
+          font-size: 20px;
+        }
+      }
+    }
+  }
+}

@@ -10,7 +10,10 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "publish:research": "ts-node --project scripts/tsconfig.json scripts/publish-analysis.ts"
+    "publish:research": "ts-node --project scripts/tsconfig.json scripts/publish-analysis.ts",
+    "coordinator:daily": "ts-node --project scripts/tsconfig.json scripts/research-coordinator.ts daily",
+    "coordinator:monitor": "ts-node --project scripts/tsconfig.json scripts/research-coordinator.ts monitor",
+    "coordinator:test": "ts-node --project scripts/tsconfig.json scripts/research-coordinator.ts test"
   },
   "private": true,
   "dependencies": {
