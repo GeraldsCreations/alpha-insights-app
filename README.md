@@ -1,297 +1,220 @@
-# 📊 Alpha Insights - Trading Analysis Mobile App
+# 📱 Alpha Insights - Mobile App
 
-A professional trading analysis platform built with **Angular 18**, **Ionic 8**, and **Firebase**.
+Professional trading analysis platform mobile app built with Ionic/Angular and Firebase.
 
-## 🚀 Project Status
-
-**Current Sprint:** Sprint 1 - Foundation & Authentication (Day 1 Complete)
-
-### ✅ Day 1 Achievements
-
-- [x] Project scaffolding (Angular + Ionic + Capacitor)
-- [x] Firebase configuration and integration
-- [x] Core folder structure (core, shared, features)
-- [x] TypeScript data models and interfaces
-- [x] Core services (Auth, Firestore, Analysis)
-- [x] Basic routing and navigation
-- [x] Placeholder pages (Login, Home, Profile)
-- [x] Demo UI with trading analysis cards
-- [x] Git repository initialized
-
-### 🎯 Next Steps (Day 2)
-
-- [ ] Implement full authentication flow
-- [ ] Create Firebase project and add config
-- [ ] Set up Firestore security rules
-- [ ] Build real-time data fetching
-- [ ] Add error handling and loading states
-- [ ] Implement form validation
-- [ ] Add authentication guards
-
-## 📁 Project Structure
-
-```
-alpha-insights-app/
-├── src/
-│   ├── app/
-│   │   ├── core/                   # Singleton services, guards
-│   │   │   ├── auth/               # Authentication service
-│   │   │   ├── services/           # Firebase, API services
-│   │   │   ├── guards/             # Route guards (TBD)
-│   │   │   └── models/             # TypeScript interfaces
-│   │   │
-│   │   ├── shared/                 # Reusable components (TBD)
-│   │   │   ├── components/
-│   │   │   ├── directives/
-│   │   │   └── pipes/
-│   │   │
-│   │   ├── features/               # Feature modules (lazy-loaded)
-│   │   │   ├── auth/
-│   │   │   │   └── login/         # Login page
-│   │   │   ├── home/              # Home feed
-│   │   │   └── profile/           # User profile
-│   │   │
-│   │   ├── app.module.ts          # Root module with Firebase
-│   │   └── app-routing.module.ts  # Main routing
-│   │
-│   ├── assets/                     # Images, icons
-│   ├── theme/                      # Ionic theme & variables
-│   └── environments/               # Firebase config
-│       ├── environment.ts          # Development
-│       └── environment.prod.ts     # Production
-│
-├── capacitor.config.ts             # Capacitor configuration
-├── ionic.config.json               # Ionic configuration
-└── package.json                    # Dependencies
-```
-
-## 🔧 Installation & Setup
+## 🚀 Quick Start
 
 ### Prerequisites
-
 - Node.js 18+ and npm
-- Ionic CLI: `npm install -g @ionic/cli`
-- Firebase account
+- Ionic CLI (`npm install -g @ionic/cli`)
+- Firebase account (for backend services)
 
-### Quick Start
+### Installation
 
-1. **Clone the repository**
-   ```bash
-   cd /root/.openclaw/workspace/alpha-insights-app
-   ```
+```bash
+# Clone the repository
+git clone <repository-url>
+cd alpha-insights-app
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+# Install dependencies
+npm install
 
-3. **Configure Firebase**
-   
-   Edit `src/environments/environment.ts` and add your Firebase credentials:
-   
-   ```typescript
-   firebase: {
-     apiKey: "YOUR_API_KEY",
-     authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-     projectId: "YOUR_PROJECT_ID",
-     storageBucket: "YOUR_PROJECT_ID.appspot.com",
-     messagingSenderId: "YOUR_SENDER_ID",
-     appId: "YOUR_APP_ID",
-     measurementId: "YOUR_MEASUREMENT_ID"
-   }
-   ```
+# Run development server
+ionic serve
+```
 
-4. **Run the app**
-   ```bash
-   ionic serve
-   ```
+The app will open at `http://localhost:8100`
 
-   Or with live reload:
-   ```bash
-   ionic serve --lab
-   ```
+### Build for Production
 
-## 📱 Available Scripts
+```bash
+# Web build
+npm run build
 
-| Command | Description |
-|---------|-------------|
-| `npm start` | Start development server |
-| `ionic serve` | Run app in browser with live reload |
-| `ionic serve --lab` | Run with iOS/Android/Desktop preview |
-| `npm run build` | Build for production |
-| `ionic capacitor add ios` | Add iOS platform |
-| `ionic capacitor add android` | Add Android platform |
-| `ionic capacitor run ios` | Run on iOS simulator |
-| `ionic capacitor run android` | Run on Android emulator |
+# iOS (requires macOS)
+ionic capacitor build ios
 
-## 🔥 Firebase Setup
+# Android
+ionic capacitor build android
+```
 
-See [FIREBASE_SETUP.md](../alpha-insights/FIREBASE_SETUP.md) in the architecture docs for detailed Firebase configuration.
+## 📂 Project Structure
 
-### Required Firebase Services
+```
+src/app/
+├── core/                      # Core application modules
+│   ├── auth/                  # Authentication service
+│   │   └── auth.service.ts    # Firebase auth implementation
+│   ├── guards/                # Route guards
+│   │   └── auth.guard.ts      # Authentication guard
+│   ├── services/              # Core services
+│   │   ├── firestore.service.ts
+│   │   └── analysis.service.ts
+│   ├── models/                # TypeScript interfaces/types
+│   │   └── index.ts           # All data models
+│   └── interceptors/          # HTTP interceptors
+│
+├── shared/                    # Shared resources
+│   ├── components/            # Reusable components
+│   ├── directives/            # Custom directives
+│   ├── pipes/                 # Custom pipes
+│   └── utils/                 # Utility functions
+│
+└── features/                  # Feature modules
+    ├── auth/                  # Authentication feature
+    │   └── login/             # Login page
+    ├── home/                  # Home feed page
+    └── profile/               # User profile page
+```
 
-- ✅ **Authentication** - Email/Password authentication
-- ✅ **Firestore Database** - NoSQL database for analysis posts
-- ✅ **Storage** - Image hosting for charts and hero images
-- 🔜 **Cloud Functions** - Price alerts, notifications (Sprint 3)
-- 🔜 **Cloud Messaging** - Push notifications (Sprint 3)
+## 🔐 Authentication
 
-## 🎨 Features
+### Current Implementation (Day 1)
+- ✅ Firebase Authentication integrated
+- ✅ Login page with email/password
+- ✅ Auth guard protecting routes
+- ✅ Auth service with observables
 
-### Current Features (MVP)
+### Login Flow
+1. User enters email and password
+2. Firebase authenticates credentials
+3. On success → Navigate to `/home`
+4. Auth state persists across sessions
+5. Protected routes redirect to `/login` if unauthenticated
 
-- ✅ Beautiful Ionic UI components
-- ✅ Demo trading analysis cards
-- ✅ Navigation between pages
-- ✅ Firebase integration (configured)
-- ✅ Responsive design (mobile-first)
+## 🧭 Routing
 
-### Coming Soon (Sprint 1)
+```typescript
+/ (root)           → Redirects to /login
+/login             → Login page (public)
+/home              → Home feed (protected by AuthGuard)
+/profile           → User profile (protected by AuthGuard)
+```
 
-- 🔜 User authentication (login, register, logout)
-- 🔜 Real-time analysis feed from Firestore
-- 🔜 Filter by asset type (crypto/stock)
-- 🔜 Filter by recommendation (LONG/SHORT)
-- 🔜 Pull-to-refresh functionality
-- 🔜 Loading states and error handling
+### Route Protection
+All routes except `/login` are protected by `AuthGuard` which:
+- Checks if user is authenticated via `AuthService.user$`
+- Redirects to `/login` if not authenticated
+- Allows access if authenticated
 
-### Future Sprints
+## 🎨 Features Implemented (Day 1)
 
-- 📋 Analysis detail view with charts
-- 📋 Watchlist management
-- 📋 Price alerts
-- 📋 Performance tracking
-- 📋 Dark mode
-- 📋 Push notifications
-- 📋 PDF export/share
+### ✅ Completed
+- [x] Project scaffolding with Ionic/Angular
+- [x] Firebase integration setup
+- [x] Authentication service
+- [x] Auth guard for route protection
+- [x] Login page UI
+- [x] Home feed page with demo data
+- [x] Profile page with demo stats
+- [x] Routing configuration
+- [x] Data models (TypeScript interfaces)
+- [x] Git repository initialized
+- [x] Project structure established
 
-## 🏗️ Architecture
+### 📝 Coming Next (Day 2+)
+- [ ] Firebase config integration
+- [ ] Real authentication flow testing
+- [ ] User registration page
+- [ ] Password reset functionality
+- [ ] Analysis feed with real Firestore data
+- [ ] Push notifications setup
+- [ ] Watchlist functionality
+- [ ] Bookmark system
+- [ ] Search and filtering
+- [ ] Analysis detail page
+- [ ] Price alerts
 
-Built following Angular/Ionic best practices:
+## 🔥 Firebase Services Used
 
-- **Lazy-loaded modules** - Fast initial load time
-- **Singleton services** - Efficient state management
-- **Observable patterns** - Reactive data streams with RxJS
-- **Type safety** - Full TypeScript interfaces
-- **Modular structure** - Clean separation of concerns
+- **Authentication** - Email/password auth
+- **Firestore** - Real-time database for posts, users, bookmarks
+- **Cloud Functions** - Backend logic (coming soon)
+- **Cloud Messaging** - Push notifications (coming soon)
+- **Storage** - Image uploads for analysis posts (coming soon)
 
-### Key Services
+## 🛠️ Tech Stack
 
-#### AuthService (`core/auth/auth.service.ts`)
-- User authentication (login, register, logout)
-- Password reset
-- Auth state management with RxJS
+- **Framework:** Ionic 8 + Angular 18
+- **Language:** TypeScript
+- **Styling:** Ionic Components + SCSS
+- **Backend:** Firebase (Auth, Firestore, Functions, FCM)
+- **State Management:** RxJS Observables
+- **Routing:** Angular Router with lazy loading
 
-#### FirestoreService (`core/services/firestore.service.ts`)
-- Generic CRUD operations
-- Real-time data streaming
-- Type-safe document/collection methods
+## 📱 Target Platforms
 
-#### AnalysisService (`core/services/analysis.service.ts`)
-- Fetch analysis posts
-- Filter and search
-- Bookmark management
-
-## 📊 Data Models
-
-All TypeScript interfaces are defined in `src/app/core/models/index.ts`:
-
-- `User` - User profile and preferences
-- `AnalysisPost` - Trading analysis with charts
-- `PriceAlert` - User price alerts
-- `PerformanceRecord` - Trade tracking
-- And more...
-
-## 🔐 Security
-
-- Firebase Security Rules (TBD - Sprint 2)
-- Environment variables never committed
-- Authentication guards on protected routes
-- Input validation and sanitization
+- iOS (via Capacitor)
+- Android (via Capacitor)
+- Progressive Web App (PWA)
 
 ## 🧪 Testing
 
-- Unit tests: Jasmine + Karma (TBD)
-- E2E tests: Cypress (TBD)
-- Test coverage goal: 80%+
-
-Run tests:
 ```bash
-npm test                # Unit tests
-npm run e2e             # E2E tests (when configured)
+# Run unit tests
+npm run test
+
+# Run e2e tests
+npm run e2e
+
+# Lint code
+npm run lint
 ```
+
+## 🚧 Development Status
+
+**Current Phase:** Day 1 - Foundation Complete ✅
+
+**What Works:**
+- ✅ App builds and runs successfully
+- ✅ Login page renders
+- ✅ Home page with demo cards
+- ✅ Profile page with logout
+- ✅ Route protection active
+- ✅ Auth service connected to Firebase
+
+**What's Stubbed:**
+- ⚠️ Firebase config needs environment variables
+- ⚠️ Login doesn't connect to real Firebase yet (needs config)
+- ⚠️ Demo data hardcoded (not from Firestore)
+- ⚠️ No error handling for network issues
 
 ## 📦 Dependencies
 
 ### Core
-- `@angular/core` ^18.0.0
-- `@ionic/angular` ^8.0.0
-- `@capacitor/core` ^6.0.0
+- `@ionic/angular` - UI framework
+- `@angular/fire` - Firebase SDK for Angular
+- `firebase` - Firebase client SDK
 
-### Firebase
-- `firebase` ^11.0.0
-- `@angular/fire` ^18.0.0
+### Dev Dependencies
+- TypeScript
+- Angular CLI
+- Ionic CLI
 
-### Utilities
-- `rxjs` ^7.8.0
-- `chart.js` ^4.0.0 (for charts)
-- `marked` ^12.0.0 (for markdown rendering)
+## 🔒 Security Notes
 
-## 🚀 Deployment
+- Auth guard prevents unauthorized access
+- Firebase rules will be configured server-side
+- No sensitive data in codebase (uses environment variables)
+- HTTPS enforced in production
 
-### Web (PWA)
-```bash
-npm run build --prod
-# Deploy www/ folder to Firebase Hosting or Netlify
-```
+## 📖 Documentation
 
-### iOS
-```bash
-ionic capacitor add ios
-ionic capacitor run ios
-# Build in Xcode and submit to App Store
-```
+- [Ionic Docs](https://ionicframework.com/docs)
+- [Angular Docs](https://angular.io/docs)
+- [Firebase Docs](https://firebase.google.com/docs)
+- [Architecture Design](/workspace/alpha-insights/ARCHITECTURE.md)
 
-### Android
-```bash
-ionic capacitor add android
-ionic capacitor run android
-# Build in Android Studio and submit to Google Play
-```
+## 🤝 Contributing
 
-## 📝 Development Notes
-
-### Current Limitations
-
-1. **Firebase not connected yet** - Need to create Firebase project and add credentials
-2. **Demo data only** - Home feed shows hardcoded posts
-3. **No authentication flow** - Login page is UI-only (no Firebase auth)
-4. **No guards** - All routes are publicly accessible
-
-### Next Development Session
-
-**Priority tasks for Day 2:**
-
-1. Create Firebase project
-2. Add Firebase credentials to environment files
-3. Implement real authentication flow
-4. Test login/logout with Firebase
-5. Create auth guard for protected routes
-6. Add error handling and loading states
-7. Test on web browser
-
-## 👥 Team
-
-- **Dev** - Senior Mobile Developer
-- **Sprint:** Sprint 1 (Week 1)
-- **Target:** Working MVP with Auth + Home Feed (5-7 days)
+This is an internal project. Follow the established folder structure and coding standards.
 
 ## 📄 License
 
-Proprietary - Alpha Insights Trading Platform
+Proprietary - All rights reserved
 
 ---
 
-**Built with 🍆 by Dev**
+**Built with 🍆 by the Alpha Insights Team**
 
-*Last updated: Day 1 - Project scaffolding complete*
+Last Updated: 2026-01-31
