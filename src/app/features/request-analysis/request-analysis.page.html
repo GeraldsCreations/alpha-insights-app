@@ -81,23 +81,83 @@
             </ion-segment>
           </div>
           
-          <!-- Ticker Input -->
-          <ion-item lines="none" class="ticker-input">
-            <ion-label position="stacked">
-              Ticker Symbol
-              <ion-text color="danger">*</ion-text>
-            </ion-label>
-            <ion-input
-              [(ngModel)]="ticker"
-              name="ticker"
-              type="text"
-              placeholder="e.g., AAPL, TSLA, BTC"
-              (ionInput)="onTickerInput($event)"
-              [disabled]="loading"
-              maxlength="5"
-              required
-            ></ion-input>
-          </ion-item>
+          <!-- Ticker Search with Autocomplete -->
+          <div class="search-container">
+            <ion-item lines="none" class="search-input">
+              <ion-label position="stacked">
+                Search Ticker
+                <ion-text color="danger">*</ion-text>
+              </ion-label>
+              <ion-searchbar
+                [(ngModel)]="searchQuery"
+                name="searchQuery"
+                placeholder="Search stocks or crypto (e.g., Apple, Bitcoin)"
+                (ionInput)="onSearchInput($event)"
+                (ionFocus)="onSearchFocus()"
+                (ionBlur)="onSearchBlur()"
+                (ionClear)="clearSearch()"
+                [disabled]="loading"
+                debounce="0"
+                showClearButton="always"
+              ></ion-searchbar>
+            </ion-item>
+            
+            <!-- Search Results Dropdown -->
+            <div class="search-results" *ngIf="showSearchResults">
+              <!-- Loading State -->
+              <div class="search-loading" *ngIf="searchLoading">
+                <ion-spinner name="crescent"></ion-spinner>
+                <p>Searching...</p>
+              </div>
+              
+              <!-- Results List -->
+              <div class="results-list" *ngIf="!searchLoading && searchResults.length > 0">
+                <div 
+                  class="result-item" 
+                  *ngFor="let result of searchResults"
+                  (click)="selectResult(result)"
+                >
+                  <div class="result-logo">
+                    <img *ngIf="result.logo" [src]="result.logo" [alt]="result.symbol" />
+                    <ion-icon 
+                      *ngIf="!result.logo" 
+                      [name]="result.type === 'crypto' ? 'logo-bitcoin' : 'trending-up-outline'"
+                    ></ion-icon>
+                  </div>
+                  
+                  <div class="result-info">
+                    <div class="result-main">
+                      <span class="result-symbol">{{ result.symbol }}</span>
+                      <span class="result-name">{{ result.name }}</span>
+                    </div>
+                    <div class="result-meta">
+                      <ion-badge [color]="result.type === 'crypto' ? 'warning' : 'primary'">
+                        {{ result.type === 'crypto' ? 'Crypto' : 'Stock' }}
+                      </ion-badge>
+                      <span *ngIf="result.price" class="result-price">
+                        ${{ result.price | number:'1.2-2' }}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Empty State -->
+              <div class="search-empty" *ngIf="!searchLoading && searchResults.length === 0">
+                <ion-icon name="search-outline"></ion-icon>
+                <p>No results found</p>
+                <small>Try searching for another ticker</small>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Selected Ticker Display -->
+          <div class="selected-ticker" *ngIf="ticker">
+            <ion-chip color="primary" outline="true">
+              <ion-icon name="checkmark-circle"></ion-icon>
+              <ion-label>{{ ticker }} - {{ assetType === 'crypto' ? 'Crypto' : 'Stock' }}</ion-label>
+            </ion-chip>
+          </div>
           
           <!-- Validation Error -->
           <ion-note *ngIf="getValidationError()" color="danger" class="validation-error">
@@ -158,8 +218,8 @@
         <div class="step">
           <div class="step-number">1</div>
           <div class="step-content">
-            <h3>Submit Request</h3>
-            <p>Enter any ticker symbol and submit</p>
+            <h3>Search Ticker</h3>
+            <p>Search for any stock or crypto asset</p>
           </div>
         </div>
         
