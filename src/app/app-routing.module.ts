@@ -30,6 +30,11 @@ const routes: Routes = [
     path: 'settings',
     loadChildren: () => import('./features/settings/settings.module').then( m => m.SettingsPageModule)
   },
+  {
+    path: 'analysis/:id',
+    loadChildren: () => import('./features/analysis-detail/analysis-detail.module').then( m => m.AnalysisDetailPageModule),
+    canActivate: [AuthGuard]
+  },
 ];
 
 @NgModule({

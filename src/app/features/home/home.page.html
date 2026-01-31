@@ -1,161 +1,170 @@
 <ion-header [translucent]="true">
-  <ion-toolbar color="primary">
+  <ion-toolbar>
     <ion-title>Alpha Insights</ion-title>
     <ion-buttons slot="end">
       <ion-button routerLink="/profile">
-        <ion-icon name="person-circle-outline"></ion-icon>
+        <ion-icon slot="icon-only" name="person-circle"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
-
+  
+  <!-- Filter Segment -->
   <ion-toolbar>
     <ion-segment [(ngModel)]="filterSegment" (ionChange)="onFilterChange()">
       <ion-segment-button value="all">
         <ion-label>All</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="crypto">
-        <ion-label>Crypto</ion-label>
-      </ion-segment-button>
       <ion-segment-button value="stock">
         <ion-label>Stocks</ion-label>
       </ion-segment-button>
-      <ion-segment-button value="forex">
-        <ion-label>Forex</ion-label>
+      <ion-segment-button value="crypto">
+        <ion-label>Crypto</ion-label>
       </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+  <!-- Offline Banner -->
+  <ion-item *ngIf="isOffline" color="warning" lines="none">
+    <ion-icon name="cloud-offline" slot="start"></ion-icon>
+    <ion-label>
+      <h3>Offline Mode</h-3>
+      <p>Some features may be limited</p>
+    </ion-label>
+  </ion-item>
+
   <!-- Pull to Refresh -->
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
-    <ion-refresher-content
-      pullingIcon="chevron-down-circle-outline"
-      pullingText="Pull to refresh"
-      refreshingSpinner="circles"
-      refreshingText="Refreshing...">
-    </ion-refresher-content>
+    <ion-refresher-content></ion-refresher-content>
   </ion-refresher>
 
-  <div class="feed-container">
-    
-    <!-- Offline Banner -->
-    <ion-card color="warning" *ngIf="isOffline" class="offline-banner">
-      <ion-card-content>
-        <div class="banner-content">
-          <ion-icon name="cloud-offline-outline"></ion-icon>
-          <div>
-            <strong>You're offline</strong>
-            <p>Showing cached content. Connect to see latest updates.</p>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading analysis reports...</p>
+  </div>
 
-    <!-- Loading State -->
-    <div *ngIf="isLoading" class="loading-container">
-      <ion-spinner name="crescent"></ion-spinner>
-      <p>Loading analysis posts...</p>
-    </div>
+  <!-- Error State -->
+  <div *ngIf="!isLoading && errorMessage && posts.length === 0" class="empty-state">
+    <ion-icon name="alert-circle" color="danger"></ion-icon>
+    <h2>Unable to Load Posts</h2>
+    <p>{{ errorMessage }}</p>
+    <ion-button (click)="loadPosts()" fill="outline">
+      <ion-icon name="refresh" slot="start"></ion-icon>
+      Try Again
+    </ion-button>
+  </div>
 
-    <!-- Error State -->
-    <ion-card *ngIf="!isLoading && errorMessage && posts.length === 0" color="light">
-      <ion-card-content class="error-state">
-        <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
-        <h3>{{ errorMessage }}</h3>
-        <ion-button (click)="loadPosts()" fill="outline">
-          <ion-icon slot="start" name="refresh"></ion-icon>
-          Try Again
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
+  <!-- Empty State (No Posts) -->
+  <div *ngIf="!isLoading && !errorMessage && posts.length === 0" class="empty-state">
+    <ion-icon name="document-text-outline" color="medium"></ion-icon>
+    <h2>No Analysis Reports Yet</h2>
+    <p>Check back soon for professional trading insights!</p>
+  </div>
 
-    <!-- Empty State -->
-    <ion-card *ngIf="!isLoading && !errorMessage && posts.length === 0" color="light">
-      <ion-card-content class="empty-state">
-        <ion-icon name="document-text-outline" color="medium"></ion-icon>
-        <h3>No Posts Yet</h3>
-        <p>Be the first to share trading analysis!</p>
-        <ion-button routerLink="/create-post" fill="solid">
-          <ion-icon slot="start" name="add"></ion-icon>
-          Create Post
-        </ion-button>
-      </ion-card-content>
-    </ion-card>
-
-    <!-- Posts Feed -->
-    <ion-card *ngFor="let post of posts" class="post-card">
+  <!-- Posts Feed -->
+  <ion-list *ngIf="!isLoading && posts.length > 0">
+    <ion-card *ngFor="let post of posts" class="analysis-card" [routerLink]="['/analysis', post.id]">
+      <!-- Card Header -->
       <ion-card-header>
-        <div class="card-header">
-          <div class="header-left">
-            <ion-chip [color]="getAssetIcon(post.assetType)">
-              <ion-icon [name]="getAssetIcon(post.assetType)"></ion-icon>
-              <ion-label>{{ post.ticker }}</ion-label>
-            </ion-chip>
-            <ion-chip [color]="getRecommendationColor(post.recommendation)">
-              <ion-label>{{ post.recommendation }}</ion-label>
-            </ion-chip>
+        <div class="card-title-row">
+          <div class="ticker-section">
+            <ion-icon [name]="getAssetIcon(post.assetType)" color="primary"></ion-icon>
+            <h2 class="ticker">{{ post.ticker }}</h2>
+            <ion-badge [color]="getRecommendationColor(post.recommendation)">
+              {{ post.recommendation }}
+            </ion-badge>
           </div>
-          <div class="header-right">
-            <ion-badge color="primary">{{ post.confidenceLevel }}/10</ion-badge>
+          
+          <div class="action-buttons">
+            <app-watchlist-button 
+              [ticker]="post.ticker" 
+              [showToast]="false">
+            </app-watchlist-button>
+            <app-bookmark-button 
+              [postId]="post.id" 
+              [showToast]="false">
+            </app-bookmark-button>
+            <app-share-button [post]="post"></app-share-button>
           </div>
         </div>
-        <ion-card-title>{{ post.title }}</ion-card-title>
-        <ion-card-subtitle>
-          <ion-icon name="person-circle-outline"></ion-icon>
-          {{ post.authorName || 'Anonymous' }}
-        </ion-card-subtitle>
+        
+        <ion-card-subtitle>{{ post.title }}</ion-card-subtitle>
       </ion-card-header>
 
+      <!-- Card Content -->
       <ion-card-content>
-        <p class="description">{{ post.description }}</p>
-        
-        <!-- Trade Levels -->
-        <div class="trade-info">
-          <div class="trade-row">
-            <span>Entry:</span>
-            <strong>${{ post.entry.toLocaleString() }}</strong>
+        <!-- Key Metrics Row -->
+        <div class="metrics-row">
+          <div class="metric">
+            <span class="label">Confidence</span>
+            <div class="confidence-bar">
+              <div 
+                class="confidence-fill" 
+                [style.width.%]="post.confidenceLevel * 10"
+                [class.high]="post.confidenceLevel >= 8"
+                [class.medium]="post.confidenceLevel >= 5 && post.confidenceLevel < 8"
+                [class.low]="post.confidenceLevel < 5">
+              </div>
+            </div>
+            <span class="value">{{ post.confidenceLevel }}/10</span>
           </div>
-          <div class="trade-row">
-            <span>Target:</span>
-            <strong class="text-success">${{ post.target.toLocaleString() }}</strong>
-          </div>
-          <div class="trade-row">
-            <span>Stop:</span>
-            <strong class="text-danger">${{ post.stop.toLocaleString() }}</strong>
-          </div>
-          <div class="trade-row">
-            <span>Risk:Reward:</span>
-            <strong>{{ post.riskRewardRatio }}:1</strong>
+          
+          <div class="metric">
+            <span class="label">R:R</span>
+            <span class="value rr-value" 
+                  [class.good]="post.riskRewardRatio >= 3"
+                  [class.ok]="post.riskRewardRatio >= 2 && post.riskRewardRatio < 3"
+                  [class.poor]="post.riskRewardRatio < 2">
+              1:{{ post.riskRewardRatio.toFixed(2) }}
+            </span>
           </div>
         </div>
 
-        <!-- Tags -->
-        <div class="tags" *ngIf="post.tags && post.tags.length > 0">
-          <ion-chip *ngFor="let tag of post.tags" outline="true">
-            <ion-label>{{ tag }}</ion-label>
-          </ion-chip>
+        <!-- Trade Setup -->
+        <div class="trade-setup">
+          <div class="price-row">
+            <span class="price-label">Entry:</span>
+            <span class="price-value">${{ post.entry.toFixed(2) }}</span>
+          </div>
+          <div class="price-row">
+            <span class="price-label">Stop:</span>
+            <span class="price-value stop">${{ post.stop.toFixed(2) }}</span>
+          </div>
+          <div class="price-row">
+            <span class="price-label">Target:</span>
+            <span class="price-value target">${{ post.target.toFixed(2) }}</span>
+          </div>
         </div>
 
-        <!-- Actions -->
-        <div class="card-actions">
-          <ion-button fill="clear" size="small">
-            <ion-icon slot="start" name="eye-outline"></ion-icon>
+        <!-- Preview Text -->
+        <p class="preview-text">
+          {{ post.content?.technicalAnalysis?.substring(0, 150) }}...
+        </p>
+
+        <!-- Footer Stats -->
+        <div class="card-footer">
+          <span class="stat">
+            <ion-icon name="eye-outline"></ion-icon>
             {{ post.views || 0 }}
-          </ion-button>
-          <app-bookmark-button [postId]="post.id" [showToast]="false"></app-bookmark-button>
-          <app-watchlist-button [ticker]="post.ticker" [showToast]="false"></app-watchlist-button>
-          <app-share-button [post]="post"></app-share-button>
+          </span>
+          <span class="stat">
+            <ion-icon name="bookmark-outline"></ion-icon>
+            {{ post.bookmarks || 0 }}
+          </span>
+          <span class="timestamp">
+            {{ post.timestamp.toDate() | date:'short' }}
+          </span>
         </div>
       </ion-card-content>
     </ion-card>
+  </ion-list>
 
-    <!-- Load More Button (if needed) -->
-    <div class="load-more" *ngIf="posts.length >= 50">
-      <ion-button expand="block" fill="outline">
-        Load More
-      </ion-button>
-    </div>
-
+  <!-- Load More (if needed) -->
+  <div *ngIf="posts.length >= 50" class="load-more-container">
+    <ion-button expand="block" fill="outline">
+      Load More
+    </ion-button>
   </div>
 </ion-content>

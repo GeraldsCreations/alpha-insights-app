@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, QueryConstraint, onSnapshot, Unsubscribe, DocumentData, Query, setDoc } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, QueryConstraint, onSnapshot, Unsubscribe, DocumentData, Query, setDoc, increment, serverTimestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -101,13 +101,30 @@ export class FirestoreService {
   /**
    * Update an existing document
    */
-  async updateDocument<T>(path: string, data: Partial<T>): Promise<void> {
-    try {
+  updateDocument<T>(path: string, data: Partial<T>): Observable<void> {
+    return new Observable(observer => {
       const docRef = doc(this.firestore, path);
-      await updateDoc(docRef, data as DocumentData);
-    } catch (error: any) {
-      throw new Error(error.message);
-    }
+      updateDoc(docRef, data as DocumentData)
+        .then(() => {
+          observer.next();
+          observer.complete();
+        })
+        .catch(error => observer.error(error));
+    });
+  }
+
+  /**
+   * Firestore increment helper
+   */
+  increment(value: number): any {
+    return increment(value);
+  }
+
+  /**
+   * Firestore serverTimestamp helper
+   */
+  serverTimestamp(): any {
+    return serverTimestamp();
   }
 
   /**

@@ -1,0 +1,162 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================================================
+    // HELPER FUNCTIONS
+    // ============================================================================
+    
+    /**
+     * Check if user is authenticated
+     */
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    /**
+     * Check if user owns the resource
+     */
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    /**
+     * Check if user is admin
+     */
+    function isAdmin() {
+      return isAuthenticated() && 
+             request.auth.token.admin == true;
+    }
+    
+    /**
+     * Check if update only modifies allowed fields
+     */
+    function onlyUpdatesFields(allowedFields) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedFields);
+    }
+    
+    // ============================================================================
+    // ANALYSIS POSTS - Public read, admin write
+    // ============================================================================
+    
+    match /AnalysisPosts/{postId} {
+      // Anyone can read published analysis posts
+      allow read: if true;
+      
+      // Only admins can create/update/delete posts
+      allow create, update, delete: if isAdmin();
+      
+      // Allow incrementing view count without auth (for analytics)
+      allow update: if request.resource.data.diff(resource.data)
+                         .affectedKeys()
+                         .hasOnly(['views', 'updatedAt']) &&
+                       request.resource.data.views == resource.data.views + 1;
+    }
+    
+    // ============================================================================
+    // USERS - Owner read/write with restrictions
+    // ============================================================================
+    
+    match /Users/{userId} {
+      // Users can read their own profile
+      allow read: if isOwner(userId);
+      
+      // Users can create their own profile (on registration)
+      allow create: if isOwner(userId) && 
+                       request.resource.data.id == userId &&
+                       request.resource.data.email == request.auth.token.email;
+      
+      // Users can update their own profile
+      allow update: if isOwner(userId);
+      
+      // Prevent deletion of user profiles
+      allow delete: if false;
+    }
+    
+    // ============================================================================
+    // BOOKMARKS - Owner read/write
+    // ============================================================================
+    
+    match /Bookmarks/{bookmarkId} {
+      // Users can read their own bookmarks
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Users can create bookmarks for themselves
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       exists(/databases/$(database)/documents/AnalysisPosts/$(request.resource.data.postId));
+      
+      // Users can delete their own bookmarks
+      allow delete: if isOwner(resource.data.userId);
+      
+      // Prevent updates to bookmarks
+      allow update: if false;
+    }
+    
+    // ============================================================================
+    // PRICE ALERTS - Owner read/write
+    // ============================================================================
+    
+    match /PriceAlerts/{alertId} {
+      // Users can read their own alerts
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Users can create alerts for themselves
+      allow create: if isAuthenticated() && 
+                       request.resource.data.userId == request.auth.uid &&
+                       request.resource.data.ticker is string &&
+                       request.resource.data.ticker.size() >= 1 &&
+                       request.resource.data.ticker.size() <= 10 &&
+                       request.resource.data.targetPrice > 0;
+      
+      // Users can update their own alerts
+      allow update: if isOwner(resource.data.userId) &&
+                       onlyUpdatesFields(['targetPrice', 'triggered', 'triggeredAt', 'triggeredPrice', 'updatedAt']);
+      
+      // Users can delete their own alerts
+      allow delete: if isOwner(resource.data.userId);
+      
+      // Cloud Functions can update triggered status
+      allow update: if request.resource.data.diff(resource.data)
+                         .affectedKeys()
+                         .hasOnly(['triggered', 'triggeredAt', 'triggeredPrice', 'updatedAt']);
+    }
+    
+    // ============================================================================
+    // ANALYTICS - Write only for authenticated users, read for admins
+    // ============================================================================
+    
+    match /Analytics/{eventId} {
+      // Only admins can read analytics
+      allow read: if isAdmin();
+      
+      // Authenticated users can create analytics events
+      allow create: if isAuthenticated() &&
+                       request.resource.data.userId == request.auth.uid;
+      
+      // Cloud Functions can create analytics without userId
+      allow create: if true;  // Allows CF to write
+      
+      // Prevent updates and deletes
+      allow update, delete: if false;
+    }
+    
+    // ============================================================================
+    // ADMIN COLLECTIONS - Admin only
+    // ============================================================================
+    
+    match /AdminConfig/{document=**} {
+      allow read, write: if isAdmin();
+    }
+    
+    // ============================================================================
+    // DEFAULT DENY - Block all other paths
+    // ============================================================================
+    
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

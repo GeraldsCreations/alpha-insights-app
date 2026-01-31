@@ -8,7 +8,7 @@ import { orderBy, limit, where, QueryConstraint } from '@angular/fire/firestore'
   providedIn: 'root'
 })
 export class AnalysisService {
-  private readonly COLLECTION_PATH = 'analysis-posts';
+  private readonly COLLECTION_PATH = 'AnalysisPosts';
 
   constructor(private firestoreService: FirestoreService) {}
 
@@ -51,8 +51,15 @@ export class AnalysisService {
   /**
    * Get a single analysis post by ID
    */
-  getAnalysisById(id: string): Observable<AnalysisPost | null> {
+  getPostById(id: string): Observable<AnalysisPost | null> {
     return this.firestoreService.getDocument<AnalysisPost>(`${this.COLLECTION_PATH}/${id}`);
+  }
+
+  /**
+   * Get a single analysis post by ID (alias for backward compatibility)
+   */
+  getAnalysisById(id: string): Observable<AnalysisPost | null> {
+    return this.getPostById(id);
   }
 
   /**
@@ -70,10 +77,14 @@ export class AnalysisService {
   /**
    * Increment view count for a post
    */
-  async incrementViews(postId: string): Promise<void> {
-    // TODO: Use Firestore increment field value
-    // For now, this is a placeholder
-    console.log('Incrementing views for post:', postId);
+  incrementViews(postId: string): Observable<void> {
+    return this.firestoreService.updateDocument(
+      `${this.COLLECTION_PATH}/${postId}`,
+      {
+        views: this.firestoreService.increment(1),
+        updatedAt: this.firestoreService.serverTimestamp()
+      }
+    );
   }
 
   /**

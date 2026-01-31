@@ -1,0 +1,228 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/home"></ion-back-button>
+    </ion-buttons>
+    <ion-title *ngIf="post">{{ post.ticker }}</ion-title>
+    <ion-buttons slot="end">
+      <app-watchlist-button 
+        *ngIf="post" 
+        [ticker]="post.ticker" 
+        [showToast]="true">
+      </app-watchlist-button>
+      <app-bookmark-button 
+        *ngIf="post" 
+        [postId]="post.id" 
+        [showToast]="true">
+      </app-bookmark-button>
+      <app-share-button *ngIf="post" [post]="post"></app-share-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <ion-spinner name="crescent"></ion-spinner>
+    <p>Loading analysis...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoading && errorMessage" class="empty-state">
+    <ion-icon name="alert-circle" color="danger"></ion-icon>
+    <h2>Unable to Load Analysis</h2>
+    <p>{{ errorMessage }}</p>
+    <ion-button (click)="goBack()" fill="outline">
+      <ion-icon name="arrow-back" slot="start"></ion-icon>
+      Go Back
+    </ion-button>
+  </div>
+
+  <!-- Post Content -->
+  <div *ngIf="!isLoading && post" class="detail-content">
+    <!-- Header Section -->
+    <div class="header-section">
+      <div class="title-row">
+        <h1>{{ post.title }}</h1>
+        <ion-badge [color]="getRecommendationColor(post.recommendation)" class="rec-badge">
+          {{ post.recommendation }}
+        </ion-badge>
+      </div>
+      
+      <div class="meta-row">
+        <span class="meta-item">
+          <ion-icon name="calendar-outline"></ion-icon>
+          {{ post.timestamp.toDate() | date:'fullDate' }}
+        </span>
+        <span class="meta-item">
+          <ion-icon name="time-outline"></ion-icon>
+          {{ post.timestamp.toDate() | date:'shortTime' }}
+        </span>
+        <span class="meta-item">
+          <ion-icon name="eye-outline"></ion-icon>
+          {{ post.views || 0 }} views
+        </span>
+      </div>
+    </div>
+
+    <!-- Trade Setup Card -->
+    <ion-card class="trade-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="analytics-outline"></ion-icon>
+          Trade Setup
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="setup-grid">
+          <!-- Confidence -->
+          <div class="setup-item full-width">
+            <span class="label">Confidence Level</span>
+            <div class="confidence-display">
+              <div class="confidence-bar-large">
+                <div 
+                  class="confidence-fill" 
+                  [style.width.%]="post.confidenceLevel * 10"
+                  [class.high]="post.confidenceLevel >= 8"
+                  [class.medium]="post.confidenceLevel >= 5 && post.confidenceLevel < 8"
+                  [class.low]="post.confidenceLevel < 5">
+                </div>
+              </div>
+              <span class="confidence-value">{{ post.confidenceLevel }}/10</span>
+            </div>
+          </div>
+
+          <!-- Entry Price -->
+          <div class="setup-item">
+            <span class="label">Entry Price</span>
+            <span class="value entry">${{ post.entry.toFixed(2) }}</span>
+          </div>
+
+          <!-- Stop Loss -->
+          <div class="setup-item">
+            <span class="label">Stop Loss</span>
+            <span class="value stop">${{ post.stop.toFixed(2) }}</span>
+            <span class="percentage loss">-{{ getStopLossPercent().toFixed(2) }}%</span>
+          </div>
+
+          <!-- Target Price -->
+          <div class="setup-item">
+            <span class="label">Target</span>
+            <span class="value target">${{ post.target.toFixed(2) }}</span>
+            <span class="percentage profit">+{{ getTargetPercent().toFixed(2) }}%</span>
+          </div>
+
+          <!-- Risk/Reward -->
+          <div class="setup-item">
+            <span class="label">Risk/Reward</span>
+            <span class="value rr" 
+                  [class.excellent]="post.riskRewardRatio >= 3"
+                  [class.good]="post.riskRewardRatio >= 2 && post.riskRewardRatio < 3"
+                  [class.poor]="post.riskRewardRatio < 2">
+              1:{{ post.riskRewardRatio.toFixed(2) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <ion-button expand="block" (click)="createAlerts()" fill="outline">
+            <ion-icon name="notifications-outline" slot="start"></ion-icon>
+            Set Price Alerts
+          </ion-button>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Verdicts Card (if available) -->
+    <ion-card *ngIf="verdicts.length > 0" class="verdicts-card">
+      <ion-card-header>
+        <ion-card-title>
+          <ion-icon name="bar-chart-outline"></ion-icon>
+          Multi-Timeframe Analysis
+        </ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <div class="verdict-list">
+          <div *ngFor="let verdict of verdicts" class="verdict-row">
+            <span class="timeframe">{{ verdict.timeframe }}</span>
+            <div class="verdict-bar">
+              <div 
+                class="verdict-fill" 
+                [style.width]="getConfidenceWidth(verdict.confidence)"
+                [class.buy]="verdict.verdict === 'BUY'"
+                [class.sell]="verdict.verdict === 'SELL'"
+                [class.hold]="verdict.verdict === 'HOLD'">
+              </div>
+            </div>
+            <ion-badge [color]="getVerdictColor(verdict.verdict)" size="small">
+              {{ verdict.verdict }}
+            </ion-badge>
+            <span class="confidence-text">{{ verdict.confidence }}%</span>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Content Tabs -->
+    <div class="tabs-container">
+      <div class="tabs">
+        <button 
+          class="tab" 
+          [class.active]="activeTab === 'overview'"
+          (click)="onTabChange('overview')">
+          Overview
+        </button>
+        <button 
+          class="tab" 
+          [class.active]="activeTab === 'technical'"
+          (click)="onTabChange('technical')">
+          Technical
+        </button>
+        <button 
+          class="tab" 
+          [class.active]="activeTab === 'news'"
+          (click)="onTabChange('news')">
+          News
+        </button>
+        <button 
+          class="tab" 
+          [class.active]="activeTab === 'price'"
+          (click)="onTabChange('price')">
+          Price Action
+        </button>
+      </div>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Overview Tab -->
+        <div *ngIf="activeTab === 'overview'" class="tab-pane">
+          <div class="markdown-content" [innerHTML]="post.content?.detailedAnalysis || 'No overview available'"></div>
+        </div>
+
+        <!-- Technical Tab -->
+        <div *ngIf="activeTab === 'technical'" class="tab-pane">
+          <div class="markdown-content" [innerHTML]="post.content?.technicalAnalysis || 'No technical analysis available'"></div>
+        </div>
+
+        <!-- News Tab -->
+        <div *ngIf="activeTab === 'news'" class="tab-pane">
+          <div class="markdown-content" [innerHTML]="post.content?.newsSummary || 'No news summary available'"></div>
+        </div>
+
+        <!-- Price Action Tab -->
+        <div *ngIf="activeTab === 'price'" class="tab-pane">
+          <div class="markdown-content" [innerHTML]="post.content?.priceAnalysis || 'No price analysis available'"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Actions -->
+    <div class="related-section">
+      <ion-button expand="block" (click)="viewTickerDetails()" fill="outline">
+        <ion-icon name="trending-up-outline" slot="start"></ion-icon>
+        View All {{ post.ticker }} Reports
+      </ion-button>
+    </div>
+  </div>
+</ion-content>
