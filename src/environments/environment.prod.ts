@@ -2,47 +2,47 @@
 
 export const environment = {
   production: true,
-  
+
   // Firebase Configuration
   // TODO: Replace with your Firebase project credentials
   firebase: {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID",
-    measurementId: "YOUR_MEASUREMENT_ID"
+    apiKey: 'AIzaSyBnVoxuXvF1qDac2J5_h6inG89Wvm3aCmQ',
+    authDomain: 'alpha-insights-84c51.firebaseapp.com',
+    projectId: 'alpha-insights-84c51',
+    storageBucket: 'alpha-insights-84c51.firebasestorage.app',
+    messagingSenderId: '1051741188643',
+    appId: '1:1051741188643:web:99d0e8a04315c34e7db796',
+    measurementId: 'G-3S36N19CKD',
   },
-  
+
   // External API Keys
   externalApis: {
-    priceDataApiKey: "",
-    priceDataBaseUrl: "https://api.example.com/v1"
+    priceDataApiKey: '',
+    priceDataBaseUrl: 'https://api.example.com/v1',
   },
-  
+
   // Feature Flags
   features: {
     enablePushNotifications: true,
     enablePriceAlerts: true,
     enablePerformanceTracking: true,
     enableDarkMode: true,
-    enableOfflineMode: true
+    enableOfflineMode: true,
   },
-  
+
   // App Configuration
   app: {
-    name: "Alpha Insights",
-    version: "1.0.0",
+    name: 'Alpha Insights',
+    version: '1.0.0',
     defaultPageSize: 20,
     cacheExpirationMinutes: 30,
     maxImageSizeMB: 5,
-    supportEmail: "support@alphainsights.com"
+    supportEmail: 'support@alphainsights.com',
   },
-  
+
   // Analytics
   analytics: {
     enabled: true,
-    debug: false
-  }
+    debug: false,
+  },
 };
