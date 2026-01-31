@@ -1,4 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertController, ToastController } from '@ionic/angular';
@@ -9,6 +12,8 @@ import { PriceAlert, AlertType } from '../../../core/models';
   selector: 'app-alerts',
   templateUrl: './alerts.page.html',
   styleUrls: ['./alerts.page.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule]
 })
 export class AlertsPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

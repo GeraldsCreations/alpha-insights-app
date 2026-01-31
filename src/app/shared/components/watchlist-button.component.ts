@@ -1,4 +1,6 @@
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ToastController } from '@ionic/angular';
@@ -12,6 +14,8 @@ import { WatchlistService } from '../../core/services/watchlist.service';
  */
 @Component({
   selector: 'app-watchlist-button',
+  standalone: true,
+  imports: [CommonModule, IonicModule],
   template: `
     <ion-button 
       fill="clear" 

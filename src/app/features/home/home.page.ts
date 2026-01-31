@@ -194,7 +194,7 @@ export class HomePage implements OnInit, OnDestroy {
    */
   private async showToast(
     message: string, 
-    color: 'success' | 'danger' | 'warning' = 'primary',
+    color: 'success' | 'danger' | 'warning' | 'primary' = 'primary',
     duration: number = 3000
   ) {
     const toast = await this.toastController.create({

@@ -52,11 +52,11 @@
       <div class="meta-row">
         <span class="meta-item">
           <ion-icon name="calendar-outline"></ion-icon>
-          {{ post.timestamp.toDate() | date:'fullDate' }}
+          {{ post.timestamp | date:'fullDate' }}
         </span>
         <span class="meta-item">
           <ion-icon name="time-outline"></ion-icon>
-          {{ post.timestamp.toDate() | date:'shortTime' }}
+          {{ post.timestamp | date:'shortTime' }}
         </span>
         <span class="meta-item">
           <ion-icon name="eye-outline"></ion-icon>

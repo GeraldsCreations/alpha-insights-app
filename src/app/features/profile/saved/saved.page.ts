@@ -1,15 +1,21 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { Router, RouterModule } from '@angular/router';
 import { Subject, combineLatest } from 'rxjs';
 import { takeUntil, switchMap } from 'rxjs/operators';
 import { BookmarkService } from '../../../core/services/bookmark.service';
 import { AnalysisService } from '../../../core/services/analysis.service';
 import { AnalysisPost } from '../../../core/models';
+import { SharedModule } from '../../../shared/shared.module';
 
 @Component({
   selector: 'app-saved',
   templateUrl: './saved.page.html',
   styleUrls: ['./saved.page.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule, SharedModule]
 })
 export class SavedPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

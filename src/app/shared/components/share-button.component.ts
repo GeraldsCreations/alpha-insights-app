@@ -1,4 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { IonicModule } from '@ionic/angular';
 import { ToastController, ActionSheetController } from '@ionic/angular';
 import { ShareService } from '../../core/services/share.service';
 import { AnalysisPost } from '../../core/models';
@@ -11,6 +13,8 @@ import { AnalysisPost } from '../../core/models';
  */
 @Component({
   selector: 'app-share-button',
+  standalone: true,
+  imports: [CommonModule, IonicModule],
   template: `
     <ion-button 
       fill="clear" 

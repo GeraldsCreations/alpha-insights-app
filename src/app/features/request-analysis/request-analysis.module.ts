@@ -11,8 +11,8 @@ import { RequestAnalysisPage } from './request-analysis.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    RequestAnalysisPageRoutingModule
-  ],
-  declarations: [RequestAnalysisPage]
+    RequestAnalysisPageRoutingModule,
+    RequestAnalysisPage
+  ]
 })
 export class RequestAnalysisPageModule {}

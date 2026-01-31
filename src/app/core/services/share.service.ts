@@ -35,7 +35,7 @@ export class ShareService {
       }
 
       // Check Web Share API
-      if (navigator.share) {
+      if (typeof navigator.share === 'function') {
         return true;
       }
 

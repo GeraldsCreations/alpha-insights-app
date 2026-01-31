@@ -1,12 +1,17 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { RouterModule, Router } from '@angular/router';
 import { ToastController, LoadingController } from '@ionic/angular';
 import { CustomRequestService, QuotaStatus } from '../../core/services/custom-request.service';
 
 @Component({
   selector: 'app-request-analysis',
   templateUrl: './request-analysis.page.html',
-  styleUrls: ['./request-analysis.page.scss']
+  styleUrls: ['./request-analysis.page.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
 export class RequestAnalysisPage implements OnInit {
   ticker = '';

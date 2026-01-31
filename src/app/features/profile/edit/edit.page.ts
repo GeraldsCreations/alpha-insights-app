@@ -1,6 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { IonicModule } from '@ionic/angular';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoadingController, ToastController, AlertController } from '@ionic/angular';
@@ -19,6 +21,8 @@ import { Auth } from '@angular/fire/auth';
   selector: 'app-edit',
   templateUrl: './edit.page.html',
   styleUrls: ['./edit.page.scss'],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, IonicModule]
 })
 export class EditPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

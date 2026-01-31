@@ -9,14 +9,12 @@ import { WatchlistButtonComponent } from './components/watchlist-button.componen
  * SharedModule - Contains reusable components, directives, and pipes
  */
 @NgModule({
-  declarations: [
+  imports: [
+    CommonModule,
+    IonicModule,
     BookmarkButtonComponent,
     ShareButtonComponent,
     WatchlistButtonComponent
-  ],
-  imports: [
-    CommonModule,
-    IonicModule
   ],
   exports: [
     BookmarkButtonComponent,

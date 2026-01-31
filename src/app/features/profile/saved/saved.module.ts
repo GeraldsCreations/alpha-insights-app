@@ -15,8 +15,8 @@ import { SavedPage } from './saved.page';
     FormsModule,
     IonicModule,
     SavedPageRoutingModule,
-    SharedModule
-  ],
-  declarations: [SavedPage]
+    SharedModule,
+    SavedPage
+  ]
 })
 export class SavedPageModule {}

@@ -25,7 +25,11 @@ export class AuthService {
             watchlistUpdates: true,
             highConfidence: true,
             priceAlerts: true
-          }
+          },
+          plan: 'free',
+          customReportsRemaining: 3,
+          customReportsResetDate: new Date(),
+          totalCustomReports: 0
         };
         this.userSubject.next(user);
       } else {

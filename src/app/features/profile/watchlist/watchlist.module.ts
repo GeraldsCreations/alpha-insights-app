@@ -13,8 +13,8 @@ import { WatchlistPage } from './watchlist.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    WatchlistPageRoutingModule
-  ],
-  declarations: [WatchlistPage]
+    WatchlistPageRoutingModule,
+    WatchlistPage
+  ]
 })
 export class WatchlistPageModule {}

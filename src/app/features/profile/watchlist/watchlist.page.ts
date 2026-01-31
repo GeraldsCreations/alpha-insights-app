@@ -1,4 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { RouterModule } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertController, ToastController } from '@ionic/angular';
@@ -8,6 +12,8 @@ import { WatchlistService } from '../../../core/services/watchlist.service';
   selector: 'app-watchlist',
   templateUrl: './watchlist.page.html',
   styleUrls: ['./watchlist.page.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
 export class WatchlistPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();

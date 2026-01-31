@@ -13,8 +13,8 @@ import { AlertsPage } from './alerts.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    AlertsPageRoutingModule
-  ],
-  declarations: [AlertsPage]
+    AlertsPageRoutingModule,
+    AlertsPage
+  ]
 })
 export class AlertsPageModule {}

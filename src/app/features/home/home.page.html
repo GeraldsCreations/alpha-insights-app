@@ -29,7 +29,7 @@
   <ion-item *ngIf="isOffline" color="warning" lines="none">
     <ion-icon name="cloud-offline" slot="start"></ion-icon>
     <ion-label>
-      <h3>Offline Mode</h-3>
+      <h3>Offline Mode</h3>
       <p>Some features may be limited</p>
     </ion-label>
   </ion-item>
@@ -154,7 +154,7 @@
             {{ post.bookmarks || 0 }}
           </span>
           <span class="timestamp">
-            {{ post.timestamp.toDate() | date:'short' }}
+            {{ post.timestamp | date:'short' }}
           </span>
         </div>
       </ion-card-content>

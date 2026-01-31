@@ -65,6 +65,8 @@ export interface AnalysisContent {
   technicalAnalysis: string;  // Rich text (HTML/Markdown)
   newsSummary: string;
   detailedAnalysis: string;
+  verdicts?: string;  // Analysis verdicts/conclusion
+  priceAnalysis?: string;  // Price analysis section
 }
 
 export type AssetType = 'crypto' | 'stock';

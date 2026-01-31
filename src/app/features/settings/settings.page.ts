@@ -1,5 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { IonicModule } from '@ionic/angular';
+import { RouterModule, Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AlertController, ToastController, LoadingController } from '@ionic/angular';
@@ -11,6 +14,8 @@ import { ThemeMode, NotificationPreferences, UserPreferences } from '../../core/
   selector: 'app-settings',
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
+  standalone: true,
+  imports: [CommonModule, FormsModule, IonicModule, RouterModule]
 })
 export class SettingsPage implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
@@ -227,7 +232,7 @@ export class SettingsPage implements OnInit, OnDestroy {
             await loading.present();
 
             try {
-              await this.authService.resetPassword(this.userEmail).toPromise();
+              await this.authService.resetPassword(this.userEmail);
               await loading.dismiss();
               this.showToast('Password reset link sent to your email');
             } catch (error) {
@@ -260,7 +265,7 @@ export class SettingsPage implements OnInit, OnDestroy {
           role: 'destructive',
           handler: async () => {
             try {
-              await this.authService.logout().toPromise();
+              await this.authService.signOut();
               this.router.navigate(['/login']);
             } catch (error) {
               console.error('Error logging out:', error);
