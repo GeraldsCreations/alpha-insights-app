@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
 
 import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 
@@ -18,6 +19,7 @@ import { environment } from '../environments/environment';
   declarations: [AppComponent],
   imports: [
     BrowserModule,
+    HttpClientModule,
     IonicModule.forRoot(),
     AppRoutingModule
   ],

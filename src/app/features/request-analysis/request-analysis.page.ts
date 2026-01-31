@@ -5,6 +5,9 @@ import { IonicModule } from '@ionic/angular';
 import { RouterModule, Router } from '@angular/router';
 import { ToastController, LoadingController } from '@ionic/angular';
 import { CustomRequestService, QuotaStatus } from '../../core/services/custom-request.service';
+import { TickerSearchService, SearchResult } from '../../core/services/ticker-search.service';
+import { Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-request-analysis',
@@ -20,8 +23,16 @@ export class RequestAnalysisPage implements OnInit {
   loading = false;
   submitted = false;
   
+  // Search functionality
+  searchQuery = '';
+  searchResults: SearchResult[] = [];
+  showSearchResults = false;
+  searchLoading = false;
+  private searchSubject = new Subject<string>();
+  
   constructor(
     private customRequestService: CustomRequestService,
+    private tickerSearchService: TickerSearchService,
     private router: Router,
     private toastController: ToastController,
     private loadingController: LoadingController
@@ -29,6 +40,92 @@ export class RequestAnalysisPage implements OnInit {
   
   ngOnInit() {
     this.loadQuotaStatus();
+    this.setupSearch();
+  }
+  
+  /**
+   * Setup search with debouncing
+   */
+  setupSearch() {
+    this.searchSubject.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(query => {
+        if (query.length < 2) {
+          this.searchLoading = false;
+          return [];
+        }
+        this.searchLoading = true;
+        return this.tickerSearchService.searchTickers(query);
+      })
+    ).subscribe({
+      next: (results) => {
+        this.searchResults = results;
+        this.searchLoading = false;
+        this.showSearchResults = results.length > 0;
+      },
+      error: (error) => {
+        console.error('Search error:', error);
+        this.searchLoading = false;
+        this.searchResults = [];
+      }
+    });
+  }
+  
+  /**
+   * Handle search input
+   */
+  onSearchInput(event: any) {
+    const query = event.target.value || '';
+    this.searchQuery = query;
+    
+    if (query.length < 2) {
+      this.searchResults = [];
+      this.showSearchResults = false;
+      this.searchLoading = false;
+      return;
+    }
+    
+    this.searchSubject.next(query);
+  }
+  
+  /**
+   * Select a search result
+   */
+  selectResult(result: SearchResult) {
+    this.ticker = result.symbol;
+    this.assetType = result.type;
+    this.searchQuery = result.symbol;
+    this.showSearchResults = false;
+    this.searchResults = [];
+  }
+  
+  /**
+   * Clear search
+   */
+  clearSearch() {
+    this.searchQuery = '';
+    this.ticker = '';
+    this.searchResults = [];
+    this.showSearchResults = false;
+  }
+  
+  /**
+   * Handle search bar focus
+   */
+  onSearchFocus() {
+    if (this.searchResults.length > 0) {
+      this.showSearchResults = true;
+    }
+  }
+  
+  /**
+   * Handle search bar blur (with delay to allow clicks)
+   */
+  onSearchBlur() {
+    setTimeout(() => {
+      this.showSearchResults = false;
+    }, 200);
   }
   
   /**
@@ -47,7 +144,7 @@ export class RequestAnalysisPage implements OnInit {
   }
   
   /**
-   * Handle ticker input
+   * Handle ticker input (fallback for manual entry)
    */
   onTickerInput(event: any) {
     // Auto-uppercase
@@ -139,6 +236,7 @@ export class RequestAnalysisPage implements OnInit {
         // Reset form
         setTimeout(() => {
           this.ticker = '';
+          this.searchQuery = '';
           this.submitted = false;
         }, 3000);
       }

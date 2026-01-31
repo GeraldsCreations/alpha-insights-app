@@ -17,8 +17,13 @@ export const environment = {
 
   // External API Keys
   externalApis: {
-    priceDataApiKey: '',
-    priceDataBaseUrl: 'https://api.example.com/v1',
+    priceDataApiKey: "",
+    priceDataBaseUrl: "https://api.example.com/v1",
+    
+    // Ticker Search APIs
+    coinGeckoBaseUrl: "https://api.coingecko.com/api/v3",
+    finnhubApiKey: "", // Add production API key here
+    finnhubBaseUrl: "https://finnhub.io/api/v1"
   },
 
   // Feature Flags
