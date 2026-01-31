@@ -1,0 +1,122 @@
+<ion-header [translucent]="true">
+  <ion-toolbar color="primary">
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/login"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Create Account</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="register-container">
+    <!-- Logo/Branding -->
+    <div class="branding">
+      <ion-icon name="trending-up" class="logo-icon"></ion-icon>
+      <h1>Alpha Insights</h1>
+      <p class="subtitle">Join the trading community</p>
+    </div>
+
+    <!-- Registration Form -->
+    <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+      
+      <!-- Display Name -->
+      <ion-item lines="full" class="form-item">
+        <ion-label position="stacked">Display Name *</ion-label>
+        <ion-input 
+          type="text" 
+          formControlName="displayName"
+          placeholder="Enter your display name"
+          autocomplete="name"
+        ></ion-input>
+      </ion-item>
+      <div class="error-text" *ngIf="registerForm.get('displayName')?.touched && registerForm.get('displayName')?.invalid">
+        {{ getErrorMessage('displayName') }}
+      </div>
+
+      <!-- Email -->
+      <ion-item lines="full" class="form-item">
+        <ion-label position="stacked">Email *</ion-label>
+        <ion-input 
+          type="email" 
+          formControlName="email"
+          placeholder="Enter your email"
+          autocomplete="email"
+        ></ion-input>
+      </ion-item>
+      <div class="error-text" *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.invalid">
+        {{ getErrorMessage('email') }}
+      </div>
+
+      <!-- Password -->
+      <ion-item lines="full" class="form-item">
+        <ion-label position="stacked">Password *</ion-label>
+        <ion-input 
+          [type]="showPassword ? 'text' : 'password'" 
+          formControlName="password"
+          placeholder="Create a password (min. 6 characters)"
+          autocomplete="new-password"
+        ></ion-input>
+        <ion-button 
+          slot="end" 
+          fill="clear" 
+          (click)="togglePasswordVisibility('password')"
+          class="password-toggle"
+        >
+          <ion-icon [name]="showPassword ? 'eye-off' : 'eye'" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <div class="error-text" *ngIf="registerForm.get('password')?.touched && registerForm.get('password')?.invalid">
+        {{ getErrorMessage('password') }}
+      </div>
+
+      <!-- Confirm Password -->
+      <ion-item lines="full" class="form-item">
+        <ion-label position="stacked">Confirm Password *</ion-label>
+        <ion-input 
+          [type]="showConfirmPassword ? 'text' : 'password'" 
+          formControlName="confirmPassword"
+          placeholder="Re-enter your password"
+          autocomplete="new-password"
+        ></ion-input>
+        <ion-button 
+          slot="end" 
+          fill="clear" 
+          (click)="togglePasswordVisibility('confirmPassword')"
+          class="password-toggle"
+        >
+          <ion-icon [name]="showConfirmPassword ? 'eye-off' : 'eye'" slot="icon-only"></ion-icon>
+        </ion-button>
+      </ion-item>
+      <div class="error-text" *ngIf="registerForm.get('confirmPassword')?.touched && registerForm.errors?.['passwordMismatch']">
+        Passwords do not match
+      </div>
+
+      <!-- Terms Notice -->
+      <div class="terms-notice">
+        <ion-text color="medium">
+          <p>By creating an account, you agree to our Terms of Service and Privacy Policy</p>
+        </ion-text>
+      </div>
+
+      <!-- Register Button -->
+      <ion-button 
+        type="submit" 
+        expand="block" 
+        [disabled]="registerForm.invalid"
+        class="submit-button"
+      >
+        Create Account
+      </ion-button>
+    </form>
+
+    <!-- Login Link -->
+    <div class="footer-links">
+      <ion-text color="medium">
+        Already have an account? 
+      </ion-text>
+      <ion-button fill="clear" size="small" (click)="goToLogin()">
+        Sign In
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

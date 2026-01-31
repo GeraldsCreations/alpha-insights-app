@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, QueryConstraint, onSnapshot, Unsubscribe, DocumentData, Query } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, QueryConstraint, onSnapshot, Unsubscribe, DocumentData, Query, setDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 
 @Injectable({
@@ -7,6 +7,19 @@ import { Observable } from 'rxjs';
 })
 export class FirestoreService {
   constructor(private firestore: Firestore) {}
+
+  /**
+   * Set a document (create or overwrite)
+   */
+  async setDocument<T>(path: string, data: T, merge: boolean = false): Promise<void> {
+    try {
+      const docRef = doc(this.firestore, path);
+      await setDoc(docRef, data as DocumentData, { merge });
+    } catch (error: any) {
+      console.error('Firestore setDocument error:', error);
+      throw new Error(error.message || 'Failed to set document');
+    }
+  }
 
   /**
    * Get a single document

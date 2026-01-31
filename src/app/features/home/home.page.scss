@@ -1,44 +1,250 @@
 .feed-container {
-  padding: 16px;
-  max-width: 768px;
+  max-width: 800px;
   margin: 0 auto;
+  padding: 16px;
+}
+
+// Offline Banner
+.offline-banner {
+  margin-bottom: 16px;
+
+  .banner-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    ion-icon {
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+
+    div {
+      flex: 1;
+
+      strong {
+        display: block;
+        font-size: 16px;
+        margin-bottom: 4px;
+      }
+
+      p {
+        margin: 0;
+        font-size: 13px;
+        opacity: 0.9;
+      }
+    }
+  }
+}
+
+// Loading State
+.loading-container {
+  text-align: center;
+  padding: 60px 20px;
+
+  ion-spinner {
+    width: 50px;
+    height: 50px;
+    margin-bottom: 16px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    font-size: 14px;
+  }
+}
+
+// Error State
+.error-state {
+  text-align: center;
+  padding: 40px 20px;
+
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+  }
+
+  h3 {
+    font-size: 18px;
+    margin: 16px 0;
+    color: var(--ion-color-medium-shade);
+  }
+
+  ion-button {
+    margin-top: 16px;
+  }
+}
+
+// Empty State
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+
+  ion-icon {
+    font-size: 80px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+  }
+
+  h3 {
+    font-size: 20px;
+    margin: 16px 0 8px;
+    font-weight: 600;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin-bottom: 24px;
+  }
+}
+
+// Post Cards
+.post-card {
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .card-header {
   display: flex;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.trade-info {
-  margin: 16px 0;
-  padding: 12px;
-  background: var(--ion-color-light);
-  border-radius: 8px;
-}
-
-.trade-row {
-  display: flex;
   justify-content: space-between;
-  padding: 4px 0;
-  
-  span {
-    color: var(--ion-color-medium);
+  align-items: center;
+  margin-bottom: 12px;
+
+  .header-left {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .header-right {
+    ion-badge {
+      font-size: 14px;
+      font-weight: 700;
+      padding: 6px 12px;
+    }
   }
 }
 
-.text-success {
-  color: var(--ion-color-success);
+ion-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  line-height: 1.3;
 }
 
-.text-danger {
-  color: var(--ion-color-danger);
+ion-card-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--ion-color-medium);
+
+  ion-icon {
+    font-size: 16px;
+  }
 }
 
+.description {
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 16px;
+  color: var(--ion-color-dark);
+}
+
+// Trade Info
+.trade-info {
+  background: var(--ion-color-light);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 16px 0;
+
+  .trade-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+
+    span {
+      font-size: 13px;
+      color: var(--ion-color-medium);
+    }
+
+    strong {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .text-success {
+      color: var(--ion-color-success);
+    }
+
+    .text-danger {
+      color: var(--ion-color-danger);
+    }
+  }
+}
+
+// Tags
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 16px 0;
+
+  ion-chip {
+    font-size: 12px;
+    height: 28px;
+  }
+}
+
+// Card Actions
 .card-actions {
   display: flex;
-  justify-content: space-around;
-  margin-top: 12px;
+  justify-content: flex-start;
+  gap: 4px;
+  margin-top: 16px;
   padding-top: 12px;
-  border-top: 1px solid var(--ion-color-light);
+  border-top: 1px solid var(--ion-color-light-shade);
+
+  ion-button {
+    font-size: 13px;
+    --padding-start: 8px;
+    --padding-end: 8px;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+// Load More
+.load-more {
+  margin: 24px 0;
+  text-align: center;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .feed-container {
+    padding: 12px;
+  }
+
+  .post-card {
+    margin-bottom: 12px;
+  }
+
+  ion-card-title {
+    font-size: 16px;
+  }
+
+  .card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+
+    .header-right {
+      align-self: flex-start;
+    }
+  }
 }

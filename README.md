@@ -69,37 +69,60 @@ src/app/
 
 ## 🔐 Authentication
 
-### Current Implementation (Day 1)
+### Current Implementation (Day 1 + Day 2)
 - ✅ Firebase Authentication integrated
-- ✅ Login page with email/password
+- ✅ Login page with email/password + password reset
+- ✅ Registration page with full validation
 - ✅ Auth guard protecting routes
 - ✅ Auth service with observables
+- ✅ Real-time Firestore data streaming
+- ✅ Error handling and retry logic
+- ✅ Offline mode support
 
-### Login Flow
-1. User enters email and password
-2. Firebase authenticates credentials
-3. On success → Navigate to `/home`
-4. Auth state persists across sessions
-5. Protected routes redirect to `/login` if unauthenticated
+### Authentication Flow
+1. **New User:**
+   - Navigate to `/register`
+   - Fill out registration form (name, email, password)
+   - Account created in Firebase Auth
+   - User profile created in Firestore
+   - Auto-login and redirect to `/home`
+
+2. **Existing User:**
+   - Navigate to `/login`
+   - Enter email and password
+   - Firebase authenticates credentials
+   - Redirect to `/home`
+
+3. **Forgot Password:**
+   - Click "Forgot Password?" on login page
+   - Enter email address
+   - Receive password reset link via email
+   - Follow link to reset password
+
+4. **Auth Persistence:**
+   - Auth state persists across sessions
+   - Protected routes redirect to `/login` if unauthenticated
+   - User data loaded from Firestore on auth state change
 
 ## 🧭 Routing
 
 ```typescript
 / (root)           → Redirects to /login
 /login             → Login page (public)
+/register          → Registration page (public)
 /home              → Home feed (protected by AuthGuard)
 /profile           → User profile (protected by AuthGuard)
 ```
 
 ### Route Protection
-All routes except `/login` are protected by `AuthGuard` which:
+All routes except `/login` and `/register` are protected by `AuthGuard` which:
 - Checks if user is authenticated via `AuthService.user$`
 - Redirects to `/login` if not authenticated
 - Allows access if authenticated
 
-## 🎨 Features Implemented (Day 1)
+## 🎨 Features Implemented
 
-### ✅ Completed
+### ✅ Day 1 - Foundation
 - [x] Project scaffolding with Ionic/Angular
 - [x] Firebase integration setup
 - [x] Authentication service
@@ -112,18 +135,31 @@ All routes except `/login` are protected by `AuthGuard` which:
 - [x] Git repository initialized
 - [x] Project structure established
 
-### 📝 Coming Next (Day 2+)
-- [ ] Firebase config integration
-- [ ] Real authentication flow testing
-- [ ] User registration page
-- [ ] Password reset functionality
-- [ ] Analysis feed with real Firestore data
-- [ ] Push notifications setup
+### ✅ Day 2 - Authentication & Data
+- [x] Firebase configuration guide
+- [x] User registration page with full validation
+- [x] Password reset flow
+- [x] Real Firestore data integration
+- [x] Error handling service
+- [x] Network status monitoring
+- [x] Offline mode detection
+- [x] Retry logic with exponential backoff
+- [x] Loading/error/empty states
+- [x] Pull-to-refresh functionality
+- [x] Real-time Firestore updates
+- [x] User profile creation in Firestore
+
+### 📝 Coming Next (Day 3+)
+- [ ] Analysis detail page
+- [ ] Create post functionality
 - [ ] Watchlist functionality
 - [ ] Bookmark system
 - [ ] Search and filtering
-- [ ] Analysis detail page
+- [ ] Push notifications setup
 - [ ] Price alerts
+- [ ] Performance tracking
+- [ ] User profile editing
+- [ ] Dark mode theme
 
 ## 🔥 Firebase Services Used
 
@@ -163,21 +199,36 @@ npm run lint
 
 ## 🚧 Development Status
 
-**Current Phase:** Day 1 - Foundation Complete ✅
+**Current Phase:** Day 2 Complete ✅ - Ready for Firebase Credentials
 
 **What Works:**
 - ✅ App builds and runs successfully
-- ✅ Login page renders
-- ✅ Home page with demo cards
+- ✅ Login page with password reset
+- ✅ Registration page with validation
+- ✅ Home page with real Firestore integration
 - ✅ Profile page with logout
 - ✅ Route protection active
 - ✅ Auth service connected to Firebase
+- ✅ Real-time data streaming from Firestore
+- ✅ Comprehensive error handling
+- ✅ Offline mode detection
+- ✅ Retry logic with exponential backoff
+- ✅ Loading/error/empty states
 
-**What's Stubbed:**
-- ⚠️ Firebase config needs environment variables
-- ⚠️ Login doesn't connect to real Firebase yet (needs config)
-- ⚠️ Demo data hardcoded (not from Firestore)
-- ⚠️ No error handling for network issues
+**Ready to Test (After Adding Firebase Config):**
+- 🔥 User registration creates Firebase Auth user + Firestore profile
+- 🔥 Password reset sends email via Firebase
+- 🔥 Login authenticates with Firebase
+- 🔥 Home feed streams real-time posts from Firestore
+- 🔥 Network errors handled gracefully with retry
+- 🔥 Offline mode shows cached data
+
+**Next Steps:**
+1. Add Firebase credentials to `src/environments/environment.ts` (see `FIREBASE_SETUP.md`)
+2. Enable Email/Password auth in Firebase Console
+3. Create Firestore database
+4. Test registration flow
+5. Add sample posts to Firestore (optional)
 
 ## 📦 Dependencies
 
