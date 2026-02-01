@@ -6,6 +6,7 @@
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { ensureUserDocument } from './init-missing-user';
 
 const db = admin.firestore();
 
@@ -43,6 +44,9 @@ export const checkAndDecrementQuota = functions.https.onCall(async (data, contex
   }
   
   try {
+    // Ensure user document exists (creates if missing)
+    await ensureUserDocument(userId, context.auth.token.email);
+    
     const userRef = db.collection('Users').doc(userId);
     
     // Use transaction to ensure atomic quota check and decrement
@@ -127,6 +131,9 @@ export const getUserQuota = functions.https.onCall(async (data, context) => {
   const userId = context.auth.uid;
   
   try {
+    // Ensure user document exists (creates if missing)
+    await ensureUserDocument(userId, context.auth.token.email);
+    
     const userDoc = await db.collection('Users').doc(userId).get();
     
     if (!userDoc.exists) {

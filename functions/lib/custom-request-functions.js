@@ -41,6 +41,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getUserCustomRequests = exports.submitCustomReportRequest = exports.onResearchTriggerCompleted = exports.onCustomReportRequestCreated = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
+const init_missing_user_1 = require("./init-missing-user");
 const db = admin.firestore();
 // ============================================================================
 // FIRESTORE TRIGGERS
@@ -156,6 +157,8 @@ exports.submitCustomReportRequest = functions.https.onCall(async (data, context)
         throw new functions.https.HttpsError('invalid-argument', 'ticker and assetType are required');
     }
     try {
+        // Ensure user document exists (creates if missing)
+        await (0, init_missing_user_1.ensureUserDocument)(userId, context.auth.token.email);
         // Validate ticker format
         const tickerUpper = ticker.toUpperCase();
         if (!/^[A-Z]{1,5}$/.test(tickerUpper)) {

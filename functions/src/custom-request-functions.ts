@@ -6,6 +6,7 @@
 
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import { ensureUserDocument } from './init-missing-user';
 
 const db = admin.firestore();
 
@@ -148,6 +149,9 @@ export const submitCustomReportRequest = functions.https.onCall(async (data, con
   }
   
   try {
+    // Ensure user document exists (creates if missing)
+    await ensureUserDocument(userId, context.auth.token.email);
+    
     // Validate ticker format
     const tickerUpper = ticker.toUpperCase();
     if (!/^[A-Z]{1,5}$/.test(tickerUpper)) {

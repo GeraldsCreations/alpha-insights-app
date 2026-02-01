@@ -41,6 +41,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.setUserPremium = exports.resetMonthlyQuotas = exports.getUserQuota = exports.checkAndDecrementQuota = void 0;
 const functions = __importStar(require("firebase-functions"));
 const admin = __importStar(require("firebase-admin"));
+const init_missing_user_1 = require("./init-missing-user");
 const db = admin.firestore();
 // ============================================================================
 // QUOTA CONSTANTS
@@ -69,6 +70,8 @@ exports.checkAndDecrementQuota = functions.https.onCall(async (data, context) =>
         throw new functions.https.HttpsError('invalid-argument', 'Ticker is required');
     }
     try {
+        // Ensure user document exists (creates if missing)
+        await (0, init_missing_user_1.ensureUserDocument)(userId, context.auth.token.email);
         const userRef = db.collection('Users').doc(userId);
         // Use transaction to ensure atomic quota check and decrement
         const result = await db.runTransaction(async (transaction) => {
@@ -139,6 +142,8 @@ exports.getUserQuota = functions.https.onCall(async (data, context) => {
     }
     const userId = context.auth.uid;
     try {
+        // Ensure user document exists (creates if missing)
+        await (0, init_missing_user_1.ensureUserDocument)(userId, context.auth.token.email);
         const userDoc = await db.collection('Users').doc(userId).get();
         if (!userDoc.exists) {
             throw new functions.https.HttpsError('not-found', 'User not found');
