@@ -36,14 +36,14 @@ service cloud.firestore {
     }
     
     // ============================================================================
-    // ANALYSIS POSTS - Public read, admin write
+    // RESEARCH REPORTS - Public read, admin write
     // ============================================================================
     
-    match /AnalysisPosts/{postId} {
-      // Anyone can read published analysis posts
+    match /ResearchReports/{postId} {
+      // Anyone can read published research reports
       allow read: if true;
       
-      // Only admins can create/update/delete posts
+      // Only admins can create/update/delete reports
       allow create, update, delete: if isAdmin();
       
       // Allow incrementing view count without auth (for analytics)
@@ -85,7 +85,7 @@ service cloud.firestore {
       // Users can create bookmarks for themselves
       allow create: if isAuthenticated() && 
                        request.resource.data.userId == request.auth.uid &&
-                       exists(/databases/$(database)/documents/AnalysisPosts/$(request.resource.data.postId));
+                       exists(/databases/$(database)/documents/ResearchReports/$(request.resource.data.postId));
       
       // Users can delete their own bookmarks
       allow delete: if isOwner(resource.data.userId);

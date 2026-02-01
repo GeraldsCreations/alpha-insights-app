@@ -260,16 +260,17 @@
   // Add padding for mobile nav
   padding-bottom: var(--ai-mobile-nav-height);
   
-  @media (min-width: $breakpoint-mobile) {
+  @media (min-width: 768px) {
     // Add margin for desktop sidebar
     margin-left: var(--ai-sidebar-width);
     padding-bottom: 0;
   }
-  
-  .sidebar.collapsed ~ & {
-    @media (min-width: $breakpoint-mobile) {
-      margin-left: var(--ai-sidebar-collapsed-width);
-    }
+}
+
+// Adjust main content when sidebar is collapsed
+.app-shell:has(.sidebar.collapsed) .main-content {
+  @media (min-width: 768px) {
+    margin-left: var(--ai-sidebar-collapsed-width);
   }
 }
 
