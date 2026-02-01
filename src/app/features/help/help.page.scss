@@ -1,0 +1,118 @@
+.help-container {
+  padding: 16px;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.contact-card {
+  text-align: center;
+  margin-bottom: 24px;
+
+  .contact-icon {
+    font-size: 64px;
+    color: var(--ion-color-primary);
+    margin: 16px 0;
+  }
+
+  ion-card-title {
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  ion-card-subtitle {
+    margin-top: 8px;
+    opacity: 0.7;
+  }
+
+  .support-email {
+    text-align: center;
+    margin-top: 16px;
+    color: var(--ion-color-medium);
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+}
+
+.section {
+  margin-bottom: 32px;
+
+  .section-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 16px 0;
+    color: var(--ion-color-dark);
+  }
+}
+
+ion-list {
+  margin: 0;
+  padding: 0;
+}
+
+ion-item {
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+
+  ion-label {
+    h3 {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    p {
+      font-size: 13px;
+      opacity: 0.7;
+    }
+  }
+}
+
+.faq-answer {
+  padding: 16px;
+  background: var(--ion-color-light);
+  
+  p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--ion-color-dark);
+  }
+}
+
+.app-info {
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--ion-color-light);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .info-label {
+      font-weight: 600;
+      color: var(--ion-color-medium);
+    }
+
+    .info-value {
+      color: var(--ion-color-dark);
+    }
+  }
+}
+
+// Dark mode support
+@media (prefers-color-scheme: dark) {
+  .faq-answer {
+    background: var(--ion-color-step-50);
+  }
+
+  .app-info .info-row {
+    border-bottom-color: var(--ion-color-step-150);
+  }
+}

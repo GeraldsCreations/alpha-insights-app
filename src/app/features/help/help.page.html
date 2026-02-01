@@ -1,0 +1,91 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/profile"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Help & Support</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="help-container">
+    
+    <!-- Contact Support Card -->
+    <ion-card class="contact-card">
+      <ion-card-header>
+        <ion-icon name="help-circle-outline" class="contact-icon"></ion-icon>
+        <ion-card-title>Need Help?</ion-card-title>
+        <ion-card-subtitle>We're here to assist you</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-button expand="block" (click)="contactSupport()">
+          <ion-icon name="mail-outline" slot="start"></ion-icon>
+          Contact Support
+        </ion-button>
+        <p class="support-email">
+          <ion-icon name="mail-outline"></ion-icon>
+          {{ supportEmail }}
+        </p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Quick Links -->
+    <div class="section">
+      <h2 class="section-title">Quick Links</h2>
+      <ion-list>
+        <ion-item 
+          *ngFor="let link of quickLinks" 
+          button 
+          (click)="openLink(link.url)"
+          detail="true">
+          <ion-icon [name]="link.icon" slot="start" color="primary"></ion-icon>
+          <ion-label>
+            <h3>{{ link.title }}</h3>
+            <p>{{ link.description }}</p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <!-- FAQs -->
+    <div class="section">
+      <h2 class="section-title">Frequently Asked Questions</h2>
+      <ion-accordion-group>
+        <ion-accordion *ngFor="let faq of faqs; let i = index" [value]="i.toString()">
+          <ion-item slot="header">
+            <ion-label>
+              <h3>{{ faq.question }}</h3>
+            </ion-label>
+          </ion-item>
+          <div slot="content" class="faq-answer">
+            <p>{{ faq.answer }}</p>
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </div>
+
+    <!-- App Info -->
+    <div class="section">
+      <h2 class="section-title">About</h2>
+      <ion-card>
+        <ion-card-content>
+          <div class="app-info">
+            <div class="info-row">
+              <span class="info-label">App Name:</span>
+              <span class="info-value">Alpha Insights</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Version:</span>
+              <span class="info-value">1.0.0</span>
+            </div>
+            <div class="info-row">
+              <span class="info-label">Platform:</span>
+              <span class="info-value">iOS, Android, Web</span>
+            </div>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </div>
+
+  </div>
+</ion-content>

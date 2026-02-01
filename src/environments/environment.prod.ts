@@ -45,6 +45,9 @@ export const environment = {
     supportEmail: 'support@alphainsights.com',
   },
 
+  // URLs
+  productionUrl: 'https://alpha-insights-84c51.web.app', // Production URL
+
   // Analytics
   analytics: {
     enabled: true,

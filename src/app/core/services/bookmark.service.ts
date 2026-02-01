@@ -1,228 +1,248 @@
 import { Injectable } from '@angular/core';
-import { Observable, BehaviorSubject, from, of, throwError } from 'rxjs';
-import { map, catchError, switchMap, tap, shareReplay } from 'rxjs/operators';
-import { 
-  Firestore, 
-  collection, 
-  doc, 
-  setDoc, 
-  deleteDoc, 
-  query, 
-  where, 
-  getDocs,
+import {
+  Firestore,
+  collection,
+  doc,
+  setDoc,
+  deleteDoc,
+  query,
+  where,
+  orderBy,
   collectionData,
-  DocumentReference,
-  Timestamp
+  docData,
+  getDocs,
+  serverTimestamp
 } from '@angular/fire/firestore';
-import { AuthService } from '../auth/auth.service';
-import { Bookmark } from '../models';
+import { Auth, user } from '@angular/fire/auth';
+import { Observable, BehaviorSubject, of, combineLatest } from 'rxjs';
+import { map, switchMap, tap, catchError, take } from 'rxjs/operators';
+import { ToastController } from '@ionic/angular';
+
+export interface Bookmark {
+  id: string;
+  userId: string;
+  postId: string;
+  ticker: string;
+  title: string;
+  createdAt: any;
+}
 
 /**
- * BookmarkService - Manages user bookmarks for analysis posts
+ * Bookmark Service
+ * 
+ * Manages user bookmarks in Firestore
+ * Collection: bookmarks/{bookmarkId}
  * 
  * Features:
- * - Save/unsave posts
+ * - Add/remove bookmarks
  * - Get user's bookmarked posts
  * - Check if post is bookmarked
- * - Real-time bookmark updates
- * - Offline support with optimistic updates
+ * - Sync with Cloud Functions for bookmark count updates
  */
 @Injectable({
   providedIn: 'root'
 })
 export class BookmarkService {
-  private bookmarksSubject = new BehaviorSubject<Set<string>>(new Set());
-  public bookmarks$ = this.bookmarksSubject.asObservable();
+  private bookmarks$ = new BehaviorSubject<Bookmark[]>([]);
+  private user$ = user(this.auth);
 
   constructor(
     private firestore: Firestore,
-    private authService: AuthService
+    private auth: Auth,
+    private toastController: ToastController
   ) {
-    this.initializeBookmarks();
-  }
-
-  /**
-   * Initialize bookmarks for current user
-   */
-  private initializeBookmarks(): void {
-    this.authService.user$.pipe(
+    // Subscribe to user bookmarks changes
+    this.user$.pipe(
       switchMap(user => {
         if (!user) {
-          this.bookmarksSubject.next(new Set());
           return of([]);
         }
-        return this.getUserBookmarks(user.uid);
-      })
-    ).subscribe({
-      next: (bookmarks) => {
-        const bookmarkIds = new Set(bookmarks.map(b => b.postId));
-        this.bookmarksSubject.next(bookmarkIds);
-      },
-      error: (error) => {
+
+        const bookmarksRef = collection(this.firestore, 'bookmarks');
+        const q = query(
+          bookmarksRef,
+          where('userId', '==', user.uid),
+          orderBy('createdAt', 'desc')
+        );
+
+        return collectionData(q, { idField: 'id' }) as Observable<Bookmark[]>;
+      }),
+      catchError(error => {
         console.error('Error loading bookmarks:', error);
-      }
+        return of([]);
+      })
+    ).subscribe(bookmarks => {
+      this.bookmarks$.next(bookmarks);
     });
   }
 
   /**
-   * Get all bookmarks for a user
+   * Get current bookmarks as observable
    */
-  private getUserBookmarks(userId: string): Observable<Bookmark[]> {
-    const bookmarksRef = collection(this.firestore, 'bookmarks');
-    const q = query(bookmarksRef, where('userId', '==', userId));
-
-    return from(getDocs(q)).pipe(
-      map(snapshot => {
-        return snapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            userId: data['userId'],
-            postId: data['postId'],
-            createdAt: data['createdAt']?.toDate() || new Date()
-          } as Bookmark;
-        });
-      }),
-      catchError(error => {
-        console.error('Error fetching bookmarks:', error);
-        return of([]);
-      })
-    );
+  getBookmarks(): Observable<Bookmark[]> {
+    return this.bookmarks$.asObservable();
   }
 
   /**
-   * Check if a post is bookmarked by current user
+   * Check if post is bookmarked
    */
   isBookmarked(postId: string): Observable<boolean> {
     return this.bookmarks$.pipe(
-      map(bookmarks => bookmarks.has(postId))
+      map(bookmarks => bookmarks.some(b => b.postId === postId))
     );
   }
 
   /**
-   * Toggle bookmark for a post
+   * Add bookmark
    */
-  toggleBookmark(postId: string): Observable<boolean> {
-    return this.authService.user$.pipe(
-      switchMap(user => {
-        if (!user) {
-          return throwError(() => new Error('User not authenticated'));
-        }
+  async addBookmark(
+    postId: string,
+    ticker: string,
+    title: string,
+    showToast: boolean = true
+  ): Promise<void> {
+    const currentUser = this.auth.currentUser;
+    if (!currentUser) {
+      throw new Error('User must be authenticated');
+    }
 
-        const currentBookmarks = this.bookmarksSubject.value;
-        const isCurrentlyBookmarked = currentBookmarks.has(postId);
+    try {
+      // Create unique bookmark ID based on user + post
+      const bookmarkId = `${currentUser.uid}_${postId}`;
+      const bookmarkRef = doc(this.firestore, `bookmarks/${bookmarkId}`);
 
-        if (isCurrentlyBookmarked) {
-          return this.removeBookmark(user.uid, postId);
-        } else {
-          return this.addBookmark(user.uid, postId);
-        }
-      })
-    );
+      await setDoc(bookmarkRef, {
+        userId: currentUser.uid,
+        postId,
+        ticker,
+        title,
+        createdAt: serverTimestamp()
+      });
+
+      if (showToast) {
+        await this.showToast('Bookmark added', 'bookmark', 'success');
+      }
+    } catch (error) {
+      console.error('Error adding bookmark:', error);
+
+      if (showToast) {
+        await this.showToast('Failed to add bookmark', 'warning', 'danger');
+      }
+
+      throw error;
+    }
   }
 
   /**
-   * Add a bookmark
+   * Remove bookmark
    */
-  private addBookmark(userId: string, postId: string): Observable<boolean> {
-    const bookmarkId = `${userId}_${postId}`;
-    const bookmarkRef = doc(this.firestore, 'bookmarks', bookmarkId);
+  async removeBookmark(postId: string, showToast: boolean = true): Promise<void> {
+    const currentUser = this.auth.currentUser;
+    if (!currentUser) {
+      throw new Error('User must be authenticated');
+    }
 
-    const bookmark: Bookmark = {
-      userId,
-      postId,
-      createdAt: new Date()
-    };
+    try {
+      const bookmarkId = `${currentUser.uid}_${postId}`;
+      const bookmarkRef = doc(this.firestore, `bookmarks/${bookmarkId}`);
 
-    // Optimistic update
-    const currentBookmarks = this.bookmarksSubject.value;
-    currentBookmarks.add(postId);
-    this.bookmarksSubject.next(new Set(currentBookmarks));
+      await deleteDoc(bookmarkRef);
 
-    return from(setDoc(bookmarkRef, {
-      userId,
-      postId,
-      createdAt: Timestamp.now()
-    })).pipe(
-      map(() => true),
-      catchError(error => {
-        console.error('Error adding bookmark:', error);
-        // Rollback optimistic update
-        const rollbackBookmarks = this.bookmarksSubject.value;
-        rollbackBookmarks.delete(postId);
-        this.bookmarksSubject.next(new Set(rollbackBookmarks));
-        return throwError(() => error);
-      })
-    );
+      if (showToast) {
+        await this.showToast('Bookmark removed', 'bookmark-outline', 'medium');
+      }
+    } catch (error) {
+      console.error('Error removing bookmark:', error);
+
+      if (showToast) {
+        await this.showToast('Failed to remove bookmark', 'warning', 'danger');
+      }
+
+      throw error;
+    }
   }
 
   /**
-   * Remove a bookmark
+   * Toggle bookmark
    */
-  private removeBookmark(userId: string, postId: string): Observable<boolean> {
-    const bookmarkId = `${userId}_${postId}`;
-    const bookmarkRef = doc(this.firestore, 'bookmarks', bookmarkId);
+  async toggleBookmark(
+    postId: string,
+    ticker: string,
+    title: string,
+    showToast: boolean = true
+  ): Promise<boolean> {
+    const currentUser = this.auth.currentUser;
+    if (!currentUser) {
+      throw new Error('User must be authenticated');
+    }
 
-    // Optimistic update
-    const currentBookmarks = this.bookmarksSubject.value;
-    currentBookmarks.delete(postId);
-    this.bookmarksSubject.next(new Set(currentBookmarks));
+    const isCurrentlyBookmarked = await this.isBookmarked(postId)
+      .pipe(take(1))
+      .toPromise();
 
-    return from(deleteDoc(bookmarkRef)).pipe(
-      map(() => false),
-      catchError(error => {
-        console.error('Error removing bookmark:', error);
-        // Rollback optimistic update
-        const rollbackBookmarks = this.bookmarksSubject.value;
-        rollbackBookmarks.add(postId);
-        this.bookmarksSubject.next(new Set(rollbackBookmarks));
-        return throwError(() => error);
-      })
-    );
+    if (isCurrentlyBookmarked) {
+      await this.removeBookmark(postId, showToast);
+      return false;
+    } else {
+      await this.addBookmark(postId, ticker, title, showToast);
+      return true;
+    }
   }
 
   /**
-   * Get all bookmarked post IDs for current user
+   * Get bookmarked post IDs
    */
   getBookmarkedPostIds(): Observable<string[]> {
     return this.bookmarks$.pipe(
-      map(bookmarks => Array.from(bookmarks))
+      map(bookmarks => bookmarks.map(b => b.postId))
     );
   }
 
   /**
-   * Get count of bookmarks
+   * Get bookmark count
    */
   getBookmarkCount(): Observable<number> {
     return this.bookmarks$.pipe(
-      map(bookmarks => bookmarks.size)
+      map(bookmarks => bookmarks.length)
     );
   }
 
   /**
-   * Clear all bookmarks (for testing/admin)
+   * Clear all bookmarks (dangerous - confirm first!)
    */
-  clearAllBookmarks(): Observable<void> {
-    return this.authService.user$.pipe(
-      switchMap(user => {
-        if (!user) {
-          return throwError(() => new Error('User not authenticated'));
-        }
+  async clearAllBookmarks(): Promise<void> {
+    const currentUser = this.auth.currentUser;
+    if (!currentUser) {
+      throw new Error('User must be authenticated');
+    }
 
-        return this.getUserBookmarks(user.uid).pipe(
-          switchMap(bookmarks => {
-            const deletePromises = bookmarks.map(bookmark => {
-              const bookmarkId = `${bookmark.userId}_${bookmark.postId}`;
-              const bookmarkRef = doc(this.firestore, 'bookmarks', bookmarkId);
-              return deleteDoc(bookmarkRef);
-            });
-            return from(Promise.all(deletePromises));
-          }),
-          tap(() => {
-            this.bookmarksSubject.next(new Set());
-          }),
-          map(() => undefined)
-        );
-      })
-    );
+    try {
+      const bookmarksRef = collection(this.firestore, 'bookmarks');
+      const q = query(bookmarksRef, where('userId', '==', currentUser.uid));
+      const snapshot = await getDocs(q);
+
+      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+
+      await this.showToast('All bookmarks cleared', 'trash', 'medium');
+    } catch (error) {
+      console.error('Error clearing bookmarks:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Show toast notification
+   */
+  private async showToast(message: string, icon: string, color: string): Promise<void> {
+    const toast = await this.toastController.create({
+      message,
+      duration: 2000,
+      position: 'bottom',
+      color,
+      icon,
+      cssClass: 'bookmark-toast'
+    });
+    await toast.present();
   }
 }

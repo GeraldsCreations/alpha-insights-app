@@ -1,6 +1,16 @@
 import { Injectable } from '@angular/core';
-import { Firestore, doc, onSnapshot } from '@angular/fire/firestore';
+import { 
+  Firestore, 
+  doc, 
+  collection,
+  query,
+  where,
+  orderBy,
+  collectionData,
+  onSnapshot 
+} from '@angular/fire/firestore';
 import { Observable, BehaviorSubject } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export interface CustomReportProgress {
   requestId: string;
@@ -163,8 +173,97 @@ export class CustomReportProgressService {
    * Get all active (in-progress) requests for a user
    */
   getActiveRequests(userId: string): Observable<CustomReportProgress[]> {
-    // TODO: Implement Firestore query for user's active requests
-    // For now, return empty observable
-    return new BehaviorSubject<CustomReportProgress[]>([]).asObservable();
+    const requestsRef = collection(this.firestore, 'custom_report_requests');
+    const q = query(
+      requestsRef,
+      where('userId', '==', userId),
+      where('status', 'in', ['pending', 'processing']),
+      orderBy('createdAt', 'desc')
+    );
+
+    return collectionData(q, { idField: 'id' }).pipe(
+      map((requests: any[]) => 
+        requests.map(req => {
+          const progress = this.calculateProgress(req.status, req.createdAt, req.completedAt);
+          return {
+            requestId: req.id,
+            ticker: req.ticker || '',
+            assetType: req.assetType || 'crypto',
+            status: req.status || 'pending',
+            progress: progress.percent,
+            currentStep: progress.step,
+            estimatedTimeRemaining: progress.timeRemaining,
+            createdAt: req.createdAt?.toDate() || new Date(),
+            completedAt: req.completedAt?.toDate(),
+            reportId: req.reportId,
+            error: req.error
+          };
+        })
+      )
+    );
+  }
+
+  /**
+   * Get all completed requests for a user
+   */
+  getCompletedRequests(userId: string, limit: number = 10): Observable<CustomReportProgress[]> {
+    const requestsRef = collection(this.firestore, 'custom_report_requests');
+    const q = query(
+      requestsRef,
+      where('userId', '==', userId),
+      where('status', '==', 'complete'),
+      orderBy('completedAt', 'desc')
+    );
+
+    return collectionData(q, { idField: 'id' }).pipe(
+      map((requests: any[]) => 
+        requests.slice(0, limit).map(req => ({
+          requestId: req.id,
+          ticker: req.ticker || '',
+          assetType: req.assetType || 'crypto',
+          status: req.status || 'complete',
+          progress: 100,
+          currentStep: 'Analysis complete! 🎉',
+          estimatedTimeRemaining: 0,
+          createdAt: req.createdAt?.toDate() || new Date(),
+          completedAt: req.completedAt?.toDate(),
+          reportId: req.reportId,
+          error: req.error
+        }))
+      )
+    );
+  }
+
+  /**
+   * Get all requests (any status) for a user
+   */
+  getAllRequests(userId: string, limit: number = 20): Observable<CustomReportProgress[]> {
+    const requestsRef = collection(this.firestore, 'custom_report_requests');
+    const q = query(
+      requestsRef,
+      where('userId', '==', userId),
+      orderBy('createdAt', 'desc')
+    );
+
+    return collectionData(q, { idField: 'id' }).pipe(
+      map((requests: any[]) => 
+        requests.slice(0, limit).map(req => {
+          const progress = this.calculateProgress(req.status, req.createdAt, req.completedAt);
+          return {
+            requestId: req.id,
+            ticker: req.ticker || '',
+            assetType: req.assetType || 'crypto',
+            status: req.status || 'pending',
+            progress: progress.percent,
+            currentStep: progress.step,
+            estimatedTimeRemaining: progress.timeRemaining,
+            createdAt: req.createdAt?.toDate() || new Date(),
+            completedAt: req.completedAt?.toDate(),
+            reportId: req.reportId,
+            error: req.error
+          };
+        })
+      )
+    );
   }
 }

@@ -4,6 +4,7 @@ import { Platform } from '@ionic/angular';
 import { Observable, from, throwError, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AnalysisPost } from '../models';
+import { environment } from '../../../environments/environment';
 
 /**
  * ShareService - Handles native sharing functionality
@@ -145,8 +146,7 @@ export class ShareService {
    * Generate post URL
    */
   private getPostUrl(postId: string): string {
-    // TODO: Update with actual production URL
-    const baseUrl = window.location.origin;
+    const baseUrl = environment.productionUrl;
     return `${baseUrl}/analysis/${postId}`;
   }
 

@@ -88,11 +88,11 @@ export class AnalysisService {
   }
 
   /**
-   * Bookmark a post (will be implemented with user service)
+   * Bookmark a post
+   * @deprecated Use BookmarkService.toggleBookmark() instead
    */
   async bookmarkPost(postId: string): Promise<void> {
-    // TODO: Implement bookmark functionality
-    console.log('Bookmarking post:', postId);
+    console.warn('bookmarkPost is deprecated. Use BookmarkService.toggleBookmark() instead');
   }
 
   /**

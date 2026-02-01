@@ -84,8 +84,7 @@ export class ProfilePage implements OnInit, OnDestroy {
    * Navigate to help
    */
   viewHelp() {
-    // TODO: Implement help page
-    console.log('Help & Support - Coming soon');
+    this.router.navigate(['/help']);
   }
 
   /**
