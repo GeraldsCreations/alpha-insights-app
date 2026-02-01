@@ -8,7 +8,7 @@ import * as admin from 'firebase-admin';
 const db = admin.firestore();
 
 export async function ensureUserDocument(userId: string, email?: string): Promise<void> {
-  const userRef = db.collection('Users').doc(userId);
+  const userRef = db.collection('users').doc(userId);
   const userDoc = await userRef.get();
   
   if (!userDoc.exists) {

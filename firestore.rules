@@ -39,7 +39,7 @@ service cloud.firestore {
     // RESEARCH REPORTS - Public read, admin write
     // ============================================================================
     
-    match /ResearchReports/{postId} {
+    match /research_reports/{postId} {
       // Anyone can read published research reports
       allow read: if true;
       
@@ -57,7 +57,7 @@ service cloud.firestore {
     // USERS - Owner read/write with restrictions
     // ============================================================================
     
-    match /Users/{userId} {
+    match /users/{userId} {
       // Users can read their own profile
       allow read: if isOwner(userId);
       
@@ -77,7 +77,7 @@ service cloud.firestore {
     // BOOKMARKS - Owner read/write
     // ============================================================================
     
-    match /Bookmarks/{bookmarkId} {
+    match /bookmarks/{bookmarkId} {
       // Users can read their own bookmarks
       allow read: if isAuthenticated() && 
                      resource.data.userId == request.auth.uid;
@@ -85,7 +85,7 @@ service cloud.firestore {
       // Users can create bookmarks for themselves
       allow create: if isAuthenticated() && 
                        request.resource.data.userId == request.auth.uid &&
-                       exists(/databases/$(database)/documents/ResearchReports/$(request.resource.data.postId));
+                       exists(/databases/$(database)/documents/research_reports/$(request.resource.data.postId));
       
       // Users can delete their own bookmarks
       allow delete: if isOwner(resource.data.userId);
@@ -98,7 +98,7 @@ service cloud.firestore {
     // PRICE ALERTS - Owner read/write
     // ============================================================================
     
-    match /PriceAlerts/{alertId} {
+    match /price_alerts/{alertId} {
       // Users can read their own alerts
       allow read: if isAuthenticated() && 
                      resource.data.userId == request.auth.uid;
@@ -128,7 +128,7 @@ service cloud.firestore {
     // ANALYTICS - Write only for authenticated users, read for admins
     // ============================================================================
     
-    match /Analytics/{eventId} {
+    match /analytics/{eventId} {
       // Only admins can read analytics
       allow read: if isAdmin();
       
@@ -147,7 +147,7 @@ service cloud.firestore {
     // CUSTOM REPORT REQUESTS - Owner read, callable function writes
     // ============================================================================
     
-    match /CustomReportRequests/{requestId} {
+    match /custom_report_requests/{requestId} {
       // Users can read their own requests
       allow read: if isAuthenticated() && 
                      resource.data.userId == request.auth.uid;
@@ -161,7 +161,7 @@ service cloud.firestore {
     // RESEARCH TRIGGERS - Cloud Functions only
     // ============================================================================
     
-    match /ResearchTriggers/{triggerId} {
+    match /research_triggers/{triggerId} {
       // Only admins or cloud functions can access triggers
       allow read, write: if isAdmin();
     }

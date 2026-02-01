@@ -72,7 +72,7 @@ exports.checkAndDecrementQuota = functions.https.onCall(async (data, context) =>
     try {
         // Ensure user document exists (creates if missing)
         await (0, init_missing_user_1.ensureUserDocument)(userId, context.auth.token.email);
-        const userRef = db.collection('Users').doc(userId);
+        const userRef = db.collection('users').doc(userId);
         // Use transaction to ensure atomic quota check and decrement
         const result = await db.runTransaction(async (transaction) => {
             var _a;
@@ -144,7 +144,7 @@ exports.getUserQuota = functions.https.onCall(async (data, context) => {
     try {
         // Ensure user document exists (creates if missing)
         await (0, init_missing_user_1.ensureUserDocument)(userId, context.auth.token.email);
-        const userDoc = await db.collection('Users').doc(userId).get();
+        const userDoc = await db.collection('users').doc(userId).get();
         if (!userDoc.exists) {
             throw new functions.https.HttpsError('not-found', 'User not found');
         }
@@ -180,7 +180,7 @@ exports.resetMonthlyQuotas = functions.pubsub
     try {
         const now = admin.firestore.Timestamp.now();
         // Find users whose reset date has passed
-        const usersToReset = await db.collection('Users')
+        const usersToReset = await db.collection('users')
             .where('customReportsResetDate', '<=', now)
             .get();
         if (usersToReset.empty) {
@@ -235,7 +235,7 @@ exports.setUserPremium = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError('invalid-argument', 'userId is required');
     }
     try {
-        const userRef = db.collection('Users').doc(userId);
+        const userRef = db.collection('users').doc(userId);
         const plan = premium ? 'premium' : 'free';
         const quota = QUOTA_LIMITS[plan];
         const nextResetDate = new Date();

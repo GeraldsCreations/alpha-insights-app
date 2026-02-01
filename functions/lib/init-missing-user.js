@@ -41,7 +41,7 @@ exports.ensureUserDocument = ensureUserDocument;
 const admin = __importStar(require("firebase-admin"));
 const db = admin.firestore();
 async function ensureUserDocument(userId, email) {
-    const userRef = db.collection('Users').doc(userId);
+    const userRef = db.collection('users').doc(userId);
     const userDoc = await userRef.get();
     if (!userDoc.exists) {
         console.log(`Creating missing user document for ${userId}`);

@@ -8,7 +8,7 @@ import { orderBy, limit, where, QueryConstraint } from '@angular/fire/firestore'
   providedIn: 'root'
 })
 export class AnalysisService {
-  private readonly COLLECTION_PATH = 'ResearchReports';
+  private readonly COLLECTION_PATH = 'research_reports';
 
   constructor(private firestoreService: FirestoreService) {}
 

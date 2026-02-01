@@ -121,7 +121,7 @@ exports.checkPriceAlerts = functions.pubsub
     console.log('Checking price alerts...');
     try {
         // Get all active (non-triggered) alerts
-        const alertsSnapshot = await db.collection('PriceAlerts')
+        const alertsSnapshot = await db.collection('price_alerts')
             .where('triggered', '==', false)
             .get();
         if (alertsSnapshot.empty) {
@@ -196,7 +196,7 @@ async function sendAlertNotification(userId, alert, currentPrice) {
     var _a;
     try {
         // Get user's FCM token
-        const userDoc = await db.collection('Users').doc(userId).get();
+        const userDoc = await db.collection('users').doc(userId).get();
         const fcmToken = (_a = userDoc.data()) === null || _a === void 0 ? void 0 : _a.fcmToken;
         if (!fcmToken) {
             console.log(`No FCM token for user ${userId}`);
@@ -232,14 +232,14 @@ async function sendAlertNotification(userId, alert, currentPrice) {
  * Purpose: Notify users watching the ticker
  */
 exports.onAnalysisPublished = functions.firestore
-    .document('AnalysisPosts/{postId}')
+    .document('analysis_posts/{postId}')
     .onCreate(async (snap, context) => {
     var _a, _b;
     const post = snap.data();
     console.log(`New analysis published: ${post.ticker} - ${post.title}`);
     try {
         // Find users watching this ticker
-        const usersSnapshot = await db.collection('Users')
+        const usersSnapshot = await db.collection('users')
             .where('watchlist', 'array-contains', post.ticker)
             .get();
         if (usersSnapshot.empty) {
@@ -284,7 +284,7 @@ exports.onAnalysisPublished = functions.firestore
         const successCount = results.filter(r => r !== null).length;
         console.log(`Sent ${successCount}/${notificationTokens.length} notifications`);
         // Track analytics
-        await db.collection('Analytics').add({
+        await db.collection('analytics').add({
             eventType: 'analysis_published',
             ticker: post.ticker,
             postId: snap.id,
@@ -304,7 +304,7 @@ exports.onAnalysisPublished = functions.firestore
  * Purpose: Increment bookmark count on post
  */
 exports.onBookmarkCreated = functions.firestore
-    .document('Bookmarks/{bookmarkId}')
+    .document('bookmarks/{bookmarkId}')
     .onCreate(async (snap, context) => {
     const bookmark = snap.data();
     try {
@@ -323,7 +323,7 @@ exports.onBookmarkCreated = functions.firestore
  * Purpose: Decrement bookmark count on post
  */
 exports.onBookmarkDeleted = functions.firestore
-    .document('Bookmarks/{bookmarkId}')
+    .document('bookmarks/{bookmarkId}')
     .onDelete(async (snap, context) => {
     const bookmark = snap.data();
     try {
@@ -347,7 +347,7 @@ exports.onUserCreated = functions.auth.user()
     try {
         const nextResetDate = new Date();
         nextResetDate.setDate(nextResetDate.getDate() + 30);
-        await db.collection('Users').doc(user.uid).set({
+        await db.collection('users').doc(user.uid).set({
             id: user.uid,
             email: user.email || '',
             displayName: user.displayName || 'Trader',
@@ -393,7 +393,7 @@ exports.trackAnalytics = functions.https.onCall(async (data, context) => {
     }
     const { eventType, metadata } = data;
     try {
-        await db.collection('Analytics').add({
+        await db.collection('analytics').add({
             userId: context.auth.uid,
             eventType,
             metadata: metadata || {},
@@ -418,16 +418,16 @@ exports.getUserStats = functions.https.onCall(async (data, context) => {
     const userId = context.auth.uid;
     try {
         // Get bookmark count
-        const bookmarksSnapshot = await db.collection('Bookmarks')
+        const bookmarksSnapshot = await db.collection('bookmarks')
             .where('userId', '==', userId)
             .get();
         // Get alert count
-        const alertsSnapshot = await db.collection('PriceAlerts')
+        const alertsSnapshot = await db.collection('price_alerts')
             .where('userId', '==', userId)
             .where('triggered', '==', false)
             .get();
         // Get user watchlist
-        const userDoc = await db.collection('Users').doc(userId).get();
+        const userDoc = await db.collection('users').doc(userId).get();
         const watchlistCount = ((_b = (_a = userDoc.data()) === null || _a === void 0 ? void 0 : _a.watchlist) === null || _b === void 0 ? void 0 : _b.length) || 0;
         return {
             bookmarks: bookmarksSnapshot.size,

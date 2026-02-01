@@ -100,7 +100,7 @@ export const checkPriceAlerts = functions.pubsub
     
     try {
       // Get all active (non-triggered) alerts
-      const alertsSnapshot = await db.collection('PriceAlerts')
+      const alertsSnapshot = await db.collection('price_alerts')
         .where('triggered', '==', false)
         .get();
       
@@ -191,7 +191,7 @@ function checkAlertCondition(alert: any, currentPrice: number): boolean {
 async function sendAlertNotification(userId: string, alert: any, currentPrice: number): Promise<void> {
   try {
     // Get user's FCM token
-    const userDoc = await db.collection('Users').doc(userId).get();
+    const userDoc = await db.collection('users').doc(userId).get();
     const fcmToken = userDoc.data()?.fcmToken;
     
     if (!fcmToken) {
@@ -234,7 +234,7 @@ async function sendAlertNotification(userId: string, alert: any, currentPrice: n
  * Purpose: Notify users watching the ticker
  */
 export const onAnalysisPublished = functions.firestore
-  .document('AnalysisPosts/{postId}')
+  .document('analysis_posts/{postId}')
   .onCreate(async (snap, context) => {
     const post = snap.data();
     
@@ -242,7 +242,7 @@ export const onAnalysisPublished = functions.firestore
     
     try {
       // Find users watching this ticker
-      const usersSnapshot = await db.collection('Users')
+      const usersSnapshot = await db.collection('users')
         .where('watchlist', 'array-contains', post.ticker)
         .get();
       
@@ -303,7 +303,7 @@ export const onAnalysisPublished = functions.firestore
       console.log(`Sent ${successCount}/${notificationTokens.length} notifications`);
       
       // Track analytics
-      await db.collection('Analytics').add({
+      await db.collection('analytics').add({
         eventType: 'analysis_published',
         ticker: post.ticker,
         postId: snap.id,
@@ -325,7 +325,7 @@ export const onAnalysisPublished = functions.firestore
  * Purpose: Increment bookmark count on post
  */
 export const onBookmarkCreated = functions.firestore
-  .document('Bookmarks/{bookmarkId}')
+  .document('bookmarks/{bookmarkId}')
   .onCreate(async (snap, context) => {
     const bookmark = snap.data();
     
@@ -347,7 +347,7 @@ export const onBookmarkCreated = functions.firestore
  * Purpose: Decrement bookmark count on post
  */
 export const onBookmarkDeleted = functions.firestore
-  .document('Bookmarks/{bookmarkId}')
+  .document('bookmarks/{bookmarkId}')
   .onDelete(async (snap, context) => {
     const bookmark = snap.data();
     
@@ -376,7 +376,7 @@ export const onUserCreated = functions.auth.user()
       const nextResetDate = new Date();
       nextResetDate.setDate(nextResetDate.getDate() + 30);
       
-      await db.collection('Users').doc(user.uid).set({
+      await db.collection('users').doc(user.uid).set({
         id: user.uid,
         email: user.email || '',
         displayName: user.displayName || 'Trader',
@@ -431,7 +431,7 @@ export const trackAnalytics = functions.https.onCall(async (data, context) => {
   const { eventType, metadata } = data;
   
   try {
-    await db.collection('Analytics').add({
+    await db.collection('analytics').add({
       userId: context.auth.uid,
       eventType,
       metadata: metadata || {},
@@ -459,18 +459,18 @@ export const getUserStats = functions.https.onCall(async (data, context) => {
   
   try {
     // Get bookmark count
-    const bookmarksSnapshot = await db.collection('Bookmarks')
+    const bookmarksSnapshot = await db.collection('bookmarks')
       .where('userId', '==', userId)
       .get();
     
     // Get alert count
-    const alertsSnapshot = await db.collection('PriceAlerts')
+    const alertsSnapshot = await db.collection('price_alerts')
       .where('userId', '==', userId)
       .where('triggered', '==', false)
       .get();
     
     // Get user watchlist
-    const userDoc = await db.collection('Users').doc(userId).get();
+    const userDoc = await db.collection('users').doc(userId).get();
     const watchlistCount = userDoc.data()?.watchlist?.length || 0;
     
     return {

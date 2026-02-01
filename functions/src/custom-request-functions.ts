@@ -21,7 +21,7 @@ const db = admin.firestore();
  * Initiates the research pipeline via OpenClaw orchestrator
  */
 export const onCustomReportRequestCreated = functions.firestore
-  .document('CustomReportRequests/{requestId}')
+  .document('custom_report_requests/{requestId}')
   .onCreate(async (snap, context) => {
     const request = snap.data();
     const requestId = context.params.requestId;
@@ -38,7 +38,7 @@ export const onCustomReportRequestCreated = functions.firestore
       // Trigger the research coordinator
       // This will be handled by the OpenClaw orchestrator
       // We create a trigger document that the orchestrator monitors
-      await db.collection('ResearchTriggers').add({
+      await db.collection('research_triggers').add({
         requestId,
         userId: request.userId,
         ticker: request.ticker,
@@ -76,7 +76,7 @@ export const onCustomReportRequestCreated = functions.firestore
  * Updates the custom request and notifies the user
  */
 export const onResearchTriggerCompleted = functions.firestore
-  .document('ResearchTriggers/{triggerId}')
+  .document('research_triggers/{triggerId}')
   .onUpdate(async (change, context) => {
     const before = change.before.data();
     const after = change.after.data();
@@ -90,7 +90,7 @@ export const onResearchTriggerCompleted = functions.firestore
       try {
         if (requestId) {
           // Update custom report request
-          const requestRef = db.collection('CustomReportRequests').doc(requestId);
+          const requestRef = db.collection('custom_report_requests').doc(requestId);
           
           if (error) {
             await requestRef.update({
@@ -162,7 +162,7 @@ export const submitCustomReportRequest = functions.https.onCall(async (data, con
     }
     
     // Check for existing pending/processing request for this ticker
-    const existingRequest = await db.collection('CustomReportRequests')
+    const existingRequest = await db.collection('custom_report_requests')
       .where('userId', '==', userId)
       .where('ticker', '==', tickerUpper)
       .where('status', 'in', ['pending', 'processing'])
@@ -177,7 +177,7 @@ export const submitCustomReportRequest = functions.https.onCall(async (data, con
     }
     
     // Check and decrement quota using transaction
-    const userRef = db.collection('Users').doc(userId);
+    const userRef = db.collection('users').doc(userId);
     const QUOTA_LIMITS = { free: 5, premium: 10 };
     const QUOTA_RESET_INTERVAL_DAYS = 30;
     
@@ -229,7 +229,7 @@ export const submitCustomReportRequest = functions.https.onCall(async (data, con
     }
     
     // Create custom report request
-    const requestRef = await db.collection('CustomReportRequests').add({
+    const requestRef = await db.collection('custom_report_requests').add({
       userId,
       ticker: tickerUpper,
       assetType,
@@ -270,7 +270,7 @@ export const getUserCustomRequests = functions.https.onCall(async (data, context
   const { limit = 10, status } = data;
   
   try {
-    let query: FirebaseFirestore.Query = db.collection('CustomReportRequests')
+    let query: FirebaseFirestore.Query = db.collection('custom_report_requests')
       .where('userId', '==', userId)
       .orderBy('createdAt', 'desc')
       .limit(limit);
@@ -300,7 +300,7 @@ export const getUserCustomRequests = functions.https.onCall(async (data, context
 
 async function sendProcessingNotification(userId: string, ticker: string): Promise<void> {
   try {
-    const userDoc = await db.collection('Users').doc(userId).get();
+    const userDoc = await db.collection('users').doc(userId).get();
     const fcmToken = userDoc.data()?.fcmToken;
     
     if (!fcmToken) {
@@ -334,7 +334,7 @@ async function sendCompletionNotification(
   reportId: string
 ): Promise<void> {
   try {
-    const userDoc = await db.collection('Users').doc(userId).get();
+    const userDoc = await db.collection('users').doc(userId).get();
     const fcmToken = userDoc.data()?.fcmToken;
     
     if (!fcmToken) {
@@ -369,7 +369,7 @@ async function sendErrorNotification(
   error: string
 ): Promise<void> {
   try {
-    const userDoc = await db.collection('Users').doc(userId).get();
+    const userDoc = await db.collection('users').doc(userId).get();
     const fcmToken = userDoc.data()?.fcmToken;
     
     if (!fcmToken) {
@@ -394,7 +394,7 @@ async function sendErrorNotification(
     console.log(`Sent error notification to ${userId}`);
     
     // Refund the user's quota
-    await db.collection('Users').doc(userId).update({
+    await db.collection('users').doc(userId).update({
       customReportsRemaining: admin.firestore.FieldValue.increment(1)
     });
     
