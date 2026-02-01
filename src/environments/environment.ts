@@ -23,7 +23,9 @@ export const environment = {
     
     // Ticker Search APIs
     coinGeckoBaseUrl: "https://api.coingecko.com/api/v3",
-    finnhubApiKey: "", // Leave empty for now (Chadizzle will add)
+    // REQUIRED: Get free API key from https://finnhub.io/register
+    // Without this key, stock search will NOT work (only crypto will show)
+    finnhubApiKey: "", // ⚠️ ADD YOUR FINNHUB API KEY HERE
     finnhubBaseUrl: "https://finnhub.io/api/v1"
   },
 
