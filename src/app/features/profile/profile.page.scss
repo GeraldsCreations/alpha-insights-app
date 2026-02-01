@@ -1,51 +1,244 @@
-.profile-container {
-  max-width: 600px;
+@import '../../../theme/variables.scss';
+
+// =============================================================================
+// PROFILE PAGE - Enterprise Design
+// =============================================================================
+
+:host {
+  display: block;
+  background: var(--ai-bg-secondary);
+}
+
+ion-header {
+  box-shadow: var(--ai-shadow-sm);
+  
+  ion-toolbar {
+    --background: var(--ai-surface);
+    --border-color: var(--ai-border);
+  }
+}
+
+ion-content {
+  --background: var(--ai-bg-secondary);
+}
+
+.profile-content {
+  max-width: 800px;
   margin: 0 auto;
+  padding: var(--ai-space-3);
+  
+  @media (min-width: $breakpoint-tablet) {
+    padding: var(--ai-space-6) var(--ai-space-4);
+  }
 }
 
-.user-section {
+// =============================================================================
+// USER INFO SECTION
+// =============================================================================
+
+.user-info-section {
+  background: var(--ai-surface);
+  border-radius: var(--ai-radius-md);
+  padding: var(--ai-space-4);
+  margin-bottom: var(--ai-space-4);
+  box-shadow: var(--ai-shadow-sm);
+  border: 1px solid var(--ai-border-light);
   text-align: center;
-  padding: 32px 16px;
+}
 
-  h2 {
-    margin: 16px 0 4px 0;
-    font-weight: bold;
+.user-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--ai-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--ai-space-3);
+  font-size: var(--ai-text-3xl);
+  font-weight: var(--ai-font-weight-bold);
+  box-shadow: var(--ai-shadow-md);
+}
+
+.user-name {
+  margin: 0 0 var(--ai-space-1) 0;
+  font-size: var(--ai-text-2xl);
+  font-weight: var(--ai-font-weight-bold);
+  color: var(--ai-text-primary);
+}
+
+.user-email {
+  margin: 0 0 var(--ai-space-3) 0;
+  font-size: var(--ai-text-base);
+  color: var(--ai-text-secondary);
+}
+
+.user-stats {
+  display: flex;
+  justify-content: space-around;
+  padding-top: var(--ai-space-3);
+  border-top: 1px solid var(--ai-border);
+  
+  .stat {
+    text-align: center;
+    
+    .stat-value {
+      display: block;
+      font-size: var(--ai-text-2xl);
+      font-weight: var(--ai-font-weight-bold);
+      color: var(--ai-primary);
+      font-family: var(--ai-font-mono);
+    }
+    
+    .stat-label {
+      display: block;
+      font-size: var(--ai-text-xs);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--ai-text-tertiary);
+      margin-top: 4px;
+    }
   }
+}
 
-  p {
-    color: var(--ion-color-medium);
-    margin: 0;
+// =============================================================================
+// MENU SECTIONS
+// =============================================================================
+
+.menu-section {
+  background: var(--ai-surface);
+  border-radius: var(--ai-radius-md);
+  margin-bottom: var(--ai-space-3);
+  box-shadow: var(--ai-shadow-sm);
+  border: 1px solid var(--ai-border-light);
+  overflow: hidden;
+  
+  .section-title {
+    padding: var(--ai-space-3);
+    font-size: var(--ai-text-sm);
+    font-weight: var(--ai-font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--ai-text-tertiary);
+    background: var(--ai-bg-secondary);
+    border-bottom: 1px solid var(--ai-border);
+  }
+  
+  ion-item {
+    --background: var(--ai-surface);
+    --border-color: var(--ai-border-light);
+    --color: var(--ai-text-primary);
+    --padding-start: var(--ai-space-3);
+    --padding-end: var(--ai-space-3);
+    --min-height: 56px;
+    cursor: pointer;
+    transition: all var(--ai-transition-fast);
+    
+    &:hover {
+      --background: var(--ai-bg-secondary);
+    }
+    
+    ion-icon {
+      color: var(--ai-primary);
+      font-size: 22px;
+      margin-right: var(--ai-space-2);
+    }
+    
+    ion-label {
+      font-weight: var(--ai-font-weight-medium);
+      
+      h3 {
+        font-size: var(--ai-text-base);
+        margin-bottom: 2px;
+      }
+      
+      p {
+        font-size: var(--ai-text-xs);
+        color: var(--ai-text-tertiary);
+      }
+    }
+    
+    ion-badge {
+      margin-left: var(--ai-space-2);
+    }
   }
 }
 
-.profile-avatar {
-  width: 100px;
-  height: 100px;
-  margin: 0 auto;
+// =============================================================================
+// ACTION BUTTONS
+// =============================================================================
 
-  ion-icon {
-    font-size: 100px;
-    color: var(--ion-color-primary);
+.action-section {
+  padding: var(--ai-space-3) 0;
+  
+  ion-button {
+    margin-bottom: var(--ai-space-2);
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 }
 
-.stat-col {
-  text-align: center;
-  padding: 12px;
+.logout-button {
+  --background: transparent;
+  --color: var(--ai-danger);
+  --border-color: var(--ai-danger);
+  --border-width: 1px;
+  --border-style: solid;
+  
+  &:hover {
+    --background: var(--ai-danger);
+    --color: white;
+  }
 }
 
-.stat-value {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: var(--ion-color-primary);
+// =============================================================================
+// LOADING & EMPTY STATES
+// =============================================================================
+
+.loading-container {
+  min-height: 50vh;
 }
 
-.stat-label {
-  font-size: 0.8rem;
-  color: var(--ion-color-medium);
-  margin-top: 4px;
+// =============================================================================
+// RESPONSIVE
+// =============================================================================
+
+@media (max-width: ($breakpoint-mobile - 1px)) {
+  .user-stats {
+    .stat-value {
+      font-size: var(--ai-text-xl);
+    }
+  }
 }
 
-.version-info {
-  margin-top: 24px;
+// =============================================================================
+// ANIMATIONS
+// =============================================================================
+
+.user-info-section,
+.menu-section,
+.action-section {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-section {
+  @for $i from 1 through 4 {
+    &:nth-child(#{$i + 1}) {
+      animation-delay: #{$i * 0.08}s;
+    }
+  }
 }

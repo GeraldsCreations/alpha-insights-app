@@ -20,11 +20,8 @@ export class AuthService {
           displayName: firebaseUser.displayName || '',
           photoURL: firebaseUser.photoURL || undefined,
           createdAt: new Date(),
-          watchlist: [],
           notificationPreferences: {
-            watchlistUpdates: true,
-            highConfidence: true,
-            priceAlerts: true
+            highConfidence: true
           },
           plan: 'free',
           customReportsRemaining: 3,

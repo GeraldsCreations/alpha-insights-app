@@ -5,11 +5,6 @@
     </ion-buttons>
     <ion-title *ngIf="post">{{ post.ticker }}</ion-title>
     <ion-buttons slot="end">
-      <app-watchlist-button 
-        *ngIf="post" 
-        [ticker]="post.ticker" 
-        [showToast]="true">
-      </app-watchlist-button>
       <app-bookmark-button 
         *ngIf="post" 
         [postId]="post.id" 
@@ -64,6 +59,28 @@
         </span>
       </div>
     </div>
+
+    <!-- EXECUTIVE SUMMARY - NEW COMPONENT -->
+    <app-executive-summary [post]="post"></app-executive-summary>
+
+    <!-- VERDICT TIMELINE - NEW COMPONENT -->
+    <app-verdict-timeline [verdicts]="verdicts"></app-verdict-timeline>
+
+    <!-- PRICE LEVELS VISUALIZATION - NEW COMPONENT -->
+    <app-price-levels
+      [entry]="post.entry"
+      [target]="post.target"
+      [stop]="post.stop"
+      [ticker]="post.ticker">
+    </app-price-levels>
+
+    <!-- TRADINGVIEW CHART - NEW COMPONENT -->
+    <app-tradingview-chart
+      [ticker]="post.ticker"
+      [entry]="post.entry"
+      [target]="post.target"
+      [stop]="post.stop">
+    </app-tradingview-chart>
 
     <!-- Trade Setup Card -->
     <ion-card class="trade-card">
@@ -122,14 +139,6 @@
               1:{{ post.riskRewardRatio.toFixed(2) }}
             </span>
           </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="quick-actions">
-          <ion-button expand="block" (click)="createAlerts()" fill="outline">
-            <ion-icon name="notifications-outline" slot="start"></ion-icon>
-            Set Price Alerts
-          </ion-button>
         </div>
       </ion-card-content>
     </ion-card>

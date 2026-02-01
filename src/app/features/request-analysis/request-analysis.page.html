@@ -78,6 +78,10 @@
                 <ion-label>Crypto</ion-label>
                 <ion-icon name="logo-bitcoin"></ion-icon>
               </ion-segment-button>
+              <ion-segment-button value="commodity">
+                <ion-label>Commodity</ion-label>
+                <ion-icon name="diamond-outline"></ion-icon>
+              </ion-segment-button>
             </ion-segment>
           </div>
           
@@ -91,7 +95,7 @@
               <ion-searchbar
                 [(ngModel)]="searchQuery"
                 name="searchQuery"
-                placeholder="Search stocks or crypto (e.g., Apple, Bitcoin)"
+                placeholder="Search stocks, crypto, or commodities"
                 (ionInput)="onSearchInput($event)"
                 (ionFocus)="onSearchFocus()"
                 (ionBlur)="onSearchBlur()"
@@ -131,8 +135,8 @@
                       <span class="result-name">{{ result.name }}</span>
                     </div>
                     <div class="result-meta">
-                      <ion-badge [color]="result.type === 'crypto' ? 'warning' : 'primary'">
-                        {{ result.type === 'crypto' ? 'Crypto' : 'Stock' }}
+                      <ion-badge [color]="result.type === 'crypto' ? 'warning' : (result.type === 'commodity' ? 'tertiary' : 'primary')">
+                        {{ result.type === 'crypto' ? 'Crypto' : (result.type === 'commodity' ? 'Commodity' : 'Stock') }}
                       </ion-badge>
                       <span *ngIf="result.price" class="result-price">
                         ${{ result.price | number:'1.2-2' }}
@@ -155,7 +159,7 @@
           <div class="selected-ticker" *ngIf="ticker">
             <ion-chip color="primary" outline="true">
               <ion-icon name="checkmark-circle"></ion-icon>
-              <ion-label>{{ ticker }} - {{ assetType === 'crypto' ? 'Crypto' : 'Stock' }}</ion-label>
+              <ion-label>{{ ticker }} - {{ assetType === 'crypto' ? 'Crypto' : (assetType === 'commodity' ? 'Commodity' : 'Stock') }}</ion-label>
             </ion-chip>
           </div>
           

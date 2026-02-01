@@ -1,11 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject, combineLatest } from 'rxjs';
+import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AuthService } from '../../core/auth/auth.service';
 import { BookmarkService } from '../../core/services/bookmark.service';
-import { WatchlistService } from '../../core/services/watchlist.service';
-import { PriceAlertService } from '../../core/services/price-alert.service';
 import { User } from '../../core/models';
 
 @Component({
@@ -22,14 +20,10 @@ export class ProfilePage implements OnInit, OnDestroy {
   
   // Stats
   bookmarkCount = 0;
-  watchlistCount = 0;
-  alertCount = 0;
 
   constructor(
     private authService: AuthService,
     private bookmarkService: BookmarkService,
-    private watchlistService: WatchlistService,
-    private priceAlertService: PriceAlertService,
     private router: Router
   ) {}
 
@@ -58,17 +52,11 @@ export class ProfilePage implements OnInit, OnDestroy {
    * Load user stats
    */
   loadStats() {
-    combineLatest([
-      this.bookmarkService.getBookmarkCount(),
-      this.watchlistService.getWatchlistCount(),
-      this.priceAlertService.getAlertStats()
-    ])
-    .pipe(takeUntil(this.destroy$))
-    .subscribe(([bookmarks, watchlist, alerts]) => {
-      this.bookmarkCount = bookmarks;
-      this.watchlistCount = watchlist;
-      this.alertCount = alerts.total;
-    });
+    this.bookmarkService.getBookmarkCount()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(count => {
+        this.bookmarkCount = count;
+      });
   }
 
   /**
@@ -76,20 +64,6 @@ export class ProfilePage implements OnInit, OnDestroy {
    */
   viewSavedPosts() {
     this.router.navigate(['/profile/saved']);
-  }
-
-  /**
-   * Navigate to watchlist
-   */
-  viewWatchlist() {
-    this.router.navigate(['/profile/watchlist']);
-  }
-
-  /**
-   * Navigate to alerts
-   */
-  viewAlerts() {
-    this.router.navigate(['/profile/alerts']);
   }
 
   /**

@@ -24,7 +24,7 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
   // Verdict data (parsed from markdown)
   verdicts: Array<{
     timeframe: string;
-    verdict: string;
+    verdict: 'BUY' | 'SELL' | 'HOLD' | 'UNKNOWN';
     confidence: number;
   }> = [];
   
@@ -98,16 +98,17 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
       const match = verdictsText.match(regex);
       
       if (match) {
+        const verdict = match[1].toUpperCase();
         return {
           timeframe,
-          verdict: match[1].toUpperCase(),
+          verdict: (verdict === 'BUY' || verdict === 'SELL' || verdict === 'HOLD' ? verdict : 'UNKNOWN') as 'BUY' | 'SELL' | 'HOLD' | 'UNKNOWN',
           confidence: parseInt(match[2])
         };
       }
       
       return {
         timeframe,
-        verdict: 'UNKNOWN',
+        verdict: 'UNKNOWN' as const,
         confidence: 0
       };
     });
@@ -145,23 +146,6 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
   viewTickerDetails() {
     if (!this.post) return;
     this.router.navigate(['/ticker', this.post.ticker]);
-  }
-
-  /**
-   * Create alerts from this post
-   */
-  createAlerts() {
-    if (!this.post) return;
-    
-    this.router.navigate(['/profile/alerts'], {
-      queryParams: {
-        ticker: this.post.ticker,
-        entry: this.post.entry,
-        stop: this.post.stop,
-        target: this.post.target,
-        postId: this.post.id
-      }
-    });
   }
 
   /**

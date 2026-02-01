@@ -62,18 +62,6 @@
     </ion-list-header>
 
     <ion-item>
-      <ion-icon name="notifications-outline" slot="start"></ion-icon>
-      <ion-label>
-        <h2>Watchlist Updates</h2>
-        <p>Get notified when watchlist tickers have new analysis</p>
-      </ion-label>
-      <ion-toggle 
-        [checked]="notificationSettings.watchlistUpdates"
-        (ionChange)="onNotificationToggle('watchlistUpdates', $event)">
-      </ion-toggle>
-    </ion-item>
-
-    <ion-item>
       <ion-icon name="trophy-outline" slot="start"></ion-icon>
       <ion-label>
         <h2>High Confidence Alerts</h2>
@@ -82,18 +70,6 @@
       <ion-toggle 
         [checked]="notificationSettings.highConfidence"
         (ionChange)="onNotificationToggle('highConfidence', $event)">
-      </ion-toggle>
-    </ion-item>
-
-    <ion-item>
-      <ion-icon name="pricetag-outline" slot="start"></ion-icon>
-      <ion-label>
-        <h2>Price Alerts</h2>
-        <p>When target prices are reached</p>
-      </ion-label>
-      <ion-toggle 
-        [checked]="notificationSettings.priceAlerts"
-        (ionChange)="onNotificationToggle('priceAlerts', $event)">
       </ion-toggle>
     </ion-item>
   </ion-list>

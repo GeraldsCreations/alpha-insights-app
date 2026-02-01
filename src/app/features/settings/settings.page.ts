@@ -24,11 +24,9 @@ export class SettingsPage implements OnInit, OnDestroy {
   preferences: UserPreferences;
   currentTheme: ThemeMode = 'auto';
   notificationSettings: NotificationPreferences = {
-    watchlistUpdates: true,
-    highConfidence: true,
-    priceAlerts: true
+    highConfidence: true
   };
-  defaultAssetFilter: 'crypto' | 'stock' | 'all' = 'all';
+  defaultAssetFilter: 'crypto' | 'stock' | 'commodity' | 'all' = 'all';
 
   // User info
   userEmail: string = '';

@@ -1,445 +1,407 @@
+@import '../../../theme/variables.scss';
+
 // =============================================================================
-// ANALYSIS DETAIL PAGE STYLES
+// ANALYSIS DETAIL PAGE - Enterprise Design
+// =============================================================================
+
+:host {
+  display: block;
+  background: var(--ai-bg-secondary);
+}
+
+ion-header {
+  box-shadow: var(--ai-shadow-sm);
+  
+  ion-toolbar {
+    --background: var(--ai-surface);
+    --border-color: var(--ai-border);
+    
+    ion-title {
+      font-family: var(--ai-font-mono);
+      font-size: var(--ai-text-xl);
+      font-weight: var(--ai-font-weight-bold);
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+ion-content {
+  --background: var(--ai-bg-secondary);
+}
+
+// =============================================================================
+// LAYOUT
+// =============================================================================
+
+.detail-content {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: var(--ai-space-4) var(--ai-space-3);
+  
+  @media (min-width: $breakpoint-tablet) {
+    padding: var(--ai-space-6) var(--ai-space-4);
+  }
+}
+
+// =============================================================================
+// HEADER SECTION
+// =============================================================================
+
+.header-section {
+  background: var(--ai-surface);
+  border-radius: var(--ai-radius-md);
+  padding: var(--ai-space-4);
+  margin-bottom: var(--ai-space-4);
+  box-shadow: var(--ai-shadow-sm);
+  border: 1px solid var(--ai-border-light);
+}
+
+.title-row {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ai-space-3);
+  margin-bottom: var(--ai-space-3);
+  
+  h1 {
+    flex: 1;
+    margin: 0;
+    font-size: var(--ai-text-3xl);
+    font-weight: var(--ai-font-weight-bold);
+    color: var(--ai-text-primary);
+    line-height: var(--ai-line-height-tight);
+    
+    @media (max-width: ($breakpoint-mobile - 1px)) {
+      font-size: var(--ai-text-2xl);
+    }
+  }
+  
+  .rec-badge {
+    flex-shrink: 0;
+    padding: 8px 16px;
+    font-size: var(--ai-text-sm);
+    font-weight: var(--ai-font-weight-bold);
+  }
+}
+
+.meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ai-space-3);
+  color: var(--ai-text-secondary);
+  font-size: var(--ai-text-sm);
+  
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    
+    ion-icon {
+      font-size: 18px;
+      opacity: 0.7;
+    }
+  }
+}
+
+// =============================================================================
+// METRICS GRID
+// =============================================================================
+
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--ai-space-3);
+  margin-bottom: var(--ai-space-4);
+}
+
+.metric-card {
+  background: var(--ai-surface);
+  border: 1px solid var(--ai-border-light);
+  border-radius: var(--ai-radius-md);
+  padding: var(--ai-space-3);
+  box-shadow: var(--ai-shadow-sm);
+  transition: all var(--ai-transition-base);
+  
+  &:hover {
+    box-shadow: var(--ai-shadow-md);
+    border-color: var(--ai-border-dark);
+  }
+  
+  .metric-label {
+    display: block;
+    font-size: var(--ai-text-xs);
+    font-weight: var(--ai-font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--ai-text-tertiary);
+    margin-bottom: var(--ai-space-1);
+  }
+  
+  .metric-value {
+    display: block;
+    font-size: var(--ai-text-2xl);
+    font-weight: var(--ai-font-weight-bold);
+    font-family: var(--ai-font-mono);
+    color: var(--ai-text-primary);
+    
+    &.success { color: var(--ai-success); }
+    &.warning { color: var(--ai-warning); }
+    &.danger { color: var(--ai-danger); }
+  }
+  
+  .metric-subtitle {
+    display: block;
+    font-size: var(--ai-text-xs);
+    color: var(--ai-text-tertiary);
+    margin-top: 4px;
+  }
+}
+
+// Confidence Bar in metric card
+.confidence-bar {
+  height: 8px;
+  background: var(--ai-bg-tertiary);
+  border-radius: var(--ai-radius-full);
+  overflow: hidden;
+  margin-top: var(--ai-space-2);
+  
+  .confidence-fill {
+    height: 100%;
+    transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: var(--ai-radius-full);
+    
+    &.high { 
+      background: linear-gradient(90deg, var(--ai-success), var(--ai-success-light));
+    }
+    &.medium { 
+      background: linear-gradient(90deg, var(--ai-warning), var(--ai-warning-light));
+    }
+    &.low { 
+      background: linear-gradient(90deg, var(--ai-danger), var(--ai-danger-light));
+    }
+  }
+}
+
+// =============================================================================
+// TRADE SETUP SECTION
+// =============================================================================
+
+.trade-section {
+  background: var(--ai-surface);
+  border: 1px solid var(--ai-border-light);
+  border-radius: var(--ai-radius-md);
+  padding: var(--ai-space-4);
+  margin-bottom: var(--ai-space-4);
+  box-shadow: var(--ai-shadow-sm);
+  
+  h2 {
+    margin: 0 0 var(--ai-space-3) 0;
+    font-size: var(--ai-text-xl);
+    font-weight: var(--ai-font-weight-bold);
+    color: var(--ai-text-primary);
+  }
+  
+  .trade-levels {
+    display: grid;
+    gap: var(--ai-space-2);
+    
+    .level-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: var(--ai-space-2);
+      background: var(--ai-bg-secondary);
+      border-radius: var(--ai-radius-md);
+      border: 1px solid var(--ai-border);
+      
+      .level-label {
+        font-size: var(--ai-text-sm);
+        font-weight: var(--ai-font-weight-semibold);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: var(--ai-text-secondary);
+      }
+      
+      .level-value {
+        font-size: var(--ai-text-lg);
+        font-weight: var(--ai-font-weight-bold);
+        font-family: var(--ai-font-mono);
+        color: var(--ai-text-primary);
+        
+        &.entry { color: var(--ai-primary); }
+        &.stop { color: var(--ai-danger); }
+        &.target { color: var(--ai-success); }
+      }
+    }
+  }
+}
+
+// =============================================================================
+// ANALYSIS SECTIONS
+// =============================================================================
+
+.analysis-section {
+  background: var(--ai-surface);
+  border: 1px solid var(--ai-border-light);
+  border-radius: var(--ai-radius-md);
+  padding: var(--ai-space-4);
+  margin-bottom: var(--ai-space-4);
+  box-shadow: var(--ai-shadow-sm);
+  
+  h2 {
+    margin: 0 0 var(--ai-space-3) 0;
+    font-size: var(--ai-text-xl);
+    font-weight: var(--ai-font-weight-bold);
+    color: var(--ai-text-primary);
+    display: flex;
+    align-items: center;
+    gap: var(--ai-space-2);
+    
+    ion-icon {
+      font-size: 24px;
+      color: var(--ai-primary);
+    }
+  }
+  
+  p {
+    margin: 0 0 var(--ai-space-2) 0;
+    font-size: var(--ai-text-base);
+    line-height: var(--ai-line-height-relaxed);
+    color: var(--ai-text-secondary);
+    
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  
+  ul {
+    margin: var(--ai-space-2) 0;
+    padding-left: var(--ai-space-4);
+    
+    li {
+      margin-bottom: var(--ai-space-2);
+      line-height: var(--ai-line-height-relaxed);
+      color: var(--ai-text-secondary);
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// =============================================================================
+// EXECUTIVE SUMMARY (Special styling)
+// =============================================================================
+
+.executive-summary {
+  background: linear-gradient(135deg, rgba(var(--ai-primary-rgb), 0.05), rgba(var(--ai-primary-rgb), 0.02));
+  border-left: 4px solid var(--ai-primary);
+  
+  p {
+    font-size: var(--ai-text-lg);
+    font-weight: var(--ai-font-weight-medium);
+    color: var(--ai-text-primary);
+    line-height: var(--ai-line-height-relaxed);
+  }
+}
+
+// =============================================================================
+// TAGS / KEYWORDS
+// =============================================================================
+
+.tags-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--ai-space-2);
+  padding: var(--ai-space-3);
+  background: var(--ai-bg-secondary);
+  border-radius: var(--ai-radius-md);
+  margin-bottom: var(--ai-space-4);
+  
+  .tag {
+    padding: 6px 14px;
+    background: var(--ai-surface);
+    border: 1px solid var(--ai-border);
+    border-radius: var(--ai-radius-full);
+    font-size: var(--ai-text-sm);
+    font-weight: var(--ai-font-weight-medium);
+    color: var(--ai-text-secondary);
+    transition: all var(--ai-transition-fast);
+    
+    &:hover {
+      background: var(--ai-primary);
+      color: white;
+      border-color: var(--ai-primary);
+    }
+  }
+}
+
+// =============================================================================
+// DISCLAIMER
+// =============================================================================
+
+.disclaimer-section {
+  background: var(--ai-warning-bg);
+  border: 1px solid var(--ai-warning);
+  border-left-width: 4px;
+  
+  h2 {
+    color: var(--ai-warning-dark);
+    
+    ion-icon {
+      color: var(--ai-warning-dark);
+    }
+  }
+  
+  p {
+    color: var(--ai-text-primary);
+    font-size: var(--ai-text-sm);
+  }
+}
+
+// =============================================================================
+// LOADING & EMPTY STATES
 // =============================================================================
 
 .loading-container,
 .empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 60px 20px;
-  text-align: center;
-  
-  ion-spinner {
-    margin-bottom: 16px;
-  }
-  
-  ion-icon {
-    font-size: 80px;
-    margin-bottom: 16px;
-    opacity: 0.4;
-  }
-  
-  h2 {
-    margin: 0 0 8px 0;
-    font-size: 20px;
-    font-weight: 600;
-  }
-  
-  p {
-    margin: 0 0 24px 0;
-    color: var(--ion-color-medium);
-    max-width: 300px;
-  }
+  min-height: 60vh;
 }
 
 // =============================================================================
-// DETAIL CONTENT
+// RESPONSIVE
 // =============================================================================
 
-.detail-content {
-  padding: 16px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-// -----------------------------------------------------------------------------
-// Header Section
-// -----------------------------------------------------------------------------
-
-.header-section {
-  margin-bottom: 20px;
-  
-  .title-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    margin-bottom: 12px;
-    
-    h1 {
-      margin: 0;
-      font-size: 24px;
-      font-weight: 700;
-      flex: 1;
-      line-height: 1.3;
-    }
-    
-    .rec-badge {
-      font-size: 12px;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 6px;
-      white-space: nowrap;
-    }
+@media (max-width: ($breakpoint-mobile - 1px)) {
+  .header-section {
+    padding: var(--ai-space-3);
   }
   
-  .meta-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
-    color: var(--ion-color-medium);
-    font-size: 13px;
-    
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      
-      ion-icon {
-        font-size: 16px;
-      }
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-// Trade Card
-// -----------------------------------------------------------------------------
-
-.trade-card {
-  margin-bottom: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  
-  ion-card-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 18px;
-    
-    ion-icon {
-      font-size: 20px;
-      color: var(--ion-color-primary);
-    }
+  .analysis-section {
+    padding: var(--ai-space-3);
   }
   
-  .setup-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    
-    .setup-item {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      
-      &.full-width {
-        grid-column: 1 / -1;
-      }
-      
-      .label {
-        font-size: 12px;
-        text-transform: uppercase;
-        color: var(--ion-color-medium);
-        font-weight: 600;
-        letter-spacing: 0.5px;
-      }
-      
-      .value {
-        font-size: 22px;
-        font-weight: 700;
-        font-family: 'Roboto Mono', monospace;
-        
-        &.entry {
-          color: var(--ion-color-primary);
-        }
-        
-        &.stop {
-          color: var(--ion-color-danger);
-        }
-        
-        &.target {
-          color: var(--ion-color-success);
-        }
-        
-        &.rr {
-          &.excellent {
-            color: var(--ion-color-success);
-          }
-          
-          &.good {
-            color: var(--ion-color-warning);
-          }
-          
-          &.poor {
-            color: var(--ion-color-danger);
-          }
-        }
-      }
-      
-      .percentage {
-        font-size: 13px;
-        font-weight: 600;
-        
-        &.loss {
-          color: var(--ion-color-danger);
-        }
-        
-        &.profit {
-          color: var(--ion-color-success);
-        }
-      }
-    }
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: var(--ai-space-2);
   }
-  
-  .confidence-display {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    
-    .confidence-bar-large {
-      flex: 1;
-      height: 10px;
-      background: var(--ion-color-light);
-      border-radius: 5px;
-      overflow: hidden;
-      
-      .confidence-fill {
-        height: 100%;
-        border-radius: 5px;
-        transition: width 0.3s;
-        
-        &.high {
-          background: var(--ion-color-success);
-        }
-        
-        &.medium {
-          background: var(--ion-color-warning);
-        }
-        
-        &.low {
-          background: var(--ion-color-danger);
-        }
-      }
-    }
-    
-    .confidence-value {
-      font-size: 18px;
-      font-weight: 700;
-      font-family: 'Roboto Mono', monospace;
-      white-space: nowrap;
-    }
-  }
-  
-  .quick-actions {
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid var(--ion-color-light);
-  }
-}
-
-// -----------------------------------------------------------------------------
-// Verdicts Card
-// -----------------------------------------------------------------------------
-
-.verdicts-card {
-  margin-bottom: 16px;
-  border-radius: 12px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  
-  ion-card-title {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 18px;
-    
-    ion-icon {
-      font-size: 20px;
-      color: var(--ion-color-primary);
-    }
-  }
-  
-  .verdict-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .verdict-row {
-    display: grid;
-    grid-template-columns: 70px 1fr auto auto;
-    gap: 12px;
-    align-items: center;
-    
-    .timeframe {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--ion-color-medium);
-    }
-    
-    .verdict-bar {
-      height: 8px;
-      background: var(--ion-color-light);
-      border-radius: 4px;
-      overflow: hidden;
-      
-      .verdict-fill {
-        height: 100%;
-        border-radius: 4px;
-        transition: width 0.3s;
-        
-        &.buy {
-          background: var(--ion-color-success);
-        }
-        
-        &.sell {
-          background: var(--ion-color-danger);
-        }
-        
-        &.hold {
-          background: var(--ion-color-warning);
-        }
-      }
-    }
-    
-    ion-badge {
-      font-size: 10px;
-      padding: 4px 8px;
-      min-width: 50px;
-      text-align: center;
-    }
-    
-    .confidence-text {
-      font-size: 12px;
-      font-weight: 600;
-      font-family: 'Roboto Mono', monospace;
-      color: var(--ion-color-medium);
-      min-width: 40px;
-      text-align: right;
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-// Tabs
-// -----------------------------------------------------------------------------
-
-.tabs-container {
-  margin-bottom: 16px;
-}
-
-.tabs {
-  display: flex;
-  border-bottom: 2px solid var(--ion-color-light);
-  margin-bottom: 16px;
-  
-  .tab {
-    flex: 1;
-    padding: 12px 16px;
-    background: none;
-    border: none;
-    border-bottom: 3px solid transparent;
-    margin-bottom: -2px;
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--ion-color-medium);
-    cursor: pointer;
-    transition: all 0.2s;
-    
-    &:hover {
-      color: var(--ion-color-primary);
-    }
-    
-    &.active {
-      color: var(--ion-color-primary);
-      border-bottom-color: var(--ion-color-primary);
-      font-weight: 600;
-    }
-  }
-}
-
-.tab-content {
-  .tab-pane {
-    animation: fadeIn 0.3s;
-  }
-  
-  .markdown-content {
-    font-size: 15px;
-    line-height: 1.7;
-    color: var(--ion-color-step-800);
-    
-    // Style markdown headings
-    ::ng-deep h1,
-    ::ng-deep h2,
-    ::ng-deep h3 {
-      margin-top: 24px;
-      margin-bottom: 12px;
-      font-weight: 600;
-      color: var(--ion-color-step-900);
-    }
-    
-    ::ng-deep h1 {
-      font-size: 24px;
-    }
-    
-    ::ng-deep h2 {
-      font-size: 20px;
-    }
-    
-    ::ng-deep h3 {
-      font-size: 17px;
-    }
-    
-    ::ng-deep p {
-      margin-bottom: 16px;
-    }
-    
-    ::ng-deep ul,
-    ::ng-deep ol {
-      margin-bottom: 16px;
-      padding-left: 24px;
-      
-      li {
-        margin-bottom: 8px;
-      }
-    }
-    
-    ::ng-deep code {
-      background: var(--ion-color-light);
-      padding: 2px 6px;
-      border-radius: 4px;
-      font-family: 'Roboto Mono', monospace;
-      font-size: 14px;
-    }
-    
-    ::ng-deep pre {
-      background: var(--ion-color-light);
-      padding: 16px;
-      border-radius: 8px;
-      overflow-x: auto;
-      
-      code {
-        background: none;
-        padding: 0;
-      }
-    }
-    
-    ::ng-deep strong {
-      font-weight: 600;
-      color: var(--ion-color-step-900);
-    }
-  }
-}
-
-// -----------------------------------------------------------------------------
-// Related Section
-// -----------------------------------------------------------------------------
-
-.related-section {
-  margin-top: 24px;
-  padding-top: 24px;
-  border-top: 2px solid var(--ion-color-light);
 }
 
 // =============================================================================
 // ANIMATIONS
 // =============================================================================
 
-@keyframes fadeIn {
+.header-section,
+.metrics-grid,
+.trade-section,
+.analysis-section {
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -447,27 +409,11 @@
   }
 }
 
-// =============================================================================
-// DARK MODE
-// =============================================================================
-
-@media (prefers-color-scheme: dark) {
-  .trade-card,
-  .verdicts-card {
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.3);
-  }
-}
-
-// =============================================================================
-// RESPONSIVE
-// =============================================================================
-
-@media (max-width: 576px) {
-  .verdict-row {
-    grid-template-columns: 60px 1fr auto;
-    
-    .confidence-text {
-      display: none;
+// Stagger animations
+.metric-card {
+  @for $i from 1 through 6 {
+    &:nth-child(#{$i}) {
+      animation: fadeInUp 0.3s ease-out #{$i * 0.08}s both;
     }
   }
 }

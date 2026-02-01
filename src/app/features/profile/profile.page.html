@@ -38,17 +38,9 @@
       <ion-card-content>
         <ion-grid>
           <ion-row>
-            <ion-col size="4" class="stat-col" (click)="viewSavedPosts()">
+            <ion-col size="12" class="stat-col" (click)="viewSavedPosts()">
               <div class="stat-value">{{ bookmarkCount }}</div>
               <div class="stat-label">Bookmarks</div>
-            </ion-col>
-            <ion-col size="4" class="stat-col" (click)="viewWatchlist()">
-              <div class="stat-value">{{ watchlistCount }}</div>
-              <div class="stat-label">Watchlist</div>
-            </ion-col>
-            <ion-col size="4" class="stat-col" (click)="viewAlerts()">
-              <div class="stat-value">{{ alertCount }}</div>
-              <div class="stat-label">Alerts</div>
             </ion-col>
           </ion-row>
         </ion-grid>
@@ -61,18 +53,6 @@
         <ion-icon name="bookmark-outline" slot="start"></ion-icon>
         <ion-label>Saved Posts</ion-label>
         <ion-badge slot="end" *ngIf="bookmarkCount > 0">{{ bookmarkCount }}</ion-badge>
-      </ion-item>
-
-      <ion-item button detail (click)="viewWatchlist()">
-        <ion-icon name="eye-outline" slot="start"></ion-icon>
-        <ion-label>Watchlist</ion-label>
-        <ion-badge slot="end" *ngIf="watchlistCount > 0">{{ watchlistCount }}</ion-badge>
-      </ion-item>
-
-      <ion-item button detail (click)="viewAlerts()">
-        <ion-icon name="notifications-outline" slot="start"></ion-icon>
-        <ion-label>Price Alerts</ion-label>
-        <ion-badge slot="end" *ngIf="alertCount > 0" color="warning">{{ alertCount }}</ion-badge>
       </ion-item>
 
       <ion-item button detail (click)="viewSettings()">

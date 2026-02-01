@@ -85,7 +85,7 @@ export class CustomRequestService {
   /**
    * Submit custom report request
    */
-  submitCustomRequest(ticker: string, assetType: 'crypto' | 'stock'): Observable<SubmitRequestResult> {
+  submitCustomRequest(ticker: string, assetType: 'crypto' | 'stock' | 'commodity'): Observable<SubmitRequestResult> {
     if (!this.functions) {
       console.warn('Firebase Functions not configured - custom requests disabled');
       return throwError(() => new Error('Firebase Functions not available'));

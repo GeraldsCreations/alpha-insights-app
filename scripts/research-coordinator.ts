@@ -91,7 +91,7 @@ async function fetchTopCryptos(count: number): Promise<Ticker[]> {
       throw new Error(`CoinGecko API error: ${response.statusText}`);
     }
     
-    const data = await response.json();
+    const data: any = await response.json();
     
     const tickers: Ticker[] = data.map((coin: any) => ({
       symbol: coin.symbol.toUpperCase(),
@@ -109,16 +109,16 @@ async function fetchTopCryptos(count: number): Promise<Ticker[]> {
     // Fallback to hardcoded list
     console.log('   ⚠️  Using fallback crypto list');
     return [
-      { symbol: 'BTC', type: 'crypto', marketCap: 0, name: 'Bitcoin' },
-      { symbol: 'ETH', type: 'crypto', marketCap: 0, name: 'Ethereum' },
-      { symbol: 'BNB', type: 'crypto', marketCap: 0, name: 'Binance Coin' },
-      { symbol: 'SOL', type: 'crypto', marketCap: 0, name: 'Solana' },
-      { symbol: 'ADA', type: 'crypto', marketCap: 0, name: 'Cardano' },
-      { symbol: 'XRP', type: 'crypto', marketCap: 0, name: 'Ripple' },
-      { symbol: 'DOT', type: 'crypto', marketCap: 0, name: 'Polkadot' },
-      { symbol: 'AVAX', type: 'crypto', marketCap: 0, name: 'Avalanche' },
-      { symbol: 'MATIC', type: 'crypto', marketCap: 0, name: 'Polygon' },
-      { symbol: 'LINK', type: 'crypto', marketCap: 0, name: 'Chainlink' }
+      { symbol: 'BTC', type: 'crypto' as const, marketCap: 0, name: 'Bitcoin' },
+      { symbol: 'ETH', type: 'crypto' as const, marketCap: 0, name: 'Ethereum' },
+      { symbol: 'BNB', type: 'crypto' as const, marketCap: 0, name: 'Binance Coin' },
+      { symbol: 'SOL', type: 'crypto' as const, marketCap: 0, name: 'Solana' },
+      { symbol: 'ADA', type: 'crypto' as const, marketCap: 0, name: 'Cardano' },
+      { symbol: 'XRP', type: 'crypto' as const, marketCap: 0, name: 'Ripple' },
+      { symbol: 'DOT', type: 'crypto' as const, marketCap: 0, name: 'Polkadot' },
+      { symbol: 'AVAX', type: 'crypto' as const, marketCap: 0, name: 'Avalanche' },
+      { symbol: 'MATIC', type: 'crypto' as const, marketCap: 0, name: 'Polygon' },
+      { symbol: 'LINK', type: 'crypto' as const, marketCap: 0, name: 'Chainlink' }
     ].slice(0, count);
   }
 }
@@ -158,44 +158,49 @@ async function fetchTopStocks(count: number): Promise<Ticker[]> {
 // ============================================================================
 
 /**
- * Execute research pipeline for a single ticker
+ * Execute research pipeline for a single ticker using the orchestrator
  */
 async function executeResearchPipeline(job: ResearchJob): Promise<ResearchResult> {
-  const startTime = Date.now();
   console.log(`\n🔬 Starting research for ${job.ticker}...`);
+  const startTime = Date.now();
   
   try {
-    // For now, use a simple shell script to trigger the research
-    // In production, this would integrate with OpenClaw sessions API
+    // Call the orchestrator script
+    const orchestratorPath = path.join(__dirname, 'research-orchestrator.ts');
+    const args = [job.ticker, job.type];
     
-    // Placeholder: Run the research specialist agents
-    // TODO: Integrate with actual OpenClaw session spawning
-    console.log(`   ⏳ Running research agents for ${job.ticker}...`);
+    // Add trigger ID if available (for Firestore updates)
+    if (job.requestId) {
+      args.push(job.requestId);
+    }
     
-    // Simulate research execution (replace with actual OpenClaw spawn)
-    // const { stdout, stderr } = await execAsync(
-    //   `openclaw sessions spawn --label "research-${job.ticker}" --agent research-coordinator --task "Research ${job.ticker}"`
-    // );
+    const cmd = `npx ts-node --project ${path.join(__dirname, 'tsconfig.json')} ${orchestratorPath} ${args.join(' ')}`;
     
-    // For now, skip to publishing step
-    console.log(`   ⏳ Publishing results for ${job.ticker}...`);
+    const { stdout, stderr } = await execAsync(cmd);
     
-    // Run publish script
-    const publishResult = await publishAnalysis(job.ticker);
+    console.log(stdout);
+    if (stderr && !stderr.includes('ExperimentalWarning')) {
+      console.error(stderr);
+    }
     
-    const duration = Date.now() - startTime;
+    // Parse result from output
+    const successMatch = stdout.match(/✅ RESEARCH COMPLETE/);
+    const reportIdMatch = stdout.match(/Report ID: ([A-Z]+-\d+)/);
+    const durationMatch = stdout.match(/Duration: ([\d.]+) minutes/);
     
-    if (publishResult.success) {
+    const success = !!successMatch;
+    const reportId = reportIdMatch ? reportIdMatch[1] : undefined;
+    const duration = durationMatch ? parseFloat(durationMatch[1]) * 60 * 1000 : 0;
+    
+    if (success) {
       console.log(`   ✅ Research complete for ${job.ticker} (${(duration / 1000).toFixed(1)}s)`);
-      
-      return {
-        ticker: job.ticker,
-        success: true,
-        reportId: publishResult.reportId,
-        duration
-      };
-    } else {
-      throw new Error(publishResult.error || 'Publish failed');
+    }
+    
+    return {
+      ticker: job.ticker,
+      success,
+      reportId,
+      duration
     }
     
   } catch (error: any) {
@@ -383,7 +388,7 @@ async function monitorCustomRequests(): Promise<void> {
   // Listen for new research triggers
   const unsubscribe = db.collection('ResearchTriggers')
     .where('status', '==', 'pending')
-    .onSnapshot(async (snapshot) => {
+    .onSnapshot(async (snapshot: any) => {
       if (snapshot.empty) {
         return;
       }
@@ -401,25 +406,28 @@ async function monitorCustomRequests(): Promise<void> {
         
         console.log(`\n🔬 Processing custom request for ${trigger.ticker}...`);
         
-        // Execute research pipeline
+        // Execute research pipeline - use doc.id as triggerId for unique filenames
         const job: ResearchJob = {
           ticker: trigger.ticker,
           type: trigger.assetType,
-          requestId: trigger.requestId,
+          requestId: doc.id,  // Use Firestore doc ID for unique filenames
           userId: trigger.userId
         };
         
         const result = await executeResearchPipeline(job);
         
-        // Update trigger with result
-        await doc.ref.update({
+        // Update trigger with result (only include defined values)
+        const updateData: any = {
           status: 'complete',
           success: result.success,
-          reportId: result.reportId,
-          error: result.error,
           duration: result.duration,
           completedAt: admin.firestore.FieldValue.serverTimestamp()
-        });
+        };
+        
+        if (result.reportId) updateData.reportId = result.reportId;
+        if (result.error) updateData.error = result.error;
+        
+        await doc.ref.update(updateData);
         
         if (result.success) {
           console.log(`   ✅ Custom request complete: ${trigger.ticker}`);

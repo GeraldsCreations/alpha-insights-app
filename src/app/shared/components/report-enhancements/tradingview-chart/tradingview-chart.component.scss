@@ -1,0 +1,78 @@
+.chart-card {
+  margin: 16px 0;
+
+  ion-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+
+    ion-icon {
+      font-size: 22px;
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+.chart-wrapper {
+  position: relative;
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+
+.tradingview-widget-container {
+  width: 100%;
+  min-height: 400px;
+}
+
+.chart-fallback {
+  display: none; /* Show only if widget fails */
+  width: 100%;
+}
+
+.chart-controls {
+  margin-bottom: 12px;
+
+  ion-segment {
+    --background: var(--ion-color-light);
+  }
+
+  ion-segment-button {
+    --indicator-color: var(--ion-color-primary);
+    --color-checked: var(--ion-color-primary);
+    font-size: 0.85rem;
+    min-height: 32px;
+  }
+}
+
+.chart-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(var(--ion-color-primary-rgb), 0.05);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+
+  ion-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: var(--ion-color-primary);
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+  .tradingview-widget-container {
+    min-height: 300px;
+  }
+
+  .chart-controls ion-segment-button {
+    font-size: 0.75rem;
+    padding: 0 8px;
+  }
+}

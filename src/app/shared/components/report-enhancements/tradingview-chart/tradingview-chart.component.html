@@ -1,0 +1,59 @@
+<ion-card class="chart-card">
+  <ion-card-header>
+    <ion-card-title>
+      <ion-icon name="analytics-outline"></ion-icon>
+      Live Price Chart
+    </ion-card-title>
+    <ion-card-subtitle>{{ ticker }} - Interactive TradingView Chart</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <div class="chart-wrapper">
+      <!-- TradingView Widget Container -->
+      <div 
+        #chartContainer 
+        id="tradingview-chart-{{ ticker }}" 
+        class="tradingview-widget-container"
+        [style.height]="height">
+      </div>
+
+      <!-- Fallback: Simple embed if widget doesn't load -->
+      <div class="chart-fallback">
+        <iframe
+          [src]="'https://s.tradingview.com/widgetembed/?frameElementId=tradingview_' + ticker + '&symbol=' + ticker + '&interval=' + interval + '&hidesidetoolbar=1&symboledit=0&saveimage=0&toolbarbg=f1f3f6&studies=%5B%5D&theme=light&style=1&timezone=Etc%2FUTC&withdateranges=1&studies_overrides=%7B%7D&overrides=%7B%7D&enabled_features=%5B%5D&disabled_features=%5B%5D&locale=en&utm_source=alpha-insights&utm_medium=widget' | safe"
+          frameborder="0"
+          allowtransparency="true"
+          scrolling="no"
+          [style.height]="height"
+          style="width: 100%; display: block;">
+        </iframe>
+      </div>
+    </div>
+
+    <!-- Chart Controls -->
+    <div class="chart-controls">
+      <ion-segment [(ngModel)]="interval" (ionChange)="loadChart()">
+        <ion-segment-button value="5">
+          <ion-label>5m</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="60">
+          <ion-label>1H</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="240">
+          <ion-label>4H</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="D">
+          <ion-label>1D</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="W">
+          <ion-label>1W</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+
+    <div class="chart-note">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>Use the chart tools to analyze price action and key technical levels</span>
+    </div>
+  </ion-card-content>
+</ion-card>

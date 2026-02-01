@@ -18,7 +18,7 @@ import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 })
 export class RequestAnalysisPage implements OnInit {
   ticker = '';
-  assetType: 'crypto' | 'stock' = 'stock';
+  assetType: 'crypto' | 'stock' | 'commodity' = 'stock';
   quotaStatus: QuotaStatus | null = null;
   loading = false;
   submitted = false;

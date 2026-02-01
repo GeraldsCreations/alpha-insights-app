@@ -1,0 +1,118 @@
+<ion-card class="verdict-timeline">
+  <ion-card-header>
+    <ion-card-title>
+      <ion-icon name="time-outline"></ion-icon>
+      Multi-Timeframe Verdict
+    </ion-card-title>
+    <ion-card-subtitle>Analysis across different time horizons</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <!-- Consensus Banner -->
+    <div class="consensus-banner" [class]="getOverallConsensus().color + '-bg'">
+      <div class="consensus-content">
+        <ion-icon name="pulse-outline"></ion-icon>
+        <div class="consensus-text">
+          <span class="consensus-label">Overall Consensus:</span>
+          <strong>{{ getOverallConsensus().strength }} {{ getOverallConsensus().verdict }}</strong>
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline Visualization -->
+    <div class="timeline-container">
+      <div 
+        *ngFor="let verdict of displayVerdicts; let i = index" 
+        class="timeline-item"
+        [class.first]="i === 0"
+        [class.last]="i === displayVerdicts.length - 1">
+        
+        <!-- Timeframe Label -->
+        <div class="timeframe-label" [class]="getTimeframeClass(verdict.timeframe)">
+          {{ verdict.timeframe }}
+        </div>
+
+        <!-- Verdict Circle -->
+        <div class="verdict-circle" [class]="getVerdictColor(verdict.verdict) + '-border'">
+          <div 
+            class="verdict-fill" 
+            [class]="getVerdictColor(verdict.verdict) + '-fill'"
+            [class.confident]="verdict.confidence >= 60">
+            <ion-icon [name]="getVerdictIcon(verdict.verdict)"></ion-icon>
+          </div>
+          
+          <!-- Confidence Ring -->
+          <svg class="confidence-ring" viewBox="0 0 36 36">
+            <path
+              class="ring-bg"
+              d="M18 2.0845
+                a 15.9155 15.9155 0 0 1 0 31.831
+                a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke-width="2"
+            />
+            <path
+              class="ring-progress"
+              [attr.stroke-dasharray]="verdict.confidence + ', 100'"
+              [class]="getVerdictColor(verdict.verdict) + '-stroke'"
+              d="M18 2.0845
+                a 15.9155 15.9155 0 0 1 0 31.831
+                a 15.9155 15.9155 0 0 1 0 -31.831"
+              fill="none"
+              stroke-width="2"
+            />
+          </svg>
+        </div>
+
+        <!-- Connector Line -->
+        <div 
+          *ngIf="i < displayVerdicts.length - 1" 
+          class="connector-line"
+          [class]="getConfidenceClass(verdict.confidence)">
+        </div>
+
+        <!-- Verdict Badge -->
+        <ion-badge 
+          [color]="getVerdictColor(verdict.verdict)" 
+          class="verdict-badge"
+          size="small">
+          {{ verdict.verdict }}
+        </ion-badge>
+
+        <!-- Confidence -->
+        <div class="confidence-label" *ngIf="verdict.confidence > 0">
+          {{ verdict.confidence }}%
+        </div>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div class="timeline-legend">
+      <div class="legend-item">
+        <div class="legend-color scalp"></div>
+        <span>Scalping (Minutes)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color intraday"></div>
+        <span>Intraday (Hours)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color swing"></div>
+        <span>Swing (Days)</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color position"></div>
+        <span>Position (Weeks+)</span>
+      </div>
+    </div>
+
+    <!-- Quick Info -->
+    <div class="timeline-info">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>
+        Circle size and color intensity reflect confidence level. 
+        The ring around each circle shows the confidence percentage.
+      </span>
+    </div>
+  </ion-card-content>
+</ion-card>

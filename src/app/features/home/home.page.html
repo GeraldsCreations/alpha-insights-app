@@ -1,9 +1,9 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>Alpha Insights</ion-title>
+    <ion-title>Latest Reports</ion-title>
     <ion-buttons slot="end">
-      <ion-button routerLink="/profile">
-        <ion-icon slot="icon-only" name="person-circle"></ion-icon>
+      <ion-button fill="clear">
+        <ion-icon slot="icon-only" name="notifications-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -12,7 +12,7 @@
   <ion-toolbar>
     <ion-segment [(ngModel)]="filterSegment" (ionChange)="onFilterChange()">
       <ion-segment-button value="all">
-        <ion-label>All</ion-label>
+        <ion-label>All Markets</ion-label>
       </ion-segment-button>
       <ion-segment-button value="stock">
         <ion-label>Stocks</ion-label>
@@ -20,19 +20,24 @@
       <ion-segment-button value="crypto">
         <ion-label>Crypto</ion-label>
       </ion-segment-button>
+      <ion-segment-button value="commodity">
+        <ion-label>Commodities</ion-label>
+      </ion-segment-button>
     </ion-segment>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content>
   <!-- Offline Banner -->
-  <ion-item *ngIf="isOffline" color="warning" lines="none">
-    <ion-icon name="cloud-offline" slot="start"></ion-icon>
-    <ion-label>
-      <h3>Offline Mode</h3>
-      <p>Some features may be limited</p>
-    </ion-label>
-  </ion-item>
+  <div *ngIf="isOffline" class="offline-banner">
+    <ion-item color="warning" lines="none">
+      <ion-icon name="cloud-offline" slot="start"></ion-icon>
+      <ion-label>
+        <h3>Offline Mode</h3>
+        <p>Some features may be limited</p>
+      </ion-label>
+    </ion-item>
+  </div>
 
   <!-- Pull to Refresh -->
   <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
@@ -41,16 +46,16 @@
 
   <!-- Loading State -->
   <div *ngIf="isLoading" class="loading-container">
-    <ion-spinner name="crescent"></ion-spinner>
+    <ion-spinner name="crescent" color="primary"></ion-spinner>
     <p>Loading analysis reports...</p>
   </div>
 
   <!-- Error State -->
   <div *ngIf="!isLoading && errorMessage && posts.length === 0" class="empty-state">
     <ion-icon name="alert-circle" color="danger"></ion-icon>
-    <h2>Unable to Load Posts</h2>
+    <h2>Unable to Load Reports</h2>
     <p>{{ errorMessage }}</p>
-    <ion-button (click)="loadPosts()" fill="outline">
+    <ion-button (click)="loadPosts()" fill="outline" color="primary">
       <ion-icon name="refresh" slot="start"></ion-icon>
       Try Again
     </ion-button>
@@ -61,6 +66,10 @@
     <ion-icon name="document-text-outline" color="medium"></ion-icon>
     <h2>No Analysis Reports Yet</h2>
     <p>Check back soon for professional trading insights!</p>
+    <ion-button routerLink="/request-analysis" fill="solid" color="primary">
+      <ion-icon name="add" slot="start"></ion-icon>
+      Request Analysis
+    </ion-button>
   </div>
 
   <!-- Posts Feed -->
@@ -70,7 +79,7 @@
       <ion-card-header>
         <div class="card-title-row">
           <div class="ticker-section">
-            <ion-icon [name]="getAssetIcon(post.assetType)" color="primary"></ion-icon>
+            <ion-icon [name]="getAssetIcon(post.assetType)"></ion-icon>
             <h2 class="ticker">{{ post.ticker }}</h2>
             <ion-badge [color]="getRecommendationColor(post.recommendation)">
               {{ post.recommendation }}
@@ -78,10 +87,6 @@
           </div>
           
           <div class="action-buttons">
-            <app-watchlist-button 
-              [ticker]="post.ticker" 
-              [showToast]="false">
-            </app-watchlist-button>
             <app-bookmark-button 
               [postId]="post.id" 
               [showToast]="false">
@@ -112,7 +117,7 @@
           </div>
           
           <div class="metric">
-            <span class="label">R:R</span>
+            <span class="label">Risk:Reward</span>
             <span class="value rr-value" 
                   [class.good]="post.riskRewardRatio >= 3"
                   [class.ok]="post.riskRewardRatio >= 2 && post.riskRewardRatio < 3"
@@ -125,22 +130,22 @@
         <!-- Trade Setup -->
         <div class="trade-setup">
           <div class="price-row">
-            <span class="price-label">Entry:</span>
+            <span class="price-label">Entry</span>
             <span class="price-value">${{ post.entry.toFixed(2) }}</span>
           </div>
           <div class="price-row">
-            <span class="price-label">Stop:</span>
+            <span class="price-label">Stop Loss</span>
             <span class="price-value stop">${{ post.stop.toFixed(2) }}</span>
           </div>
           <div class="price-row">
-            <span class="price-label">Target:</span>
+            <span class="price-label">Target</span>
             <span class="price-value target">${{ post.target.toFixed(2) }}</span>
           </div>
         </div>
 
         <!-- Preview Text -->
-        <p class="preview-text">
-          {{ post.content?.technicalAnalysis?.substring(0, 150) }}...
+        <p class="preview-text" *ngIf="post.content?.technicalAnalysis">
+          {{ post.content.technicalAnalysis.substring(0, 120) }}...
         </p>
 
         <!-- Footer Stats -->
@@ -163,8 +168,8 @@
 
   <!-- Load More (if needed) -->
   <div *ngIf="posts.length >= 50" class="load-more-container">
-    <ion-button expand="block" fill="outline">
-      Load More
+    <ion-button expand="block" fill="outline" color="primary">
+      Load More Reports
     </ion-button>
   </div>
 

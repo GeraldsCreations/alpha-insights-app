@@ -1,12 +1,6 @@
 /*
- * App Global CSS
- * ----------------------------------------------------------------------------
- * Put style rules here that you want to apply globally. These styles are for
- * the entire app and not just one component. Additionally, this file can be
- * used as an entry point to import other CSS/Sass files to be included in the
- * output CSS.
- * For more information on global stylesheets, visit the documentation:
- * https://ionicframework.com/docs/layout/global-stylesheets
+ * Alpha Insights - Global Styles
+ * Enterprise-grade professional design system
  */
 
 /* Core CSS required for Ionic components to work properly */
@@ -18,20 +12,555 @@
 @import "@ionic/angular/css/typography.css";
 @import "@ionic/angular/css/display.css";
 
-/* Optional CSS utils that can be commented out */
+/* Optional CSS utils */
 @import "@ionic/angular/css/padding.css";
 @import "@ionic/angular/css/float-elements.css";
 @import "@ionic/angular/css/text-alignment.css";
 @import "@ionic/angular/css/text-transformation.css";
 @import "@ionic/angular/css/flex-utils.css";
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+/* Theme Variables */
+@import "./theme/variables.scss";
 
-/* @import "@ionic/angular/css/palettes/dark.always.css"; */
-/* @import "@ionic/angular/css/palettes/dark.class.css"; */
-@import "@ionic/angular/css/palettes/dark.system.css";
+/* Google Fonts - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+// =============================================================================
+// GLOBAL RESETS & BASE STYLES
+// =============================================================================
+
+* {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--ai-font-family);
+  font-size: var(--ai-text-base);
+  line-height: var(--ai-line-height-relaxed);
+  color: var(--ai-text-primary);
+  background: var(--ai-bg-secondary);
+}
+
+// =============================================================================
+// TYPOGRAPHY SYSTEM
+// =============================================================================
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: var(--ai-font-weight-bold);
+  line-height: var(--ai-line-height-tight);
+  color: var(--ai-text-primary);
+  margin: 0;
+}
+
+h1 { font-size: var(--ai-text-4xl); }
+h2 { font-size: var(--ai-text-3xl); }
+h3 { font-size: var(--ai-text-2xl); }
+h4 { font-size: var(--ai-text-xl); }
+h5 { font-size: var(--ai-text-lg); }
+h6 { font-size: var(--ai-text-base); font-weight: var(--ai-font-weight-semibold); }
+
+p {
+  margin: 0 0 var(--ai-space-2) 0;
+  line-height: var(--ai-line-height-relaxed);
+}
+
+.text-primary { color: var(--ai-text-primary); }
+.text-secondary { color: var(--ai-text-secondary); }
+.text-tertiary { color: var(--ai-text-tertiary); }
+
+.font-medium { font-weight: var(--ai-font-weight-medium); }
+.font-semibold { font-weight: var(--ai-font-weight-semibold); }
+.font-bold { font-weight: var(--ai-font-weight-bold); }
+
+// =============================================================================
+// LAYOUT UTILITIES
+// =============================================================================
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 0 var(--ai-space-2);
+  
+  @media (min-width: $breakpoint-tablet) {
+    padding: 0 var(--ai-space-4);
+  }
+}
+
+.section {
+  padding: var(--ai-space-6) 0;
+  
+  @media (min-width: $breakpoint-tablet) {
+    padding: var(--ai-space-8) 0;
+  }
+}
+
+// =============================================================================
+// CARD SYSTEM
+// =============================================================================
+
+.card {
+  background: var(--ai-surface);
+  border-radius: var(--ai-radius-md);
+  box-shadow: var(--ai-shadow-sm);
+  border: 1px solid var(--ai-border-light);
+  overflow: hidden;
+  transition: all var(--ai-transition-base);
+  
+  &:hover {
+    box-shadow: var(--ai-shadow-md);
+    transform: translateY(-1px);
+  }
+  
+  &-header {
+    padding: var(--ai-space-3);
+    border-bottom: 1px solid var(--ai-border);
+  }
+  
+  &-body {
+    padding: var(--ai-space-3);
+  }
+  
+  &-footer {
+    padding: var(--ai-space-3);
+    border-top: 1px solid var(--ai-border);
+    background: var(--ai-bg-secondary);
+  }
+}
+
+// =============================================================================
+// BUTTON SYSTEM
+// =============================================================================
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
+  font-size: var(--ai-text-base);
+  font-weight: var(--ai-font-weight-medium);
+  border-radius: var(--ai-radius-md);
+  border: none;
+  cursor: pointer;
+  transition: all var(--ai-transition-fast);
+  text-decoration: none;
+  gap: var(--ai-space-1);
+  
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  // Primary Button
+  &-primary {
+    background: var(--ai-primary);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background: var(--ai-primary-hover);
+      box-shadow: var(--ai-shadow-md);
+    }
+    
+    &:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+  }
+  
+  // Secondary Button
+  &-secondary {
+    background: var(--ai-bg-secondary);
+    color: var(--ai-text-primary);
+    border: 1px solid var(--ai-border);
+    
+    &:hover:not(:disabled) {
+      background: var(--ai-bg-tertiary);
+      border-color: var(--ai-border-dark);
+    }
+  }
+  
+  // Ghost Button
+  &-ghost {
+    background: transparent;
+    color: var(--ai-text-secondary);
+    
+    &:hover:not(:disabled) {
+      background: var(--ai-bg-secondary);
+      color: var(--ai-text-primary);
+    }
+  }
+  
+  // Danger Button
+  &-danger {
+    background: var(--ai-danger);
+    color: white;
+    
+    &:hover:not(:disabled) {
+      background: var(--ai-danger-dark);
+    }
+  }
+  
+  // Sizes
+  &-sm {
+    padding: 6px 12px;
+    font-size: var(--ai-text-sm);
+  }
+  
+  &-lg {
+    padding: 14px 28px;
+    font-size: var(--ai-text-lg);
+  }
+}
+
+// =============================================================================
+// FORM INPUTS
+// =============================================================================
+
+.input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: var(--ai-text-base);
+  font-family: var(--ai-font-family);
+  color: var(--ai-text-primary);
+  background: var(--ai-surface);
+  border: 1px solid var(--ai-border);
+  border-radius: var(--ai-radius-md);
+  transition: all var(--ai-transition-fast);
+  
+  &:focus {
+    outline: none;
+    border-color: var(--ai-primary);
+    box-shadow: 0 0 0 3px rgba(var(--ai-primary-rgb), 0.1);
+  }
+  
+  &::placeholder {
+    color: var(--ai-text-tertiary);
+  }
+  
+  &:disabled {
+    background: var(--ai-bg-secondary);
+    cursor: not-allowed;
+  }
+}
+
+.label {
+  display: block;
+  margin-bottom: var(--ai-space-1);
+  font-size: var(--ai-text-sm);
+  font-weight: var(--ai-font-weight-medium);
+  color: var(--ai-text-primary);
+}
+
+// =============================================================================
+// BADGES & TAGS
+// =============================================================================
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  font-size: var(--ai-text-xs);
+  font-weight: var(--ai-font-weight-semibold);
+  border-radius: var(--ai-radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &-success {
+    background: var(--ai-success-bg);
+    color: var(--ai-success-dark);
+  }
+  
+  &-warning {
+    background: var(--ai-warning-bg);
+    color: var(--ai-warning-dark);
+  }
+  
+  &-danger {
+    background: var(--ai-danger-bg);
+    color: var(--ai-danger-dark);
+  }
+  
+  &-info {
+    background: var(--ai-info-bg);
+    color: var(--ai-info-dark);
+  }
+  
+  &-neutral {
+    background: var(--ai-bg-tertiary);
+    color: var(--ai-text-secondary);
+  }
+}
+
+// =============================================================================
+// TRADING-SPECIFIC COMPONENTS
+// =============================================================================
+
+.ticker {
+  font-family: var(--ai-font-mono);
+  font-weight: var(--ai-font-weight-bold);
+  font-size: var(--ai-text-lg);
+  letter-spacing: 0.5px;
+}
+
+.price {
+  font-family: var(--ai-font-mono);
+  font-weight: var(--ai-font-weight-semibold);
+}
+
+.recommendation {
+  &-long {
+    color: var(--ai-long);
+  }
+  
+  &-short {
+    color: var(--ai-short);
+  }
+  
+  &-hold {
+    color: var(--ai-neutral);
+  }
+}
+
+// =============================================================================
+// LOADING & EMPTY STATES
+// =============================================================================
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ai-space-8) var(--ai-space-4);
+  text-align: center;
+  
+  ion-spinner {
+    margin-bottom: var(--ai-space-2);
+  }
+  
+  p {
+    color: var(--ai-text-secondary);
+    margin: 0;
+  }
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--ai-space-8) var(--ai-space-4);
+  text-align: center;
+  
+  ion-icon {
+    font-size: 64px;
+    margin-bottom: var(--ai-space-3);
+    opacity: 0.3;
+  }
+  
+  h2 {
+    margin-bottom: var(--ai-space-2);
+    font-size: var(--ai-text-xl);
+  }
+  
+  p {
+    color: var(--ai-text-secondary);
+    max-width: 400px;
+    margin-bottom: var(--ai-space-3);
+  }
+}
+
+// =============================================================================
+// IONIC COMPONENT OVERRIDES
+// =============================================================================
+
+ion-header {
+  box-shadow: var(--ai-shadow-sm);
+}
+
+ion-toolbar {
+  --background: var(--ai-surface);
+  --border-color: var(--ai-border);
+  --color: var(--ai-text-primary);
+  --padding-start: var(--ai-space-2);
+  --padding-end: var(--ai-space-2);
+  
+  @media (min-width: $breakpoint-tablet) {
+    --padding-start: var(--ai-space-4);
+    --padding-end: var(--ai-space-4);
+  }
+}
+
+ion-title {
+  font-weight: var(--ai-font-weight-bold);
+  font-size: var(--ai-text-xl);
+}
+
+ion-card {
+  margin: 0 0 var(--ai-space-2) 0;
+  box-shadow: var(--ai-shadow-sm);
+  border-radius: var(--ai-radius-md);
+  border: 1px solid var(--ai-border-light);
+  
+  &:hover {
+    box-shadow: var(--ai-shadow-md);
+  }
+}
+
+ion-button {
+  --border-radius: var(--ai-radius-md);
+  font-weight: var(--ai-font-weight-medium);
+  text-transform: none;
+}
+
+ion-segment {
+  --background: var(--ai-bg-secondary);
+  border-radius: var(--ai-radius-md);
+  padding: 4px;
+}
+
+ion-segment-button {
+  --indicator-color: var(--ai-surface);
+  --indicator-box-shadow: var(--ai-shadow-sm);
+  --color: var(--ai-text-secondary);
+  --color-checked: var(--ai-text-primary);
+  font-weight: var(--ai-font-weight-medium);
+  text-transform: none;
+  min-height: 36px;
+}
+
+ion-searchbar {
+  --background: var(--ai-surface);
+  --border-radius: var(--ai-radius-md);
+  --box-shadow: var(--ai-shadow-sm);
+  --icon-color: var(--ai-text-tertiary);
+  --placeholder-color: var(--ai-text-tertiary);
+  padding: var(--ai-space-2) 0;
+}
+
+ion-list {
+  background: transparent;
+  padding: 0;
+}
+
+ion-item {
+  --background: var(--ai-surface);
+  --border-color: var(--ai-border-light);
+  --padding-start: var(--ai-space-3);
+  --padding-end: var(--ai-space-3);
+  
+  &:hover {
+    --background: var(--ai-bg-secondary);
+  }
+}
+
+ion-badge {
+  --background: var(--ai-primary);
+  --color: white;
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  --padding-start: 10px;
+  --padding-end: 10px;
+  border-radius: var(--ai-radius-full);
+  font-weight: var(--ai-font-weight-semibold);
+  font-size: var(--ai-text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+ion-fab-button {
+  --background: var(--ai-primary);
+  --background-hover: var(--ai-primary-hover);
+  --box-shadow: var(--ai-shadow-lg);
+  
+  &:hover {
+    --box-shadow: var(--ai-shadow-xl);
+  }
+}
+
+// =============================================================================
+// UTILITY CLASSES
+// =============================================================================
+
+.d-flex { display: flex; }
+.d-grid { display: grid; }
+.d-none { display: none; }
+.d-block { display: block; }
+
+.align-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.flex-column { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.gap-1 { gap: var(--ai-space-1); }
+.gap-2 { gap: var(--ai-space-2); }
+.gap-3 { gap: var(--ai-space-3); }
+.gap-4 { gap: var(--ai-space-4); }
+
+.mt-1 { margin-top: var(--ai-space-1); }
+.mt-2 { margin-top: var(--ai-space-2); }
+.mt-3 { margin-top: var(--ai-space-3); }
+.mt-4 { margin-top: var(--ai-space-4); }
+
+.mb-1 { margin-bottom: var(--ai-space-1); }
+.mb-2 { margin-bottom: var(--ai-space-2); }
+.mb-3 { margin-bottom: var(--ai-space-3); }
+.mb-4 { margin-bottom: var(--ai-space-4); }
+
+.p-1 { padding: var(--ai-space-1); }
+.p-2 { padding: var(--ai-space-2); }
+.p-3 { padding: var(--ai-space-3); }
+.p-4 { padding: var(--ai-space-4); }
+
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.w-full { width: 100%; }
+.h-full { height: 100%; }
+
+@media (min-width: $breakpoint-tablet) {
+  .d-md-none { display: none; }
+  .d-md-block { display: block; }
+  .d-md-flex { display: flex; }
+}
+
+// =============================================================================
+// ANIMATIONS
+// =============================================================================
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--ai-transition-base) ease-out;
+}
+
+// =============================================================================
+// SCROLLBAR STYLING
+// =============================================================================
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--ai-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--ai-border-dark);
+  border-radius: var(--ai-radius-full);
+  
+  &:hover {
+    background: var(--ai-text-tertiary);
+  }
+}

@@ -1,3 +1,7 @@
 <ion-app>
-  <ion-router-outlet></ion-router-outlet>
+  <app-shell *ngIf="showAppShell">
+    <ion-router-outlet></ion-router-outlet>
+  </app-shell>
+  
+  <ion-router-outlet *ngIf="!showAppShell"></ion-router-outlet>
 </ion-app>

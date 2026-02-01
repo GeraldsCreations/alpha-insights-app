@@ -1,2 +1,178 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+/**
+ * Alpha Insights - Enterprise Design System
+ * Professional, clean, Bloomberg/Robinhood-inspired theme
+ */
+
+// =============================================================================
+// COLOR PALETTE - Professional Business App
+// =============================================================================
+
+:root {
+  // Primary Colors - Professional Blue
+  --ai-primary: #2563eb;
+  --ai-primary-hover: #1d4ed8;
+  --ai-primary-light: #3b82f6;
+  --ai-primary-dark: #1e40af;
+  --ai-primary-rgb: 37, 99, 235;
+
+  // Background & Surface
+  --ai-bg-primary: #ffffff;
+  --ai-bg-secondary: #f8f9fa;
+  --ai-bg-tertiary: #f1f3f5;
+  --ai-surface: #ffffff;
+  --ai-surface-elevated: #ffffff;
+  
+  // Text Colors
+  --ai-text-primary: #1f2937;
+  --ai-text-secondary: #6b7280;
+  --ai-text-tertiary: #9ca3af;
+  --ai-text-inverse: #ffffff;
+  
+  // Borders & Dividers
+  --ai-border: #e5e7eb;
+  --ai-border-light: #f3f4f6;
+  --ai-border-dark: #d1d5db;
+  
+  // Semantic Colors
+  --ai-success: #10b981;
+  --ai-success-light: #34d399;
+  --ai-success-dark: #059669;
+  --ai-success-bg: #d1fae5;
+  
+  --ai-warning: #f59e0b;
+  --ai-warning-light: #fbbf24;
+  --ai-warning-dark: #d97706;
+  --ai-warning-bg: #fef3c7;
+  
+  --ai-danger: #ef4444;
+  --ai-danger-light: #f87171;
+  --ai-danger-dark: #dc2626;
+  --ai-danger-bg: #fee2e2;
+  
+  --ai-info: #3b82f6;
+  --ai-info-light: #60a5fa;
+  --ai-info-dark: #2563eb;
+  --ai-info-bg: #dbeafe;
+  
+  // Trading-specific Colors
+  --ai-long: #10b981;
+  --ai-short: #ef4444;
+  --ai-neutral: #6b7280;
+  
+  // Shadows - Subtle & Professional
+  --ai-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --ai-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --ai-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+  --ai-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  // Spacing Scale (8px grid)
+  --ai-space-1: 8px;
+  --ai-space-2: 16px;
+  --ai-space-3: 24px;
+  --ai-space-4: 32px;
+  --ai-space-5: 40px;
+  --ai-space-6: 48px;
+  --ai-space-8: 64px;
+  --ai-space-10: 80px;
+  --ai-space-12: 96px;
+  
+  // Border Radius
+  --ai-radius-sm: 4px;
+  --ai-radius-md: 8px;
+  --ai-radius-lg: 12px;
+  --ai-radius-xl: 16px;
+  --ai-radius-full: 9999px;
+  
+  // Typography Scale
+  --ai-font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --ai-font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+  
+  --ai-text-xs: 12px;
+  --ai-text-sm: 14px;
+  --ai-text-base: 16px;
+  --ai-text-lg: 18px;
+  --ai-text-xl: 20px;
+  --ai-text-2xl: 24px;
+  --ai-text-3xl: 30px;
+  --ai-text-4xl: 36px;
+  
+  --ai-line-height-tight: 1.25;
+  --ai-line-height-normal: 1.5;
+  --ai-line-height-relaxed: 1.6;
+  
+  --ai-font-weight-normal: 400;
+  --ai-font-weight-medium: 500;
+  --ai-font-weight-semibold: 600;
+  --ai-font-weight-bold: 700;
+  
+  // Z-Index Scale
+  --ai-z-dropdown: 1000;
+  --ai-z-sticky: 1020;
+  --ai-z-fixed: 1030;
+  --ai-z-modal-backdrop: 1040;
+  --ai-z-modal: 1050;
+  --ai-z-popover: 1060;
+  --ai-z-tooltip: 1070;
+  
+  // Navigation
+  --ai-sidebar-width: 240px;
+  --ai-sidebar-collapsed-width: 72px;
+  --ai-header-height: 64px;
+  --ai-mobile-nav-height: 64px;
+  
+  // Transitions
+  --ai-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --ai-transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --ai-transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// =============================================================================
+// IONIC VARIABLE OVERRIDES
+// =============================================================================
+
+:root {
+  // Override Ionic primary color
+  --ion-color-primary: var(--ai-primary);
+  --ion-color-primary-rgb: var(--ai-primary-rgb);
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-shade: var(--ai-primary-dark);
+  --ion-color-primary-tint: var(--ai-primary-light);
+  
+  // Override Ionic success color
+  --ion-color-success: var(--ai-success);
+  --ion-color-success-shade: var(--ai-success-dark);
+  --ion-color-success-tint: var(--ai-success-light);
+  
+  // Override Ionic warning color
+  --ion-color-warning: var(--ai-warning);
+  --ion-color-warning-shade: var(--ai-warning-dark);
+  --ion-color-warning-tint: var(--ai-warning-light);
+  
+  // Override Ionic danger color
+  --ion-color-danger: var(--ai-danger);
+  --ion-color-danger-shade: var(--ai-danger-dark);
+  --ion-color-danger-tint: var(--ai-danger-light);
+  
+  // Background colors
+  --ion-background-color: var(--ai-bg-primary);
+  --ion-text-color: var(--ai-text-primary);
+  
+  // Toolbar
+  --ion-toolbar-background: var(--ai-surface);
+  --ion-toolbar-border-color: var(--ai-border);
+  
+  // Card
+  --ion-card-background: var(--ai-surface);
+  
+  // Font
+  --ion-font-family: var(--ai-font-family);
+}
+
+// =============================================================================
+// RESPONSIVE BREAKPOINTS
+// =============================================================================
+
+$breakpoint-mobile: 768px;
+$breakpoint-tablet: 1024px;
+$breakpoint-desktop: 1280px;
+$breakpoint-wide: 1536px;

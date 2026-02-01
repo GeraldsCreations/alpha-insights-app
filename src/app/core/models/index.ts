@@ -9,7 +9,6 @@ export interface User {
   displayName: string;
   photoURL?: string;
   createdAt: Date;
-  watchlist: string[];  // Array of ticker symbols
   notificationPreferences: NotificationPreferences;
   fcmToken?: string;
   
@@ -21,9 +20,7 @@ export interface User {
 }
 
 export interface NotificationPreferences {
-  watchlistUpdates: boolean;
   highConfidence: boolean;  // 8+ confidence alerts
-  priceAlerts: boolean;
 }
 
 /**
@@ -69,32 +66,8 @@ export interface AnalysisContent {
   priceAnalysis?: string;  // Price analysis section
 }
 
-export type AssetType = 'crypto' | 'stock';
+export type AssetType = 'crypto' | 'stock' | 'commodity';
 export type RecommendationType = 'LONG' | 'SHORT' | 'NO_TRADE';
-
-/**
- * Price Alert Model
- */
-export interface PriceAlert {
-  id: string;
-  userId: string;
-  ticker: string;
-  alertType: AlertType;
-  targetPrice: number;
-  currentPrice: number;
-  postId: string;  // Reference to analysis post
-  triggered: boolean;
-  createdAt: Date;
-}
-
-export type AlertType = 'ENTRY' | 'STOP' | 'TARGET';
-
-export interface PriceAlertInput {
-  ticker: string;
-  alertType: AlertType;
-  targetPrice: number;
-  postId: string;
-}
 
 /**
  * Performance Tracking Model
@@ -167,7 +140,7 @@ export interface CustomReportRequest {
   id: string;
   userId: string;
   ticker: string;
-  assetType: 'crypto' | 'stock';
+  assetType: 'crypto' | 'stock' | 'commodity';
   status: 'pending' | 'processing' | 'complete' | 'failed';
   createdAt: Date;
   completedAt?: Date;
@@ -184,8 +157,7 @@ export interface NotificationPayload {
   data?: {
     postId?: string;
     ticker?: string;
-    alertId?: string;
-    type: 'NEW_POST' | 'WATCHLIST_UPDATE' | 'PRICE_ALERT' | 'HIGH_CONFIDENCE';
+    type: 'NEW_POST' | 'HIGH_CONFIDENCE';
   };
 }
 
@@ -303,7 +275,6 @@ export interface AnalysisDetailState {
   loading: boolean;
   error: string | null;
   isBookmarked: boolean;
-  isInWatchlist: boolean;
 }
 
 /**

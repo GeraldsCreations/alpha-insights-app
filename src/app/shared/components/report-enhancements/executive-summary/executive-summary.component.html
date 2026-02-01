@@ -1,0 +1,123 @@
+<ion-card class="executive-summary">
+  <ion-card-header>
+    <ion-card-title class="summary-title">
+      <ion-icon name="document-text-outline"></ion-icon>
+      Executive Summary
+    </ion-card-title>
+    <ion-card-subtitle>TL;DR - Quick Overview</ion-card-subtitle>
+  </ion-card-header>
+  
+  <ion-card-content>
+    <!-- Overall Verdict -->
+    <div class="verdict-section">
+      <div class="verdict-header">
+        <ion-badge [color]="getVerdictColor()" class="verdict-badge">
+          <ion-icon [name]="getVerdictIcon()"></ion-icon>
+          {{ overallVerdict }}
+        </ion-badge>
+        <div class="confidence-badge">
+          <span class="confidence-label">Confidence:</span>
+          <ion-badge [color]="getConfidenceColor()" size="small">
+            {{ confidenceLabel }} ({{ confidenceLevel }}/10)
+          </ion-badge>
+        </div>
+      </div>
+      
+      <!-- Confidence Bar -->
+      <div class="confidence-bar-container">
+        <div class="confidence-bar">
+          <div 
+            class="confidence-bar-fill" 
+            [style.width.%]="confidenceLevel * 10"
+            [class.high]="confidenceLevel >= 8"
+            [class.medium]="confidenceLevel >= 5 && confidenceLevel < 8"
+            [class.low]="confidenceLevel < 5">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="key-metrics">
+      <div class="metric-row">
+        <div class="metric">
+          <span class="metric-label">Entry Price</span>
+          <span class="metric-value entry">${{ entryPrice.toFixed(2) }}</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Target</span>
+          <span class="metric-value target">${{ priceTarget.toFixed(2) }}</span>
+          <span class="metric-change profit">+{{ potentialGain.toFixed(1) }}%</span>
+        </div>
+      </div>
+      
+      <div class="metric-row">
+        <div class="metric">
+          <span class="metric-label">Stop Loss</span>
+          <span class="metric-value stop">${{ stopLoss.toFixed(2) }}</span>
+          <span class="metric-change loss">-{{ potentialLoss.toFixed(1) }}%</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Risk/Reward</span>
+          <span class="metric-value rr" [class.excellent]="riskReward >= 3">
+            1:{{ riskReward.toFixed(2) }}
+          </span>
+          <span class="metric-assessment" [class.excellent]="riskReward >= 3">
+            {{ riskRewardAssessment }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key Insights -->
+    <div class="key-insights">
+      <h3 class="insights-header">
+        <ion-icon name="bulb-outline"></ion-icon>
+        Key Insights
+      </h3>
+      <ul class="insights-list">
+        <li *ngFor="let insight of keyInsights" class="insight-item">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          {{ insight }}
+        </li>
+      </ul>
+    </div>
+
+    <!-- Risk/Reward Summary -->
+    <div class="risk-reward-summary">
+      <div class="summary-box risk">
+        <div class="summary-header">
+          <ion-icon name="warning-outline"></ion-icon>
+          <span>Max Risk</span>
+        </div>
+        <div class="summary-value">{{ potentialLoss.toFixed(1) }}%</div>
+        <div class="summary-detail">${{ (entryPrice - stopLoss).toFixed(2) }} per share</div>
+      </div>
+      
+      <div class="vs-divider">vs</div>
+      
+      <div class="summary-box reward">
+        <div class="summary-header">
+          <ion-icon name="trophy-outline"></ion-icon>
+          <span>Potential Reward</span>
+        </div>
+        <div class="summary-value">+{{ potentialGain.toFixed(1) }}%</div>
+        <div class="summary-detail">${{ (priceTarget - entryPrice).toFixed(2) }} per share</div>
+      </div>
+    </div>
+
+    <!-- Quick Action -->
+    <div class="quick-verdict">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span *ngIf="overallVerdict === 'LONG'">
+        This analysis suggests a <strong>bullish opportunity</strong> with a {{ riskRewardAssessment.toLowerCase() }} risk/reward profile.
+      </span>
+      <span *ngIf="overallVerdict === 'SHORT'">
+        This analysis suggests a <strong>bearish opportunity</strong> with a {{ riskRewardAssessment.toLowerCase() }} risk/reward profile.
+      </span>
+      <span *ngIf="overallVerdict === 'NO_TRADE'">
+        <strong>No clear trade setup</strong> at current price levels. Wait for better entry conditions.
+      </span>
+    </div>
+  </ion-card-content>
+</ion-card>

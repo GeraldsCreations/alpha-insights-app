@@ -8,9 +8,9 @@ import { environment } from '../../../environments/environment';
  * Search result interface - unified format for stocks and crypto
  */
 export interface SearchResult {
-  symbol: string;        // AAPL, BTC
-  name: string;          // Apple Inc., Bitcoin
-  type: 'stock' | 'crypto';
+  symbol: string;        // AAPL, BTC, GOLD
+  name: string;          // Apple Inc., Bitcoin, Gold
+  type: 'stock' | 'crypto' | 'commodity';
   logo?: string;         // URL
   price?: number;        // Optional current price
   marketCap?: number;    // Optional
@@ -79,14 +79,15 @@ export class TickerSearchService {
       return of(cached);
     }
     
-    // Search both APIs in parallel
+    // Search across all asset types in parallel
     return forkJoin({
       stocks: this.searchStocks(normalizedQuery),
-      crypto: this.searchCrypto(normalizedQuery)
+      crypto: this.searchCrypto(normalizedQuery),
+      commodities: this.searchCommodities(normalizedQuery)
     }).pipe(
-      map(({ stocks, crypto }) => {
-        // Combine results, crypto first for popular assets
-        const combined = [...crypto, ...stocks];
+      map(({ stocks, crypto, commodities }) => {
+        // Combine results: commodities, crypto, then stocks
+        const combined = [...commodities, ...crypto, ...stocks];
         
         // Cache results
         this.saveToCache(normalizedQuery, combined);
@@ -174,6 +175,37 @@ export class TickerSearchService {
   }
   
   /**
+   * Search commodities using a predefined list
+   * (Could be enhanced with an API in the future)
+   */
+  private searchCommodities(query: string): Observable<SearchResult[]> {
+    const commodities: SearchResult[] = [
+      { symbol: 'GOLD', name: 'Gold', type: 'commodity' },
+      { symbol: 'SILVER', name: 'Silver', type: 'commodity' },
+      { symbol: 'OIL', name: 'Crude Oil', type: 'commodity' },
+      { symbol: 'BRENT', name: 'Brent Crude Oil', type: 'commodity' },
+      { symbol: 'NATGAS', name: 'Natural Gas', type: 'commodity' },
+      { symbol: 'COPPER', name: 'Copper', type: 'commodity' },
+      { symbol: 'PLATINUM', name: 'Platinum', type: 'commodity' },
+      { symbol: 'PALLADIUM', name: 'Palladium', type: 'commodity' },
+      { symbol: 'WHEAT', name: 'Wheat', type: 'commodity' },
+      { symbol: 'CORN', name: 'Corn', type: 'commodity' },
+      { symbol: 'SOYBEANS', name: 'Soybeans', type: 'commodity' },
+      { symbol: 'COFFEE', name: 'Coffee', type: 'commodity' },
+      { symbol: 'SUGAR', name: 'Sugar', type: 'commodity' },
+      { symbol: 'COTTON', name: 'Cotton', type: 'commodity' }
+    ];
+    
+    // Filter commodities by query match (symbol or name)
+    const results = commodities.filter(c => 
+      c.symbol.toLowerCase().includes(query) || 
+      c.name.toLowerCase().includes(query)
+    );
+    
+    return of(results);
+  }
+
+  /**
    * Get popular/trending tickers for pre-population
    */
   getPopularTickers(): SearchResult[] {
@@ -190,7 +222,12 @@ export class TickerSearchService {
       { symbol: 'BTC', name: 'Bitcoin', type: 'crypto' },
       { symbol: 'ETH', name: 'Ethereum', type: 'crypto' },
       { symbol: 'SOL', name: 'Solana', type: 'crypto' },
-      { symbol: 'BNB', name: 'Binance Coin', type: 'crypto' }
+      { symbol: 'BNB', name: 'Binance Coin', type: 'crypto' },
+      
+      // Popular commodities
+      { symbol: 'GOLD', name: 'Gold', type: 'commodity' },
+      { symbol: 'OIL', name: 'Crude Oil', type: 'commodity' },
+      { symbol: 'SILVER', name: 'Silver', type: 'commodity' }
     ];
   }
   

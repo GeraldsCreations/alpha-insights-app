@@ -1,0 +1,122 @@
+<ion-card class="price-levels">
+  <ion-card-header>
+    <ion-card-title>
+      <ion-icon name="bar-chart-outline"></ion-icon>
+      Key Price Levels
+    </ion-card-title>
+    <ion-card-subtitle>Support, Resistance & Trade Levels</ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <!-- Price Ladder Visualization -->
+    <div class="price-ladder">
+      <!-- Vertical Scale -->
+      <div class="price-scale">
+        <div class="scale-label top">${{ maxPrice.toFixed(2) }}</div>
+        <div class="scale-label middle">${{ ((maxPrice + minPrice) / 2).toFixed(2) }}</div>
+        <div class="scale-label bottom">${{ minPrice.toFixed(2) }}</div>
+      </div>
+
+      <!-- Ladder Container -->
+      <div class="ladder-container">
+        <!-- Background Gradient Zones -->
+        <div class="profit-zone" [style.height.%]="getLevelPosition(target) - getLevelPosition(entry)"></div>
+        <div class="risk-zone" [style.height.%]="getLevelPosition(entry) - getLevelPosition(stop)"></div>
+
+        <!-- Price Levels -->
+        <div
+          *ngFor="let level of levels"
+          class="price-level"
+          [class]="level.type + '-level'"
+          [style.bottom.%]="getLevelPosition(level.price)">
+          
+          <div class="level-line"></div>
+          
+          <div class="level-marker">
+            <ion-icon [name]="getLevelIcon(level.type)" [color]="getLevelColor(level.type)"></ion-icon>
+          </div>
+
+          <div class="level-info">
+            <div class="level-price">${{ level.price.toFixed(2) }}</div>
+            <div class="level-label">{{ level.label }}</div>
+            <div class="level-description" *ngIf="level.description">
+              {{ level.description }}
+            </div>
+          </div>
+
+          <ion-badge [color]="getLevelColor(level.type)" class="level-badge" size="small">
+            {{ level.type.toUpperCase() }}
+          </ion-badge>
+        </div>
+      </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="level-stats">
+      <div class="stat-card profit-card">
+        <div class="stat-icon">
+          <ion-icon name="arrow-up" color="success"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Profit Potential</div>
+          <div class="stat-value success">+{{ potentialGain.toFixed(2) }}%</div>
+          <div class="stat-detail">${{ (target - entry).toFixed(2) }} upside</div>
+        </div>
+      </div>
+
+      <div class="stat-divider">
+        <ion-icon name="swap-horizontal-outline"></ion-icon>
+      </div>
+
+      <div class="stat-card risk-card">
+        <div class="stat-icon">
+          <ion-icon name="arrow-down" color="danger"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Risk Exposure</div>
+          <div class="stat-value danger">-{{ potentialLoss.toFixed(2) }}%</div>
+          <div class="stat-detail">${{ (entry - stop).toFixed(2) }} downside</div>
+        </div>
+      </div>
+
+      <div class="stat-divider">
+        <ion-icon name="swap-horizontal-outline"></ion-icon>
+      </div>
+
+      <div class="stat-card rr-card">
+        <div class="stat-icon">
+          <ion-icon name="analytics" color="tertiary"></ion-icon>
+        </div>
+        <div class="stat-content">
+          <div class="stat-label">Risk/Reward</div>
+          <div class="stat-value tertiary">1:{{ riskReward.toFixed(2) }}</div>
+          <div class="stat-detail" [class.excellent]="riskReward >= 3">
+            {{ riskReward >= 3 ? 'Excellent' : riskReward >= 2 ? 'Good' : 'Fair' }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Current Price Indicator -->
+    <div class="current-price-info" *ngIf="currentPrice">
+      <ion-icon name="pulse-outline"></ion-icon>
+      <div class="price-status">
+        <span>Current price: <strong>${{ currentPrice.toFixed(2) }}</strong></span>
+        <span 
+          class="price-change"
+          [class.positive]="getCurrentPricePercentage() > 0"
+          [class.negative]="getCurrentPricePercentage() < 0">
+          {{ getCurrentPricePercentage() > 0 ? '+' : '' }}{{ getCurrentPricePercentage().toFixed(2) }}% from entry
+        </span>
+      </div>
+    </div>
+
+    <!-- Info Note -->
+    <div class="levels-note">
+      <ion-icon name="information-circle-outline"></ion-icon>
+      <span>
+        Price levels are based on technical analysis. Always use proper risk management and position sizing.
+      </span>
+    </div>
+  </ion-card-content>
+</ion-card>

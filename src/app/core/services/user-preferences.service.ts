@@ -44,9 +44,7 @@ export class UserPreferencesService {
     return {
       theme: 'auto',
       notifications: {
-        watchlistUpdates: true,
-        highConfidence: true,
-        priceAlerts: true
+        highConfidence: true
       },
       defaultAssetFilter: undefined
     };
@@ -125,9 +123,7 @@ export class UserPreferencesService {
         return {
           theme: data['theme'] || 'auto',
           notifications: {
-            watchlistUpdates: notificationPrefs['watchlistUpdates'] ?? true,
-            highConfidence: notificationPrefs['highConfidence'] ?? true,
-            priceAlerts: notificationPrefs['priceAlerts'] ?? true
+            highConfidence: notificationPrefs['highConfidence'] ?? true
           },
           defaultAssetFilter: data['defaultAssetFilter']
         } as UserPreferences;
@@ -162,7 +158,7 @@ export class UserPreferencesService {
   /**
    * Update default asset filter
    */
-  updateDefaultAssetFilter(assetType: 'crypto' | 'stock' | undefined): Observable<void> {
+  updateDefaultAssetFilter(assetType: 'crypto' | 'stock' | 'commodity' | undefined): Observable<void> {
     return this.updatePreferences({ defaultAssetFilter: assetType });
   }
 

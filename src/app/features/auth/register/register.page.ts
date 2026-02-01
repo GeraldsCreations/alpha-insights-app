@@ -88,11 +88,8 @@ export class RegisterPage implements OnInit {
           displayName: displayName,
           photoURL: null,
           createdAt: new Date(),
-          watchlist: [],
           notificationPreferences: {
-            watchlistUpdates: true,
-            highConfidence: true,
-            priceAlerts: true
+            highConfidence: true
           }
         });
       }

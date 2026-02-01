@@ -1,0 +1,448 @@
+.price-levels {
+  margin: 16px 0;
+
+  ion-card-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+
+    ion-icon {
+      font-size: 22px;
+      color: var(--ion-color-primary);
+    }
+  }
+}
+
+/* Price Ladder */
+.price-ladder {
+  display: flex;
+  gap: 16px;
+  min-height: 400px;
+  margin-bottom: 24px;
+  position: relative;
+}
+
+.price-scale {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 70px;
+  padding: 20px 0;
+}
+
+.scale-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--ion-color-dark);
+  text-align: right;
+  padding: 4px 8px;
+  background: var(--ion-color-light);
+  border-radius: 6px;
+
+  &.top {
+    color: var(--ion-color-success);
+  }
+
+  &.bottom {
+    color: var(--ion-color-danger);
+  }
+}
+
+.ladder-container {
+  flex: 1;
+  position: relative;
+  background: linear-gradient(to bottom, 
+    rgba(var(--ion-color-light-rgb), 0.3),
+    rgba(var(--ion-color-light-rgb), 0.1)
+  );
+  border: 2px solid var(--ion-color-light-shade);
+  border-radius: 12px;
+  padding: 20px;
+}
+
+/* Background Zones */
+.profit-zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 50%; /* Will be adjusted dynamically */
+  background: linear-gradient(to top,
+    rgba(var(--ion-color-success-rgb), 0.05),
+    rgba(var(--ion-color-success-rgb), 0.15)
+  );
+  border-top: 2px dashed rgba(var(--ion-color-success-rgb), 0.3);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.risk-zone {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(to bottom,
+    rgba(var(--ion-color-danger-rgb), 0.05),
+    rgba(var(--ion-color-danger-rgb), 0.15)
+  );
+  border-bottom: 2px dashed rgba(var(--ion-color-danger-rgb), 0.3);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Price Levels */
+.price-level {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 1;
+  transform: translateY(50%);
+}
+
+.level-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 0;
+}
+
+.target-level .level-line {
+  background: linear-gradient(90deg, 
+    transparent,
+    var(--ion-color-success),
+    transparent
+  );
+  box-shadow: 0 0 8px rgba(var(--ion-color-success-rgb), 0.4);
+}
+
+.entry-level .level-line {
+  background: linear-gradient(90deg,
+    transparent,
+    var(--ion-color-primary),
+    transparent
+  );
+  box-shadow: 0 0 8px rgba(var(--ion-color-primary-rgb), 0.4);
+}
+
+.stop-level .level-line {
+  background: linear-gradient(90deg,
+    transparent,
+    var(--ion-color-danger),
+    transparent
+  );
+  box-shadow: 0 0 8px rgba(var(--ion-color-danger-rgb), 0.4);
+}
+
+.support-level .level-line,
+.resistance-level .level-line {
+  background: linear-gradient(90deg,
+    transparent,
+    var(--ion-color-warning),
+    transparent
+  );
+}
+
+.level-marker {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+
+  .target-level & {
+    border-color: var(--ion-color-success);
+  }
+
+  .entry-level & {
+    border-color: var(--ion-color-primary);
+  }
+
+  .stop-level & {
+    border-color: var(--ion-color-danger);
+  }
+
+  .support-level &,
+  .resistance-level & {
+    border-color: var(--ion-color-warning);
+  }
+
+  ion-icon {
+    font-size: 22px;
+  }
+}
+
+.level-info {
+  flex: 1;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border-left: 4px solid;
+  z-index: 1;
+
+  .target-level & {
+    border-color: var(--ion-color-success);
+  }
+
+  .entry-level & {
+    border-color: var(--ion-color-primary);
+  }
+
+  .stop-level & {
+    border-color: var(--ion-color-danger);
+  }
+
+  .support-level &,
+  .resistance-level & {
+    border-color: var(--ion-color-warning);
+  }
+}
+
+.level-price {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--ion-color-dark);
+}
+
+.level-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--ion-color-medium);
+  margin-top: 2px;
+}
+
+.level-description {
+  font-size: 0.7rem;
+  color: var(--ion-color-medium);
+  margin-top: 2px;
+}
+
+.level-badge {
+  display: none; /* Hidden on desktop, show on mobile */
+}
+
+/* Statistics */
+.level-stats {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.stat-card {
+  flex: 1;
+  display: flex;
+  gap: 10px;
+  padding: 14px;
+  background: white;
+  border-radius: 10px;
+  border: 2px solid;
+  min-width: 140px;
+
+  &.profit-card {
+    border-color: var(--ion-color-success);
+    background: linear-gradient(135deg, 
+      rgba(var(--ion-color-success-rgb), 0.05),
+      white
+    );
+  }
+
+  &.risk-card {
+    border-color: var(--ion-color-danger);
+    background: linear-gradient(135deg,
+      rgba(var(--ion-color-danger-rgb), 0.05),
+      white
+    );
+  }
+
+  &.rr-card {
+    border-color: var(--ion-color-tertiary);
+    background: linear-gradient(135deg,
+      rgba(var(--ion-color-tertiary-rgb), 0.05),
+      white
+    );
+  }
+}
+
+.stat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  ion-icon {
+    font-size: 28px;
+  }
+}
+
+.stat-content {
+  flex: 1;
+}
+
+.stat-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ion-color-medium);
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: 800;
+  margin-bottom: 2px;
+
+  &.success {
+    color: var(--ion-color-success);
+  }
+
+  &.danger {
+    color: var(--ion-color-danger);
+  }
+
+  &.tertiary {
+    color: var(--ion-color-tertiary);
+  }
+}
+
+.stat-detail {
+  font-size: 0.7rem;
+  color: var(--ion-color-medium);
+
+  &.excellent {
+    color: var(--ion-color-success);
+    font-weight: 700;
+  }
+}
+
+.stat-divider {
+  display: flex;
+  align-items: center;
+  color: var(--ion-color-medium);
+
+  ion-icon {
+    font-size: 20px;
+  }
+}
+
+/* Current Price Info */
+.current-price-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  background: rgba(var(--ion-color-primary-rgb), 0.08);
+  border-radius: 10px;
+  border-left: 4px solid var(--ion-color-primary);
+  margin-bottom: 12px;
+
+  ion-icon {
+    font-size: 24px;
+    color: var(--ion-color-primary);
+    flex-shrink: 0;
+  }
+}
+
+.price-status {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 0.9rem;
+
+  strong {
+    font-weight: 800;
+  }
+}
+
+.price-change {
+  font-size: 0.8rem;
+  font-weight: 700;
+
+  &.positive {
+    color: var(--ion-color-success);
+  }
+
+  &.negative {
+    color: var(--ion-color-danger);
+  }
+}
+
+/* Levels Note */
+.levels-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(var(--ion-color-warning-rgb), 0.08);
+  border-radius: 8px;
+  font-size: 0.8rem;
+  color: var(--ion-color-medium);
+  line-height: 1.4;
+
+  ion-icon {
+    flex-shrink: 0;
+    font-size: 18px;
+    color: var(--ion-color-warning);
+    margin-top: 1px;
+  }
+}
+
+/* Mobile Responsive */
+@media (max-width: 576px) {
+  .price-ladder {
+    min-height: 350px;
+  }
+
+  .price-scale {
+    width: 60px;
+  }
+
+  .scale-label {
+    font-size: 0.75rem;
+    padding: 3px 6px;
+  }
+
+  .level-info {
+    padding: 6px 10px;
+  }
+
+  .level-price {
+    font-size: 1rem;
+  }
+
+  .level-description {
+    display: none;
+  }
+
+  .level-marker {
+    width: 32px;
+    height: 32px;
+
+    ion-icon {
+      font-size: 18px;
+    }
+  }
+
+  .level-stats {
+    flex-direction: column;
+  }
+
+  .stat-divider {
+    display: none;
+  }
+
+  .stat-card {
+    width: 100%;
+  }
+}

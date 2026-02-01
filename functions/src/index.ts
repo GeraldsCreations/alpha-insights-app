@@ -44,7 +44,7 @@ export const submitCustomReportRequest = customRequestFunctions.submitCustomRepo
 export const getUserCustomRequests = customRequestFunctions.getUserCustomRequests;
 
 const db = admin.firestore();
-const auth = admin.auth();
+// const auth = admin.auth(); // Uncomment if needed later
 
 // ============================================================================
 // SCHEDULED FUNCTIONS

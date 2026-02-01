@@ -15,14 +15,6 @@ const routes: Routes = [
   {
     path: 'saved',
     loadChildren: () => import('./saved/saved.module').then( m => m.SavedPageModule)
-  },
-  {
-    path: 'watchlist',
-    loadChildren: () => import('./watchlist/watchlist.module').then( m => m.WatchlistPageModule)
-  },
-  {
-    path: 'alerts',
-    loadChildren: () => import('./alerts/alerts.module').then( m => m.AlertsPageModule)
   }
 ];
 

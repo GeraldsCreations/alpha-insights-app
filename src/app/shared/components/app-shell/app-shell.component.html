@@ -1,0 +1,72 @@
+<!-- App Shell with Responsive Navigation -->
+<div class="app-shell">
+  
+  <!-- Desktop Sidebar Navigation (>768px) -->
+  <aside class="sidebar" [class.collapsed]="isSidebarCollapsed">
+    <div class="sidebar-content">
+      
+      <!-- Logo Section -->
+      <div class="sidebar-header">
+        <div class="logo" [routerLink]="'/home'">
+          <ion-icon name="trending-up" class="logo-icon"></ion-icon>
+          <span class="logo-text" *ngIf="!isSidebarCollapsed">Alpha Insights</span>
+        </div>
+      </div>
+      
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <a 
+          *ngFor="let item of navItems" 
+          [routerLink]="item.route"
+          class="nav-item"
+          [class.active]="isActive(item.route)"
+          routerLinkActive="active">
+          <ion-icon 
+            [name]="isActive(item.route) ? (item.activeIcon || item.icon) : item.icon" 
+            class="nav-icon">
+          </ion-icon>
+          <span class="nav-label" *ngIf="!isSidebarCollapsed">{{ item.label }}</span>
+          <div class="active-indicator" *ngIf="isActive(item.route)"></div>
+        </a>
+      </nav>
+      
+      <!-- Sidebar Footer -->
+      <div class="sidebar-footer">
+        <!-- Settings -->
+        <a [routerLink]="'/settings'" class="nav-item" [class.active]="isActive('/settings')">
+          <ion-icon name="settings-outline" class="nav-icon"></ion-icon>
+          <span class="nav-label" *ngIf="!isSidebarCollapsed">Settings</span>
+        </a>
+        
+        <!-- Logout -->
+        <button class="nav-item logout-btn" (click)="logout()">
+          <ion-icon name="log-out-outline" class="nav-icon"></ion-icon>
+          <span class="nav-label" *ngIf="!isSidebarCollapsed">Logout</span>
+        </button>
+      </div>
+      
+    </div>
+  </aside>
+  
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <ng-content></ng-content>
+  </main>
+  
+  <!-- Mobile Bottom Navigation (<768px) -->
+  <nav class="mobile-nav">
+    <a 
+      *ngFor="let item of navItems" 
+      [routerLink]="item.route"
+      class="mobile-nav-item"
+      [class.active]="isActive(item.route)"
+      routerLinkActive="active">
+      <ion-icon 
+        [name]="isActive(item.route) ? (item.activeIcon || item.icon) : item.icon" 
+        class="mobile-nav-icon">
+      </ion-icon>
+      <span class="mobile-nav-label">{{ item.label }}</span>
+    </a>
+  </nav>
+  
+</div>
