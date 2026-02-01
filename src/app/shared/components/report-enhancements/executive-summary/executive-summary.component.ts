@@ -52,18 +52,68 @@ export class ExecutiveSummaryComponent {
     // Extract key insights from content
     const insights: string[] = [];
     
-    // Try to extract from detailed analysis
-    if (this.post.content?.detailedAnalysis) {
-      const text = this.post.content.detailedAnalysis;
-      
-      // Look for bullet points or key phrases
-      const bulletMatch = text.match(/(?:^|\n)[-*•]\s*(.+?)(?:\n|$)/gm);
-      if (bulletMatch && bulletMatch.length > 0) {
-        insights.push(...bulletMatch.slice(0, 3).map(b => b.replace(/^[-*•]\s*/, '').trim()));
+    // Try multiple sources for insights
+    const sources = [
+      this.post.content?.detailedAnalysis,
+      this.post.content?.technicalAnalysis,
+      this.post.content?.newsSummary,
+      this.post.description
+    ];
+    
+    for (const text of sources) {
+      if (text && insights.length < 3) {
+        // Strip HTML tags first
+        const cleanText = text.replace(/<[^>]*>/g, '');
+        
+        // Try to find sections with headers
+        const sections = [
+          /(?:key\s+(?:takeaways?|insights?|points?)|bottom\s+line|summary|conclusion)[:\s]+(.*?)(?:\n\n|$)/is,
+          /(?:##?\s*(?:key\s+(?:takeaways?|insights?|points?)|bottom\s+line|summary))[:\s]+(.*?)(?:\n\n|$)/is
+        ];
+        
+        for (const sectionRegex of sections) {
+          const sectionMatch = cleanText.match(sectionRegex);
+          if (sectionMatch) {
+            // Extract bullet points from this section
+            const bulletMatch = sectionMatch[1].match(/(?:^|\n)[-*•]\s*(.+?)(?:\n|$)/gm);
+            if (bulletMatch) {
+              insights.push(...bulletMatch.map(b => 
+                b.replace(/^[-*•]\s*/, '')
+                 .replace(/\*\*/g, '')
+                 .trim()
+                 .replace(/\.$/, '') // Remove trailing period
+              ).filter(i => i.length > 10 && i.length < 200));
+            }
+          }
+        }
+        
+        // If no sections found, look for any bullet points
+        if (insights.length === 0) {
+          const bulletMatch = cleanText.match(/(?:^|\n)[-*•]\s*(.+?)(?:\n|$)/gm);
+          if (bulletMatch) {
+            insights.push(...bulletMatch.slice(0, 5).map(b => 
+              b.replace(/^[-*•]\s*/, '')
+               .replace(/\*\*/g, '')
+               .trim()
+               .replace(/\.$/, '')
+            ).filter(i => i.length > 10 && i.length < 200));
+          }
+        }
+        
+        // Look for key sentences (sentences with important keywords)
+        if (insights.length < 3) {
+          const keywordRegex = /((?:strong|bullish|bearish|support|resistance|breakout|breakdown|trend|momentum|volume|reversal|consolidation)[^.!?]*[.!?])/gi;
+          const keywordMatches = cleanText.match(keywordRegex);
+          if (keywordMatches) {
+            insights.push(...keywordMatches.slice(0, 3).map(s => 
+              s.trim().replace(/\*\*/g, '')
+            ).filter(i => i.length > 15 && i.length < 200));
+          }
+        }
       }
     }
 
-    // Fallback to generated insights
+    // Fallback to generated insights if nothing extracted
     if (insights.length === 0) {
       if (this.post.recommendation === 'LONG') {
         insights.push(`Strong ${this.post.recommendation} signal with ${this.confidenceLabel.toLowerCase()} confidence`);
@@ -80,7 +130,10 @@ export class ExecutiveSummaryComponent {
       }
     }
 
-    return insights.slice(0, 3);
+    // Return top 3-5 most meaningful insights
+    return insights
+      .filter((insight, index, self) => self.indexOf(insight) === index) // Remove duplicates
+      .slice(0, 5);
   }
 
   get riskRewardAssessment(): string {

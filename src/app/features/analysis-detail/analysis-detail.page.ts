@@ -87,15 +87,53 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
    * Parse verdicts from markdown content
    */
   parseVerdicts() {
-    if (!this.post?.content?.verdicts) return;
+    if (!this.post?.content?.verdicts) {
+      console.warn('No verdicts field found in post.content');
+      return;
+    }
     
     const verdictsText = this.post.content.verdicts;
-    const timeframes = ['5-Min', '15-Min', '1-Hour', '4-Hour', 'Daily', 'Weekly', '1-Day'];
+    console.log('Parsing verdicts from:', verdictsText);
+    
+    const timeframes = ['5-Min', '15-Min', '1-Hour', '4-Hour', 'Daily', 'Weekly'];
     
     this.verdicts = timeframes.map(timeframe => {
-      // Look for pattern like "**5-Min:** BUY (High confidence - 80%)"
-      const regex = new RegExp(`\\*\\*${timeframe}:\\*\\*\\s*(BUY|SELL|HOLD)[^\\d]*(\\d+)%`, 'i');
-      const match = verdictsText.match(regex);
+      // Try multiple regex patterns to be more flexible
+      
+      // Pattern 1: **5-Min:** BUY (High confidence - 80%)
+      let regex = new RegExp(`\\*\\*${timeframe.replace('-', '[-\\s]?')}:\\*\\*\\s*(BUY|SELL|HOLD)[^\\d]*(\\d+)%`, 'i');
+      let match = verdictsText.match(regex);
+      
+      // Pattern 2: 5-Min: BUY (80%)
+      if (!match) {
+        regex = new RegExp(`${timeframe.replace('-', '[-\\s]?')}:\\s*(BUY|SELL|HOLD)[^\\d]*(\\d+)%`, 'i');
+        match = verdictsText.match(regex);
+      }
+      
+      // Pattern 3: 5 Min BUY 80%
+      if (!match) {
+        regex = new RegExp(`${timeframe.replace('-', '\\s')}\\s*(BUY|SELL|HOLD)[^\\d]*(\\d+)%`, 'i');
+        match = verdictsText.match(regex);
+      }
+      
+      // Pattern 4: Just look for the verdict word near the timeframe
+      if (!match) {
+        const tfRegex = new RegExp(`${timeframe.replace('-', '[-\\s]?')}[^a-z]*(BUY|SELL|HOLD)`, 'i');
+        const tfMatch = verdictsText.match(tfRegex);
+        if (tfMatch) {
+          // Try to find confidence near this verdict
+          const confRegex = /(\d+)%/;
+          const nearbyText = verdictsText.substring(Math.max(0, verdictsText.indexOf(tfMatch[0]) - 50), 
+                                                     verdictsText.indexOf(tfMatch[0]) + 100);
+          const confMatch = nearbyText.match(confRegex);
+          
+          return {
+            timeframe,
+            verdict: tfMatch[1].toUpperCase() as 'BUY' | 'SELL' | 'HOLD',
+            confidence: confMatch ? parseInt(confMatch[1]) : 70 // Default confidence if not found
+          };
+        }
+      }
       
       if (match) {
         const verdict = match[1].toUpperCase();
@@ -106,12 +144,15 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
         };
       }
       
+      console.warn(`No verdict pattern found for timeframe: ${timeframe}`);
       return {
         timeframe,
         verdict: 'UNKNOWN' as const,
         confidence: 0
       };
     });
+    
+    console.log('Parsed verdicts:', this.verdicts);
   }
 
   /**

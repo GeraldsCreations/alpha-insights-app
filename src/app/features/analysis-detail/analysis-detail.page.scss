@@ -34,12 +34,97 @@ ion-content {
 // =============================================================================
 
 .detail-content {
-  max-width: 900px;
+  max-width: 1400px;
   margin: 0 auto;
   padding: var(--ai-space-4) var(--ai-space-3);
   
   @media (min-width: $breakpoint-tablet) {
     padding: var(--ai-space-6) var(--ai-space-4);
+  }
+}
+
+// =============================================================================
+// TWO-COLUMN LAYOUT (Desktop: Widgets Left 40%, Article Right 60%)
+// =============================================================================
+
+.two-column-layout {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ai-space-4);
+  
+  @media (min-width: $breakpoint-tablet) {
+    flex-direction: row;
+    gap: var(--ai-space-6);
+    align-items: flex-start;
+  }
+}
+
+.widgets-column {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--ai-space-4);
+  
+  @media (min-width: $breakpoint-tablet) {
+    width: 40%;
+    position: sticky;
+    top: var(--ai-space-4);
+    max-height: calc(100vh - var(--ai-space-8));
+    overflow-y: auto;
+    
+    // Custom scrollbar for widgets column
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: var(--ai-border-dark);
+      border-radius: var(--ai-radius-full);
+      
+      &:hover {
+        background: var(--ai-text-tertiary);
+      }
+    }
+  }
+}
+
+.article-column {
+  width: 100%;
+  
+  @media (min-width: $breakpoint-tablet) {
+    width: 60%;
+  }
+}
+
+.article-card {
+  background: var(--ai-surface);
+  border: 1px solid var(--ai-border-light);
+  box-shadow: var(--ai-shadow-sm);
+  
+  ion-card-header {
+    border-bottom: 1px solid var(--ai-border);
+    
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: var(--ai-space-2);
+      font-size: var(--ai-text-xl);
+      font-weight: var(--ai-font-weight-bold);
+      color: var(--ai-text-primary);
+      
+      ion-icon {
+        font-size: 24px;
+        color: var(--ai-primary);
+      }
+    }
+  }
+  
+  ion-card-content {
+    padding: var(--ai-space-4);
   }
 }
 
@@ -182,47 +267,55 @@ ion-content {
 }
 
 // =============================================================================
-// TRADE SETUP SECTION
+// TRADE CARD (In Widgets Column)
 // =============================================================================
 
-.trade-section {
+.trade-card {
   background: var(--ai-surface);
   border: 1px solid var(--ai-border-light);
-  border-radius: var(--ai-radius-md);
-  padding: var(--ai-space-4);
-  margin-bottom: var(--ai-space-4);
   box-shadow: var(--ai-shadow-sm);
   
-  h2 {
-    margin: 0 0 var(--ai-space-3) 0;
-    font-size: var(--ai-text-xl);
-    font-weight: var(--ai-font-weight-bold);
-    color: var(--ai-text-primary);
+  ion-card-header {
+    border-bottom: 1px solid var(--ai-border);
+    
+    ion-card-title {
+      display: flex;
+      align-items: center;
+      gap: var(--ai-space-2);
+      font-size: var(--ai-text-lg);
+      font-weight: var(--ai-font-weight-bold);
+      color: var(--ai-text-primary);
+      
+      ion-icon {
+        font-size: 22px;
+        color: var(--ai-primary);
+      }
+    }
   }
   
-  .trade-levels {
+  .setup-grid {
     display: grid;
-    gap: var(--ai-space-2);
+    gap: var(--ai-space-3);
     
-    .level-row {
+    .setup-item {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: var(--ai-space-2);
-      background: var(--ai-bg-secondary);
-      border-radius: var(--ai-radius-md);
-      border: 1px solid var(--ai-border);
+      flex-direction: column;
+      gap: var(--ai-space-1);
       
-      .level-label {
-        font-size: var(--ai-text-sm);
+      &.full-width {
+        grid-column: 1 / -1;
+      }
+      
+      .label {
+        font-size: var(--ai-text-xs);
         font-weight: var(--ai-font-weight-semibold);
         text-transform: uppercase;
         letter-spacing: 0.5px;
-        color: var(--ai-text-secondary);
+        color: var(--ai-text-tertiary);
       }
       
-      .level-value {
-        font-size: var(--ai-text-lg);
+      .value {
+        font-size: var(--ai-text-xl);
         font-weight: var(--ai-font-weight-bold);
         font-family: var(--ai-font-mono);
         color: var(--ai-text-primary);
@@ -230,6 +323,118 @@ ion-content {
         &.entry { color: var(--ai-primary); }
         &.stop { color: var(--ai-danger); }
         &.target { color: var(--ai-success); }
+        
+        &.rr {
+          &.excellent { color: var(--ai-success); }
+          &.good { color: var(--ai-warning); }
+          &.poor { color: var(--ai-danger); }
+        }
+      }
+      
+      .percentage {
+        font-size: var(--ai-text-sm);
+        font-weight: var(--ai-font-weight-semibold);
+        
+        &.profit { color: var(--ai-success); }
+        &.loss { color: var(--ai-danger); }
+      }
+      
+      .confidence-display {
+        display: flex;
+        align-items: center;
+        gap: var(--ai-space-2);
+        
+        .confidence-bar-large {
+          flex: 1;
+          height: 12px;
+          background: var(--ai-bg-tertiary);
+          border-radius: var(--ai-radius-full);
+          overflow: hidden;
+          
+          .confidence-fill {
+            height: 100%;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: var(--ai-radius-full);
+            
+            &.high { 
+              background: linear-gradient(90deg, var(--ai-success), var(--ai-success-light));
+            }
+            &.medium { 
+              background: linear-gradient(90deg, var(--ai-warning), var(--ai-warning-light));
+            }
+            &.low { 
+              background: linear-gradient(90deg, var(--ai-danger), var(--ai-danger-light));
+            }
+          }
+        }
+        
+        .confidence-value {
+          font-size: var(--ai-text-sm);
+          font-weight: var(--ai-font-weight-bold);
+          font-family: var(--ai-font-mono);
+          color: var(--ai-text-secondary);
+        }
+      }
+    }
+  }
+}
+
+// =============================================================================
+// VERDICTS CARD (Legacy - keeping for backward compatibility)
+// =============================================================================
+
+.verdicts-card {
+  background: var(--ai-surface);
+  border: 1px solid var(--ai-border-light);
+  box-shadow: var(--ai-shadow-sm);
+  
+  .verdict-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ai-space-2);
+    
+    .verdict-row {
+      display: grid;
+      grid-template-columns: 80px 1fr auto auto;
+      gap: var(--ai-space-2);
+      align-items: center;
+      padding: var(--ai-space-2);
+      background: var(--ai-bg-secondary);
+      border-radius: var(--ai-radius-md);
+      
+      .timeframe {
+        font-size: var(--ai-text-sm);
+        font-weight: var(--ai-font-weight-semibold);
+        color: var(--ai-text-secondary);
+      }
+      
+      .verdict-bar {
+        height: 8px;
+        background: var(--ai-bg-tertiary);
+        border-radius: var(--ai-radius-full);
+        overflow: hidden;
+        
+        .verdict-fill {
+          height: 100%;
+          transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+          
+          &.buy {
+            background: linear-gradient(90deg, var(--ai-success), var(--ai-success-light));
+          }
+          &.sell {
+            background: linear-gradient(90deg, var(--ai-danger), var(--ai-danger-light));
+          }
+          &.hold {
+            background: linear-gradient(90deg, var(--ai-warning), var(--ai-warning-light));
+          }
+        }
+      }
+      
+      .confidence-text {
+        font-size: var(--ai-text-xs);
+        font-weight: var(--ai-font-weight-medium);
+        font-family: var(--ai-font-mono);
+        color: var(--ai-text-tertiary);
       }
     }
   }
@@ -369,6 +574,158 @@ ion-content {
 }
 
 // =============================================================================
+// TABS STYLING (Inside Article Card)
+// =============================================================================
+
+.tabs-container {
+  .tabs {
+    display: flex;
+    gap: var(--ai-space-2);
+    margin-bottom: var(--ai-space-4);
+    border-bottom: 2px solid var(--ai-border);
+    overflow-x: auto;
+    
+    &::-webkit-scrollbar {
+      height: 4px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: var(--ai-border-dark);
+      border-radius: var(--ai-radius-full);
+    }
+    
+    .tab {
+      padding: 12px 20px;
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--ai-text-secondary);
+      font-size: var(--ai-text-base);
+      font-weight: var(--ai-font-weight-medium);
+      cursor: pointer;
+      transition: all var(--ai-transition-fast);
+      white-space: nowrap;
+      position: relative;
+      bottom: -2px;
+      
+      &:hover {
+        color: var(--ai-text-primary);
+        background: var(--ai-bg-secondary);
+      }
+      
+      &.active {
+        color: var(--ai-primary);
+        border-bottom-color: var(--ai-primary);
+        font-weight: var(--ai-font-weight-semibold);
+      }
+    }
+  }
+  
+  .tab-content {
+    .tab-pane {
+      animation: fadeIn 0.3s ease-out;
+    }
+  }
+}
+
+.markdown-content {
+  font-size: var(--ai-text-base);
+  line-height: var(--ai-line-height-relaxed);
+  color: var(--ai-text-secondary);
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--ai-text-primary);
+    margin-top: var(--ai-space-4);
+    margin-bottom: var(--ai-space-2);
+    font-weight: var(--ai-font-weight-bold);
+  }
+  
+  h1 { font-size: var(--ai-text-3xl); }
+  h2 { font-size: var(--ai-text-2xl); }
+  h3 { font-size: var(--ai-text-xl); }
+  h4 { font-size: var(--ai-text-lg); }
+  
+  p {
+    margin-bottom: var(--ai-space-3);
+  }
+  
+  ul, ol {
+    margin: var(--ai-space-3) 0;
+    padding-left: var(--ai-space-5);
+    
+    li {
+      margin-bottom: var(--ai-space-2);
+    }
+  }
+  
+  strong {
+    color: var(--ai-text-primary);
+    font-weight: var(--ai-font-weight-semibold);
+  }
+  
+  code {
+    background: var(--ai-bg-secondary);
+    padding: 2px 6px;
+    border-radius: var(--ai-radius-sm);
+    font-family: var(--ai-font-mono);
+    font-size: 0.9em;
+  }
+  
+  pre {
+    background: var(--ai-bg-secondary);
+    padding: var(--ai-space-3);
+    border-radius: var(--ai-radius-md);
+    overflow-x: auto;
+    
+    code {
+      background: none;
+      padding: 0;
+    }
+  }
+  
+  blockquote {
+    border-left: 4px solid var(--ai-primary);
+    padding-left: var(--ai-space-3);
+    margin: var(--ai-space-4) 0;
+    color: var(--ai-text-secondary);
+    font-style: italic;
+  }
+  
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: var(--ai-space-4) 0;
+    
+    th, td {
+      padding: 12px;
+      border: 1px solid var(--ai-border);
+      text-align: left;
+    }
+    
+    th {
+      background: var(--ai-bg-secondary);
+      font-weight: var(--ai-font-weight-semibold);
+      color: var(--ai-text-primary);
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// =============================================================================
 // RESPONSIVE
 // =============================================================================
 
@@ -384,6 +741,13 @@ ion-content {
   .metrics-grid {
     grid-template-columns: 1fr;
     gap: var(--ai-space-2);
+  }
+  
+  .tabs {
+    .tab {
+      padding: 10px 16px;
+      font-size: var(--ai-text-sm);
+    }
   }
 }
 

@@ -26,11 +26,69 @@ export class PriceLevelsComponent implements OnInit {
   priceRange: number = 0;
 
   ngOnInit() {
+    this.validateAndFixPrices();
     this.calculateLevels();
   }
 
   ngOnChanges() {
+    this.validateAndFixPrices();
     this.calculateLevels();
+  }
+
+  /**
+   * Validate and fix price levels if they don't make sense
+   */
+  validateAndFixPrices() {
+    // If stop is 0 or negative, it's broken
+    if (this.stop <= 0) {
+      console.error('Invalid stop loss:', this.stop);
+      // Set a reasonable stop based on entry (e.g., 5% below for long)
+      this.stop = this.entry * 0.95;
+    }
+
+    // If target is 0 or negative, it's broken
+    if (this.target <= 0) {
+      console.error('Invalid target:', this.target);
+      // Set a reasonable target based on entry (e.g., 10% above for long)
+      this.target = this.entry * 1.10;
+    }
+
+    // Check if prices make logical sense for a LONG trade
+    // For LONG: stop < entry < target
+    // For SHORT: target < entry < stop
+    
+    // Assume LONG trade if target > entry
+    const isLongTrade = this.target > this.entry;
+    
+    if (isLongTrade) {
+      // LONG trade validation
+      if (this.stop > this.entry) {
+        console.warn('LONG trade has stop > entry, swapping them');
+        // Swap stop and entry
+        [this.stop, this.entry] = [this.entry, this.stop];
+      }
+      
+      if (this.entry > this.target) {
+        console.warn('LONG trade has entry > target, swapping them');
+        // Swap entry and target
+        [this.entry, this.target] = [this.target, this.entry];
+      }
+    } else {
+      // SHORT trade validation
+      if (this.stop < this.entry) {
+        console.warn('SHORT trade has stop < entry, swapping them');
+        // Swap stop and entry
+        [this.stop, this.entry] = [this.entry, this.stop];
+      }
+      
+      if (this.entry < this.target) {
+        console.warn('SHORT trade has entry < target, swapping them');
+        // Swap entry and target
+        [this.entry, this.target] = [this.target, this.entry];
+      }
+    }
+
+    console.log('Validated prices:', { entry: this.entry, target: this.target, stop: this.stop });
   }
 
   calculateLevels() {

@@ -35,7 +35,7 @@
 
   <!-- Post Content -->
   <div *ngIf="!isLoading && post" class="detail-content">
-    <!-- Header Section -->
+    <!-- Header Section - Full Width -->
     <div class="header-section">
       <div class="title-row">
         <h1>{{ post.title }}</h1>
@@ -60,30 +60,34 @@
       </div>
     </div>
 
-    <!-- EXECUTIVE SUMMARY - NEW COMPONENT -->
-    <app-executive-summary [post]="post"></app-executive-summary>
+    <!-- Two Column Layout: Widgets (Left) + Article (Right) -->
+    <div class="two-column-layout">
+      <!-- LEFT COLUMN: Widgets -->
+      <div class="widgets-column">
+        <!-- EXECUTIVE SUMMARY - NEW COMPONENT -->
+        <app-executive-summary [post]="post"></app-executive-summary>
 
-    <!-- VERDICT TIMELINE - NEW COMPONENT -->
-    <app-verdict-timeline [verdicts]="verdicts"></app-verdict-timeline>
+        <!-- VERDICT TIMELINE - NEW COMPONENT -->
+        <app-verdict-timeline [verdicts]="verdicts"></app-verdict-timeline>
 
-    <!-- PRICE LEVELS VISUALIZATION - NEW COMPONENT -->
-    <app-price-levels
-      [entry]="post.entry"
-      [target]="post.target"
-      [stop]="post.stop"
-      [ticker]="post.ticker">
-    </app-price-levels>
+        <!-- PRICE LEVELS VISUALIZATION - NEW COMPONENT -->
+        <app-price-levels
+          [entry]="post.entry"
+          [target]="post.target"
+          [stop]="post.stop"
+          [ticker]="post.ticker">
+        </app-price-levels>
 
-    <!-- TRADINGVIEW CHART - NEW COMPONENT -->
-    <app-tradingview-chart
-      [ticker]="post.ticker"
-      [entry]="post.entry"
-      [target]="post.target"
-      [stop]="post.stop">
-    </app-tradingview-chart>
+        <!-- TRADINGVIEW CHART - NEW COMPONENT -->
+        <app-tradingview-chart
+          [ticker]="post.ticker"
+          [entry]="post.entry"
+          [target]="post.target"
+          [stop]="post.stop">
+        </app-tradingview-chart>
 
-    <!-- Trade Setup Card -->
-    <ion-card class="trade-card">
+        <!-- Trade Setup Card -->
+        <ion-card class="trade-card">
       <ion-card-header>
         <ion-card-title>
           <ion-icon name="analytics-outline"></ion-icon>
@@ -143,95 +147,81 @@
       </ion-card-content>
     </ion-card>
 
-    <!-- Verdicts Card (if available) -->
-    <ion-card *ngIf="verdicts.length > 0" class="verdicts-card">
-      <ion-card-header>
-        <ion-card-title>
-          <ion-icon name="bar-chart-outline"></ion-icon>
-          Multi-Timeframe Analysis
-        </ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <div class="verdict-list">
-          <div *ngFor="let verdict of verdicts" class="verdict-row">
-            <span class="timeframe">{{ verdict.timeframe }}</span>
-            <div class="verdict-bar">
-              <div 
-                class="verdict-fill" 
-                [style.width]="getConfidenceWidth(verdict.confidence)"
-                [class.buy]="verdict.verdict === 'BUY'"
-                [class.sell]="verdict.verdict === 'SELL'"
-                [class.hold]="verdict.verdict === 'HOLD'">
+      </div>
+
+      <!-- RIGHT COLUMN: Full Article -->
+      <div class="article-column">
+        <ion-card class="article-card">
+          <ion-card-header>
+            <ion-card-title>
+              <ion-icon name="document-text-outline"></ion-icon>
+              Full Analysis
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <!-- Content Tabs -->
+            <div class="tabs-container">
+              <div class="tabs">
+                <button 
+                  class="tab" 
+                  [class.active]="activeTab === 'overview'"
+                  (click)="onTabChange('overview')">
+                  Overview
+                </button>
+                <button 
+                  class="tab" 
+                  [class.active]="activeTab === 'technical'"
+                  (click)="onTabChange('technical')">
+                  Technical
+                </button>
+                <button 
+                  class="tab" 
+                  [class.active]="activeTab === 'news'"
+                  (click)="onTabChange('news')">
+                  News
+                </button>
+                <button 
+                  class="tab" 
+                  [class.active]="activeTab === 'price'"
+                  (click)="onTabChange('price')">
+                  Price Action
+                </button>
+              </div>
+
+              <!-- Tab Content -->
+              <div class="tab-content">
+                <!-- Overview Tab -->
+                <div *ngIf="activeTab === 'overview'" class="tab-pane">
+                  <div class="markdown-content" [innerHTML]="post.content?.detailedAnalysis || 'No overview available'"></div>
+                </div>
+
+                <!-- Technical Tab -->
+                <div *ngIf="activeTab === 'technical'" class="tab-pane">
+                  <div class="markdown-content" [innerHTML]="post.content?.technicalAnalysis || 'No technical analysis available'"></div>
+                </div>
+
+                <!-- News Tab -->
+                <div *ngIf="activeTab === 'news'" class="tab-pane">
+                  <div class="markdown-content" [innerHTML]="post.content?.newsSummary || 'No news summary available'"></div>
+                </div>
+
+                <!-- Price Action Tab -->
+                <div *ngIf="activeTab === 'price'" class="tab-pane">
+                  <div class="markdown-content" [innerHTML]="post.content?.priceAnalysis || 'No price analysis available'"></div>
+                </div>
               </div>
             </div>
-            <ion-badge [color]="getVerdictColor(verdict.verdict)" size="small">
-              {{ verdict.verdict }}
-            </ion-badge>
-            <span class="confidence-text">{{ verdict.confidence }}%</span>
-          </div>
-        </div>
-      </ion-card-content>
-    </ion-card>
+          </ion-card-content>
+        </ion-card>
 
-    <!-- Content Tabs -->
-    <div class="tabs-container">
-      <div class="tabs">
-        <button 
-          class="tab" 
-          [class.active]="activeTab === 'overview'"
-          (click)="onTabChange('overview')">
-          Overview
-        </button>
-        <button 
-          class="tab" 
-          [class.active]="activeTab === 'technical'"
-          (click)="onTabChange('technical')">
-          Technical
-        </button>
-        <button 
-          class="tab" 
-          [class.active]="activeTab === 'news'"
-          (click)="onTabChange('news')">
-          News
-        </button>
-        <button 
-          class="tab" 
-          [class.active]="activeTab === 'price'"
-          (click)="onTabChange('price')">
-          Price Action
-        </button>
-      </div>
-
-      <!-- Tab Content -->
-      <div class="tab-content">
-        <!-- Overview Tab -->
-        <div *ngIf="activeTab === 'overview'" class="tab-pane">
-          <div class="markdown-content" [innerHTML]="post.content?.detailedAnalysis || 'No overview available'"></div>
-        </div>
-
-        <!-- Technical Tab -->
-        <div *ngIf="activeTab === 'technical'" class="tab-pane">
-          <div class="markdown-content" [innerHTML]="post.content?.technicalAnalysis || 'No technical analysis available'"></div>
-        </div>
-
-        <!-- News Tab -->
-        <div *ngIf="activeTab === 'news'" class="tab-pane">
-          <div class="markdown-content" [innerHTML]="post.content?.newsSummary || 'No news summary available'"></div>
-        </div>
-
-        <!-- Price Action Tab -->
-        <div *ngIf="activeTab === 'price'" class="tab-pane">
-          <div class="markdown-content" [innerHTML]="post.content?.priceAnalysis || 'No price analysis available'"></div>
+        <!-- Related Actions -->
+        <div class="related-section">
+          <ion-button expand="block" (click)="viewTickerDetails()" fill="outline">
+            <ion-icon name="trending-up-outline" slot="start"></ion-icon>
+            View All {{ post.ticker }} Reports
+          </ion-button>
         </div>
       </div>
-    </div>
-
-    <!-- Related Actions -->
-    <div class="related-section">
-      <ion-button expand="block" (click)="viewTickerDetails()" fill="outline">
-        <ion-icon name="trending-up-outline" slot="start"></ion-icon>
-        View All {{ post.ticker }} Reports
-      </ion-button>
     </div>
   </div>
 </ion-content>

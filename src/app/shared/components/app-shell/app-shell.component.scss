@@ -267,8 +267,8 @@
   }
 }
 
-// Adjust main content when sidebar is collapsed
-.app-shell:has(.sidebar.collapsed) .main-content {
+// Adjust main content when sidebar is collapsed (using class-based approach)
+.app-shell.sidebar-collapsed .main-content {
   @media (min-width: 768px) {
     margin-left: var(--ai-sidebar-collapsed-width);
   }
