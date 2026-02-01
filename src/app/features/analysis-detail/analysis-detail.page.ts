@@ -106,16 +106,28 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
   }
 
   /**
-   * Parse verdicts from markdown content
+   * Parse verdicts from structured field or markdown content (fallback)
    */
   parseVerdicts() {
+    // PRIORITY 1: Use structured verdicts field if available
+    if (this.post?.verdicts && Array.isArray(this.post.verdicts) && this.post.verdicts.length > 0) {
+      console.log('✅ Using structured verdicts from post.verdicts:', this.post.verdicts);
+      this.verdicts = this.post.verdicts.map(v => ({
+        timeframe: v.timeframe,
+        verdict: v.verdict,
+        confidence: v.confidence
+      }));
+      return;
+    }
+    
+    // FALLBACK: Parse from markdown if no structured verdicts
     if (!this.post?.content?.verdicts) {
-      console.warn('No verdicts field found in post.content');
+      console.warn('⚠️ No verdicts data found (neither structured nor markdown)');
       return;
     }
     
     const verdictsText = this.post.content.verdicts;
-    console.log('Parsing verdicts from:', verdictsText);
+    console.log('⚠️ Falling back to parsing verdicts from markdown:', verdictsText.substring(0, 200));
     
     const timeframes = ['5-Min', '15-Min', '1-Hour', '4-Hour', 'Daily', 'Weekly'];
     
