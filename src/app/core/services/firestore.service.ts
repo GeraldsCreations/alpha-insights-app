@@ -1,6 +1,43 @@
 import { Injectable } from '@angular/core';
-import { Firestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, QueryConstraint, onSnapshot, Unsubscribe, DocumentData, Query, setDoc, increment, serverTimestamp } from '@angular/fire/firestore';
+import { Firestore, collection, doc, getDoc, getDocs, addDoc, updateDoc, deleteDoc, query, QueryConstraint, onSnapshot, Unsubscribe, DocumentData, Query, setDoc, increment, serverTimestamp, Timestamp } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+
+/**
+ * Convert Firebase Timestamp objects to JavaScript Date objects
+ */
+function convertTimestamps(data: any): any {
+  if (!data || typeof data !== 'object') {
+    return data;
+  }
+
+  // Handle arrays
+  if (Array.isArray(data)) {
+    return data.map(item => convertTimestamps(item));
+  }
+
+  // Handle Timestamp objects
+  if (data instanceof Timestamp) {
+    return data.toDate();
+  }
+
+  // Handle nested objects
+  const converted: any = {};
+  for (const key in data) {
+    if (data.hasOwnProperty(key)) {
+      const value = data[key];
+      
+      if (value instanceof Timestamp) {
+        converted[key] = value.toDate();
+      } else if (value && typeof value === 'object') {
+        converted[key] = convertTimestamps(value);
+      } else {
+        converted[key] = value;
+      }
+    }
+  }
+  
+  return converted;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -31,7 +68,8 @@ export class FirestoreService {
       getDoc(docRef)
         .then(docSnap => {
           if (docSnap.exists()) {
-            observer.next({ id: docSnap.id, ...docSnap.data() } as T);
+            const data = convertTimestamps(docSnap.data());
+            observer.next({ id: docSnap.id, ...data } as T);
           } else {
             observer.next(null);
           }
@@ -53,7 +91,8 @@ export class FirestoreService {
         .then(querySnapshot => {
           const items: T[] = [];
           querySnapshot.forEach(doc => {
-            items.push({ id: doc.id, ...doc.data() } as T);
+            const data = convertTimestamps(doc.data());
+            items.push({ id: doc.id, ...data } as T);
           });
           observer.next(items);
           observer.complete();
@@ -74,7 +113,8 @@ export class FirestoreService {
         querySnapshot => {
           const items: T[] = [];
           querySnapshot.forEach(doc => {
-            items.push({ id: doc.id, ...doc.data() } as T);
+            const data = convertTimestamps(doc.data());
+            items.push({ id: doc.id, ...data } as T);
           });
           observer.next(items);
         },
