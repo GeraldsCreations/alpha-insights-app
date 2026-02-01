@@ -204,17 +204,16 @@ export class RequestAnalysisPage implements OnInit {
       
       if (result && result.success) {
         this.submitted = true;
-        this.showToast(
-          `${this.ticker} analysis is being prepared! We'll notify you when it's ready.`,
-          'success'
-        );
         
-        // Reset form
+        // Navigate to progress page
+        this.router.navigate(['/report-progress', result.requestId]);
+        
+        // Reset form (for when user comes back)
         setTimeout(() => {
           this.ticker = '';
           this.searchQuery = '';
           this.submitted = false;
-        }, 3000);
+        }, 1000);
       }
       
     } catch (error: any) {

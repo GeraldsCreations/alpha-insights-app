@@ -40,6 +40,11 @@ const routes: Routes = [
     loadChildren: () => import('./features/request-analysis/request-analysis.module').then( m => m.RequestAnalysisPageModule),
     canActivate: [AuthGuard]
   },
+  {
+    path: 'report-progress/:requestId',
+    loadChildren: () => import('./features/report-progress/report-progress.module').then( m => m.ReportProgressPageModule),
+    canActivate: [AuthGuard]
+  },
 ];
 
 @NgModule({

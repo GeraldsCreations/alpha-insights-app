@@ -1,0 +1,131 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goHome()">
+        <ion-icon name="close"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Generating Analysis</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="progress-container">
+    
+    <!-- Loading State -->
+    <div *ngIf="!progress" class="loading-state">
+      <ion-spinner name="crescent" color="primary"></ion-spinner>
+      <p>Loading...</p>
+    </div>
+    
+    <!-- Progress Display -->
+    <div *ngIf="progress" class="progress-content">
+      
+      <!-- Header with Ticker -->
+      <div class="header-section">
+        <div class="ticker-badge">
+          <ion-icon [name]="progress.assetType === 'crypto' ? 'logo-bitcoin' : 'trending-up'"></ion-icon>
+          <h1>{{ progress.ticker }}</h1>
+        </div>
+        <p class="asset-type">{{ progress.assetType | titlecase }} Analysis</p>
+      </div>
+      
+      <!-- Status Icon (Animated) -->
+      <div class="status-icon-container">
+        <div class="status-icon" [class.spinning]="progress.status === 'processing'">
+          <ion-icon [name]="getStatusIcon()" [color]="getProgressColor()"></ion-icon>
+        </div>
+      </div>
+      
+      <!-- Progress Bar -->
+      <div class="progress-bar-container">
+        <div class="progress-info">
+          <span class="current-step">{{ progress.currentStep }}</span>
+          <span class="progress-percent">{{ progress.progress }}%</span>
+        </div>
+        <ion-progress-bar 
+          [value]="progress.progress / 100" 
+          [color]="getProgressColor()"
+          class="animated-progress"
+        ></ion-progress-bar>
+      </div>
+      
+      <!-- Time Estimate -->
+      <div class="time-estimate" *ngIf="progress.status === 'processing'">
+        <ion-icon name="time-outline"></ion-icon>
+        <span>{{ formatTimeRemaining(progress.estimatedTimeRemaining) }} remaining</span>
+      </div>
+      
+      <!-- Steps Checklist -->
+      <div class="steps-checklist">
+        <h3>Processing Steps</h3>
+        
+        <div class="step-item" [class.completed]="progress.progress >= 10">
+          <ion-icon [name]="progress.progress >= 10 ? 'checkmark-circle' : 'ellipse-outline'" 
+                    [color]="progress.progress >= 10 ? 'success' : 'medium'"></ion-icon>
+          <span>Request queued</span>
+        </div>
+        
+        <div class="step-item" [class.completed]="progress.progress >= 30">
+          <ion-icon [name]="progress.progress >= 30 ? 'checkmark-circle' : 'ellipse-outline'" 
+                    [color]="progress.progress >= 30 ? 'success' : 'medium'"></ion-icon>
+          <span>Fetching market data</span>
+        </div>
+        
+        <div class="step-item" [class.completed]="progress.progress >= 60">
+          <ion-icon [name]="progress.progress >= 60 ? 'checkmark-circle' : 'ellipse-outline'" 
+                    [color]="progress.progress >= 60 ? 'success' : 'medium'"></ion-icon>
+          <span>Analyzing technical indicators</span>
+        </div>
+        
+        <div class="step-item" [class.completed]="progress.progress >= 80">
+          <ion-icon [name]="progress.progress >= 80 ? 'checkmark-circle' : 'ellipse-outline'" 
+                    [color]="progress.progress >= 80 ? 'success' : 'medium'"></ion-icon>
+          <span>Generating report</span>
+        </div>
+        
+        <div class="step-item" [class.completed]="progress.progress >= 100">
+          <ion-icon [name]="progress.progress >= 100 ? 'checkmark-circle' : 'ellipse-outline'" 
+                    [color]="progress.progress >= 100 ? 'success' : 'medium'"></ion-icon>
+          <span>Finalizing analysis</span>
+        </div>
+      </div>
+      
+      <!-- Complete State -->
+      <div *ngIf="progress.status === 'complete'" class="complete-state">
+        <div class="success-message">
+          <ion-icon name="checkmark-circle" color="success"></ion-icon>
+          <h2>Analysis Complete!</h2>
+          <p>Your {{ progress.ticker }} report is ready</p>
+        </div>
+        
+        <ion-button expand="block" (click)="viewReport()" color="success" class="view-report-btn">
+          <ion-icon name="document-text" slot="start"></ion-icon>
+          View Report
+        </ion-button>
+        
+        <p class="auto-navigate-hint">Redirecting automatically...</p>
+      </div>
+      
+      <!-- Failed State -->
+      <div *ngIf="progress.status === 'failed'" class="failed-state">
+        <div class="error-message">
+          <ion-icon name="close-circle" color="danger"></ion-icon>
+          <h2>Processing Failed</h2>
+          <p>{{ progress.error || 'Something went wrong. Please try again.' }}</p>
+        </div>
+        
+        <ion-button expand="block" (click)="cancelAndGoBack()" color="primary">
+          <ion-icon name="refresh" slot="start"></ion-icon>
+          Try Again
+        </ion-button>
+        
+        <ion-button expand="block" fill="outline" (click)="goHome()">
+          Go to Home
+        </ion-button>
+      </div>
+      
+    </div>
+    
+  </div>
+</ion-content>
