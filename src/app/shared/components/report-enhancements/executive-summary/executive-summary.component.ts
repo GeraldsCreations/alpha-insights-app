@@ -49,7 +49,12 @@ export class ExecutiveSummaryComponent {
   }
 
   get keyInsights(): string[] {
-    // Extract key insights from content
+    // Use structured keyInsights if available
+    if (this.post.keyInsights && this.post.keyInsights.length > 0) {
+      return this.post.keyInsights;
+    }
+    
+    // Fallback: Extract key insights from content
     const insights: string[] = [];
     
     // Try multiple sources for insights

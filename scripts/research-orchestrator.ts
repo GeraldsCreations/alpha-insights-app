@@ -280,20 +280,67 @@ Complete this within ${agent.timeoutMinutes} minutes.`;
 
 Provide final investment verdicts for ${ticker} (${assetType}).
 
-Read your role definition: ${agent.roleFile}
-
 **The comprehensive report is complete.**
 
 Read and analyze: ${outputDir}/${ticker}-report.md
 
-Provide clear investment verdicts across multiple timeframes:
-- 5 minute, 1 hour, 4 hour
-- 24 hour, 1 week, 1 month
-- 1 year
+**CRITICAL FORMAT REQUIREMENTS:**
+
+You MUST provide verdicts for EXACTLY these 6 timeframes using EXACT names:
+
+### 5-Min
+**Verdict:** BUY/SELL/HOLD 🟢🔴🟡
+**Confidence:** [number 0-100]
+**Reasoning:** [1-2 sentences max]
+
+### 15-Min
+**Verdict:** BUY/SELL/HOLD 🟢🔴🟡
+**Confidence:** [number 0-100]
+**Reasoning:** [1-2 sentences max]
+
+### 1-Hour
+**Verdict:** BUY/SELL/HOLD 🟢🔴🟡
+**Confidence:** [number 0-100]
+**Reasoning:** [1-2 sentences max]
+
+### 4-Hour
+**Verdict:** BUY/SELL/HOLD 🟢🔴🟡
+**Confidence:** [number 0-100]
+**Reasoning:** [1-2 sentences max]
+
+### Daily
+**Verdict:** BUY/SELL/HOLD 🟢🔴🟡
+**Confidence:** [number 0-100]
+**Reasoning:** [1-2 sentences max]
+
+### Weekly
+**Verdict:** BUY/SELL/HOLD 🟢🔴🟡
+**Confidence:** [number 0-100]
+**Reasoning:** [1-2 sentences max]
+
+**RULES:**
+- Timeframe names MUST be EXACTLY as shown above (case-sensitive)
+- Confidence MUST be a number 0-100 (not "High/Medium/Low")
+- Reasoning MUST be 1-2 sentences, WSJ-quality professional language
+- Use emojis: 🟢 BUY, 🔴 SELL, 🟡 HOLD
+
+**ADDITIONAL SECTION - Key Insights:**
+
+Add this section at the top of your output:
+
+## 📌 Key Insights
+
+- **[Category]:** [Precise, data-driven insight with numbers]
+- **[Category]:** [Precise, data-driven insight with numbers]
+- **[Category]:** [Precise, data-driven insight with numbers]
+- **[Category]:** [Precise, data-driven insight with numbers]
+- **[Category]:** [Precise, data-driven insight with numbers]
+
+Categories: Technical Setup, Momentum, Risk/Reward, Catalyst, Timeframe, Sentiment, Volume Profile
 
 Write to: ${agent.outputFile}
 
-Follow the exact output format specified in your role definition. Be decisive with clear BUY/HOLD/SELL recommendations and confidence levels.
+Be decisive. Use exact numbers. WSJ-level professional language only.
 
 Complete this within ${agent.timeoutMinutes} minutes.`;
 

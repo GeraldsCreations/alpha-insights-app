@@ -69,8 +69,11 @@ interface ResearchDocument {
     verdicts: string;
   };
   
-  // Verdicts data
+  // Verdicts data (structured for timeline UI)
   verdicts: TimeframeVerdict[];
+  
+  // Key insights (for executive summary)
+  keyInsights: string[];
   
   // Trading recommendation
   recommendation: 'LONG' | 'SHORT' | 'HOLD';
@@ -98,7 +101,7 @@ interface ResearchDocument {
 interface TimeframeVerdict {
   timeframe: string;
   verdict: 'BUY' | 'HOLD' | 'SELL';
-  confidence: 'High' | 'Medium' | 'Low';
+  confidence: number;  // 0-100
   reasoning: string;
 }
 
@@ -109,6 +112,9 @@ interface TimeframeVerdict {
 function parseVerdicts(verdictsContent: string): TimeframeVerdict[] {
   const verdicts: TimeframeVerdict[] = [];
   
+  // Required timeframes (EXACT names from UI)
+  const requiredTimeframes = ['5-Min', '15-Min', '1-Hour', '4-Hour', 'Daily', 'Weekly'];
+  
   // Split by ### headers
   const sections = verdictsContent.split('###').filter(s => s.trim());
   
@@ -116,11 +122,38 @@ function parseVerdicts(verdictsContent: string): TimeframeVerdict[] {
     const lines = section.trim().split('\n').map(l => l.trim());
     
     // Extract timeframe (first line)
-    const timeframe = lines[0].replace(/\*/g, '').trim();
-    if (!timeframe || timeframe.includes('Multi-Timeframe') || timeframe.includes('Verdict')) continue;
+    let timeframe = lines[0].replace(/\*/g, '').trim();
+    
+    // Skip non-verdict sections
+    if (!timeframe || timeframe.includes('Multi-Timeframe') || timeframe.includes('Verdict') || timeframe.includes('Key Insights')) continue;
+    
+    // Normalize old timeframe names to new format
+    const timeframeMap: Record<string, string> = {
+      '5 Minute': '5-Min',
+      '5 minute': '5-Min',
+      '15 Minute': '15-Min',
+      '15 minute': '15-Min',
+      '1 Hour': '1-Hour',
+      '1 hour': '1-Hour',
+      '4 Hour': '4-Hour',
+      '4 hour': '4-Hour',
+      '24 Hour': 'Daily',
+      '24 hour': 'Daily',
+      'daily': 'Daily',
+      '1 Week': 'Weekly',
+      '1 week': 'Weekly',
+      'weekly': 'Weekly'
+    };
+    
+    if (timeframeMap[timeframe]) {
+      timeframe = timeframeMap[timeframe];
+    }
+    
+    // Only accept exact required timeframes
+    if (!requiredTimeframes.includes(timeframe)) continue;
     
     let verdict: 'BUY' | 'HOLD' | 'SELL' = 'HOLD';
-    let confidence: 'High' | 'Medium' | 'Low' = 'Medium';
+    let confidence: number = 50;
     let reasoning = '';
     
     for (const line of lines) {
@@ -131,9 +164,17 @@ function parseVerdicts(verdictsContent: string): TimeframeVerdict[] {
         else if (verdictText.includes('HOLD') || verdictText.includes('🟡')) verdict = 'HOLD';
       } else if (line.startsWith('**Confidence:**')) {
         const confText = line.replace('**Confidence:**', '').trim();
-        if (confText.includes('High')) confidence = 'High';
-        else if (confText.includes('Low')) confidence = 'Low';
-        else confidence = 'Medium';
+        
+        // Try to extract number first
+        const numMatch = confText.match(/(\d+)/);
+        if (numMatch) {
+          confidence = parseInt(numMatch[1]);
+        } else {
+          // Fallback to string mapping
+          if (confText.toLowerCase().includes('high')) confidence = 80;
+          else if (confText.toLowerCase().includes('low')) confidence = 40;
+          else confidence = 60;
+        }
       } else if (line.startsWith('**Reasoning:**')) {
         reasoning = line.replace('**Reasoning:**', '').trim();
       }
@@ -144,7 +185,56 @@ function parseVerdicts(verdictsContent: string): TimeframeVerdict[] {
     }
   }
   
+  // Validate we have all 6 required timeframes
+  const foundTimeframes = verdicts.map(v => v.timeframe);
+  const missingTimeframes = requiredTimeframes.filter(tf => !foundTimeframes.includes(tf));
+  
+  if (missingTimeframes.length > 0) {
+    console.warn(`⚠️  Missing timeframes in verdicts: ${missingTimeframes.join(', ')}`);
+    
+    // Add placeholder verdicts for missing timeframes
+    for (const tf of missingTimeframes) {
+      verdicts.push({
+        timeframe: tf,
+        verdict: 'HOLD',
+        confidence: 0,
+        reasoning: 'Data not available for this timeframe'
+      });
+    }
+  }
+  
+  // Sort by timeframe order
+  const timeframeOrder = { '5-Min': 0, '15-Min': 1, '1-Hour': 2, '4-Hour': 3, 'Daily': 4, 'Weekly': 5 };
+  verdicts.sort((a, b) => timeframeOrder[a.timeframe as keyof typeof timeframeOrder] - timeframeOrder[b.timeframe as keyof typeof timeframeOrder]);
+  
   return verdicts;
+}
+
+function parseKeyInsights(verdictsContent: string): string[] {
+  const insights: string[] = [];
+  
+  // Look for "Key Insights" section
+  const insightMatch = verdictsContent.match(/##?\s*📌?\s*Key Insights\s*\n([\s\S]*?)(?:\n##|$)/i);
+  
+  if (insightMatch) {
+    const insightText = insightMatch[1];
+    
+    // Extract bullet points
+    const bulletRegex = /^[-*•]\s*\*\*(.+?):\*\*\s*(.+?)$/gm;
+    let match;
+    
+    while ((match = bulletRegex.exec(insightText)) !== null && insights.length < 5) {
+      insights.push(`${match[1]}: ${match[2].trim()}`);
+    }
+  }
+  
+  // Fallback: extract first 3-5 sentences from reasoning if no insights section
+  if (insights.length === 0) {
+    const verdicts = parseVerdicts(verdictsContent);
+    insights.push(...verdicts.slice(0, 3).map(v => `${v.timeframe}: ${v.reasoning}`));
+  }
+  
+  return insights.slice(0, 5);
 }
 
 function extractCurrentPrice(reportContent: string): number {
@@ -200,15 +290,18 @@ function determineRecommendation(verdicts: TimeframeVerdict[]): 'LONG' | 'SHORT'
 }
 
 function calculateConfidenceLevel(verdicts: TimeframeVerdict[]): number {
-  const weekVerdict = verdicts.find(v => 
-    v.timeframe.toLowerCase().includes('week') || 
-    v.timeframe.toLowerCase().includes('1 week')
-  );
+  // Look for Weekly verdict
+  const weekVerdict = verdicts.find(v => v.timeframe === 'Weekly');
   
   if (weekVerdict) {
-    if (weekVerdict.confidence === 'High') return 8;
-    if (weekVerdict.confidence === 'Medium') return 6;
-    if (weekVerdict.confidence === 'Low') return 4;
+    // Convert 0-100 confidence to 1-10 scale
+    return Math.round((weekVerdict.confidence / 100) * 10);
+  }
+  
+  // Fallback: average all verdicts
+  if (verdicts.length > 0) {
+    const avgConfidence = verdicts.reduce((sum, v) => sum + v.confidence, 0) / verdicts.length;
+    return Math.round((avgConfidence / 100) * 10);
   }
   
   return 7;
@@ -349,7 +442,15 @@ async function publishToFirestore(requestId: string, ticker: string, assetType: 
   const verdicts = parseVerdicts(files.verdicts);
   console.log(`   ✓ Found ${verdicts.length} timeframe verdicts`);
   verdicts.forEach(v => {
-    console.log(`     - ${v.timeframe}: ${v.verdict} (${v.confidence})`);
+    console.log(`     - ${v.timeframe}: ${v.verdict} (${v.confidence}%)`);
+  });
+  
+  // Parse key insights
+  console.log('\n💡 Parsing key insights...');
+  const keyInsights = parseKeyInsights(files.verdicts);
+  console.log(`   ✓ Extracted ${keyInsights.length} key insights`);
+  keyInsights.forEach((insight, i) => {
+    console.log(`     ${i + 1}. ${insight.substring(0, 80)}${insight.length > 80 ? '...' : ''}`);
   });
   
   // Extract metrics
@@ -407,6 +508,7 @@ async function publishToFirestore(requestId: string, ticker: string, assetType: 
     },
     
     verdicts,
+    keyInsights,
     
     recommendation,
     confidenceLevel,

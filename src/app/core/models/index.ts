@@ -29,7 +29,8 @@ export interface NotificationPreferences {
 export interface AnalysisPost {
   id: string;
   title: string;
-  heroImage: string;  // Firebase Storage URL
+  heroImage: string;  // Firebase Storage URL (or imageUrl)
+  imageUrl?: string;  // Alternative field name
   description: string;
   timestamp: Date;
   assetType: AssetType;
@@ -37,6 +38,12 @@ export interface AnalysisPost {
   
   // Full analysis content
   content: AnalysisContent;
+  
+  // Structured verdicts for timeline UI
+  verdicts?: TimeframeVerdict[];
+  
+  // Key insights for executive summary
+  keyInsights?: string[];
   
   // Trading recommendation
   recommendation: RecommendationType;
@@ -46,8 +53,12 @@ export interface AnalysisPost {
   riskRewardRatio: number;
   confidenceLevel: number;  // 1-10
   
+  // Current market price
+  currentPrice?: number;
+  
   // Metadata
-  authorId: string;
+  authorId?: string;
+  requestId?: string;
   views: number;
   bookmarks: number;
   
@@ -55,6 +66,16 @@ export interface AnalysisPost {
   searchTerms: string[];
   createdAt: Date;
   updatedAt: Date;
+}
+
+/**
+ * Timeframe Verdict for Multi-Timeframe Analysis
+ */
+export interface TimeframeVerdict {
+  timeframe: '5-Min' | '15-Min' | '1-Hour' | '4-Hour' | 'Daily' | 'Weekly';
+  verdict: 'BUY' | 'SELL' | 'HOLD';
+  confidence: number;  // 0-100
+  reasoning: string;
 }
 
 export interface AnalysisContent {
