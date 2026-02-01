@@ -20,12 +20,8 @@ export const environment = {
     priceDataApiKey: "",
     priceDataBaseUrl: "https://api.example.com/v1",
     
-    // Ticker Search APIs
-    coinGeckoBaseUrl: "https://api.coingecko.com/api/v3",
-    // REQUIRED: Get free API key from https://finnhub.io/register
-    // Without this key, stock search will NOT work (only crypto will show)
-    finnhubApiKey: "", // ⚠️ ADD YOUR FINNHUB API KEY HERE (PRODUCTION)
-    finnhubBaseUrl: "https://finnhub.io/api/v1"
+    // Ticker Search APIs (no API keys required)
+    coinGeckoBaseUrl: "https://api.coingecko.com/api/v3"
   },
 
   // Feature Flags
