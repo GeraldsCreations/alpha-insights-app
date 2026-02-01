@@ -30,15 +30,15 @@ interface CoinGeckoSearchResponse {
 }
 
 /**
- * Yahoo Finance API response interface
+ * Finnhub API response interface
  */
-interface YahooFinanceSearchResponse {
-  quotes: Array<{
+interface FinnhubSearchResponse {
+  count: number;
+  result: Array<{
+    description: string;
+    displaySymbol: string;
     symbol: string;
-    shortname?: string;
-    longname?: string;
-    quoteType: string;
-    exchange?: string;
+    type: string;
   }>;
 }
 
@@ -104,32 +104,40 @@ export class TickerSearchService {
   }
   
   /**
-   * Search stocks using Yahoo Finance API (no API key required)
+   * Search stocks using Finnhub API
    */
   private searchStocks(query: string): Observable<SearchResult[]> {
-    const url = `https://query2.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(query)}&quotesCount=10&newsCount=0`;
+    const apiKey = environment.externalApis.finnhubApiKey;
     
-    return this.http.get<YahooFinanceSearchResponse>(url).pipe(
+    // If no API key, return empty results
+    if (!apiKey) {
+      console.warn('Finnhub API key not configured');
+      return of([]);
+    }
+    
+    const url = `${environment.externalApis.finnhubBaseUrl}/search?q=${encodeURIComponent(query)}&token=${apiKey}`;
+    
+    return this.http.get<FinnhubSearchResponse>(url).pipe(
       map(response => {
-        if (!response.quotes || response.quotes.length === 0) {
+        if (!response.result || response.result.length === 0) {
           return [];
         }
         
-        // Convert to SearchResult format - filter to equities only
-        return response.quotes
-          .filter(quote => quote.quoteType === 'EQUITY')
+        // Convert to SearchResult format
+        return response.result
+          .filter(item => item.type === 'Common Stock' || item.type === 'ETP') // Filter to stocks only
           .slice(0, 10) // Limit to 10 results
-          .map(quote => ({
-            symbol: quote.symbol,
-            name: quote.shortname || quote.longname || quote.symbol,
+          .map(item => ({
+            symbol: item.symbol,
+            name: item.description,
             type: 'stock' as const,
-            logo: undefined,
+            logo: undefined, // Finnhub free tier doesn't include logos
             price: undefined,
             marketCap: undefined
           }));
       }),
       catchError(error => {
-        console.error('Yahoo Finance API error:', error);
+        console.error('Finnhub API error:', error);
         return of([]);
       })
     );
