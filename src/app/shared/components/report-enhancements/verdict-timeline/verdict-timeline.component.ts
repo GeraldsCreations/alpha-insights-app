@@ -3,7 +3,7 @@ import { Component, Input, OnInit } from '@angular/core';
 export interface VerdictData {
   timeframe: string;
   verdict: 'BUY' | 'SELL' | 'HOLD' | 'UNKNOWN';
-  confidence: number;
+  confidence: number | string; // Accept both number and "High/Medium/Low" string
 }
 
 @Component({
@@ -25,14 +25,49 @@ export class VerdictTimelineComponent implements OnInit {
     this.prepareTimelineData();
   }
 
+  /**
+   * Convert confidence string to number
+   */
+  private convertConfidence(confidence: number | string): number {
+    if (typeof confidence === 'number') return confidence;
+    
+    switch (confidence) {
+      case 'High': return 80;
+      case 'Medium': return 60;
+      case 'Low': return 40;
+      default: return 0;
+    }
+  }
+
   prepareTimelineData() {
+    // Map database timeframes to display timeframes
+    const timeframeMap: Record<string, string> = {
+      '5 Minute': '5-Min',
+      '15 Minute': '15-Min',
+      '1 Hour': '1-Hour',
+      '4 Hour': '4-Hour',
+      '24 Hour': 'Daily',
+      '1 Week': 'Weekly',
+      '1 Month': 'Monthly',
+      '1 Year': 'Yearly'
+    };
+    
     // Ensure we have verdicts for all timeframes
     const timeframes = ['5-Min', '15-Min', '1-Hour', '4-Hour', 'Daily', 'Weekly'];
     
-    this.displayVerdicts = timeframes.map(tf => {
-      const existing = this.verdicts.find(v => v.timeframe === tf);
-      return existing || {
-        timeframe: tf,
+    this.displayVerdicts = timeframes.map(displayTf => {
+      // Find matching verdict by checking both display name and database name
+      const existing = this.verdicts.find(v => {
+        const mappedName = timeframeMap[v.timeframe];
+        return v.timeframe === displayTf || mappedName === displayTf;
+      });
+      
+      return existing ? {
+        ...existing,
+        timeframe: displayTf, // Normalize to display name
+        confidence: this.convertConfidence(existing.confidence) // Convert to number
+      } : {
+        timeframe: displayTf,
         verdict: 'UNKNOWN' as const,
         confidence: 0
       };
