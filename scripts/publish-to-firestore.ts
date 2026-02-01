@@ -448,12 +448,12 @@ async function publishToFirestore(requestId: string, ticker: string, assetType: 
   try {
     console.log('\n🚀 Publishing to Firestore...');
     
-    const docRef = db.collection('ResearchReports').doc(docId);
+    const docRef = db.collection('research_reports').doc(docId);
     await docRef.set(researchDoc);
     
     console.log('   ✓ Published successfully!');
     console.log(`   📄 Document ID: ${docId}`);
-    console.log(`   🔗 Collection: ResearchReports`);
+    console.log(`   🔗 Collection: research_reports`);
     console.log(`   🌐 Request ID: ${requestId}`);
     
     console.log('\n✅ Research published to Firestore!\n');

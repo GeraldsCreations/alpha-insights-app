@@ -81,15 +81,26 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
             this.parseVerdicts();
             this.incrementViewCount();
           } else {
-            this.errorMessage = 'Post not found';
+            console.error('[AnalysisDetail] Post not found in Firestore. Document ID:', this.postId);
+            this.errorMessage = `Analysis not found (ID: ${this.postId}). Please check the document exists in the research_reports collection.`;
           }
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('[AnalysisDetail] Error loading post:', error);
-          this.errorMessage = 'Failed to load analysis';
+          console.error('[AnalysisDetail] Firestore error:', error);
+          console.error('[AnalysisDetail] Error code:', error.code);
+          console.error('[AnalysisDetail] Error message:', error.message);
+          
+          if (error.code === 'permission-denied') {
+            this.errorMessage = 'Permission denied. Please check Firestore security rules.';
+          } else if (error.code === 'not-found') {
+            this.errorMessage = `Document not found: ${this.postId}`;
+          } else {
+            this.errorMessage = `Failed to load analysis: ${error.message || 'Unknown error'}`;
+          }
+          
           this.isLoading = false;
-          this.showToast('Failed to load analysis', 'danger');
+          this.showToast(this.errorMessage, 'danger');
         }
       });
   }
