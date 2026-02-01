@@ -144,6 +144,29 @@ service cloud.firestore {
     }
     
     // ============================================================================
+    // CUSTOM REPORT REQUESTS - Owner read, callable function writes
+    // ============================================================================
+    
+    match /CustomReportRequests/{requestId} {
+      // Users can read their own requests
+      allow read: if isAuthenticated() && 
+                     resource.data.userId == request.auth.uid;
+      
+      // Cloud Functions handle creation (via callable function)
+      // No direct client writes allowed - must go through Cloud Function
+      allow create, update, delete: if false;
+    }
+    
+    // ============================================================================
+    // RESEARCH TRIGGERS - Cloud Functions only
+    // ============================================================================
+    
+    match /ResearchTriggers/{triggerId} {
+      // Only admins or cloud functions can access triggers
+      allow read, write: if isAdmin();
+    }
+    
+    // ============================================================================
     // ADMIN COLLECTIONS - Admin only
     // ============================================================================
     

@@ -38,15 +38,19 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    // Get post ID from route params
-    this.postId = this.route.snapshot.paramMap.get('id') || '';
-    
-    if (this.postId) {
-      this.loadPost();
-    } else {
-      this.errorMessage = 'Invalid post ID';
-      this.isLoading = false;
-    }
+    // Subscribe to route params to handle navigation between analyses
+    this.route.paramMap
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(params => {
+        this.postId = params.get('id') || '';
+        
+        if (this.postId) {
+          this.loadPost();
+        } else {
+          this.errorMessage = 'Invalid post ID';
+          this.isLoading = false;
+        }
+      });
   }
 
   ngOnDestroy() {
