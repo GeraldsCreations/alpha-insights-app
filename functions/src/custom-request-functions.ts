@@ -172,6 +172,58 @@ export const submitCustomReportRequest = functions.https.onCall(async (data, con
       );
     }
     
+    // Check and decrement quota using transaction
+    const userRef = db.collection('Users').doc(userId);
+    const QUOTA_LIMITS = { free: 5, premium: 10 };
+    const QUOTA_RESET_INTERVAL_DAYS = 30;
+    
+    const quotaResult = await db.runTransaction(async (transaction) => {
+      const userDoc = await transaction.get(userRef);
+      
+      if (!userDoc.exists) {
+        throw new functions.https.HttpsError('not-found', 'User not found');
+      }
+      
+      const userData = userDoc.data()!;
+      let quotaRemaining = userData.customReportsRemaining || 0;
+      const plan = userData.plan || 'free';
+      
+      // Check if quota needs reset
+      const resetDate = userData.customReportsResetDate?.toDate();
+      const now = new Date();
+      
+      if (!resetDate || now > resetDate) {
+        // Reset quota to plan limit
+        quotaRemaining = QUOTA_LIMITS[plan as keyof typeof QUOTA_LIMITS];
+        const nextResetDate = new Date();
+        nextResetDate.setDate(nextResetDate.getDate() + QUOTA_RESET_INTERVAL_DAYS);
+        
+        transaction.update(userRef, {
+          customReportsRemaining: quotaRemaining,
+          customReportsResetDate: admin.firestore.Timestamp.fromDate(nextResetDate)
+        });
+      }
+      
+      // Check if user has quota
+      if (quotaRemaining <= 0) {
+        return { success: false, quotaRemaining: 0, plan };
+      }
+      
+      // Decrement quota
+      transaction.update(userRef, {
+        customReportsRemaining: admin.firestore.FieldValue.increment(-1)
+      });
+      
+      return { success: true, quotaRemaining: quotaRemaining - 1, plan };
+    });
+    
+    if (!quotaResult.success) {
+      throw new functions.https.HttpsError(
+        'resource-exhausted',
+        `No custom reports remaining. You have ${quotaResult.quotaRemaining} of ${QUOTA_LIMITS[quotaResult.plan as keyof typeof QUOTA_LIMITS]} reports left.`
+      );
+    }
+    
     // Create custom report request
     const requestRef = await db.collection('CustomReportRequests').add({
       userId,

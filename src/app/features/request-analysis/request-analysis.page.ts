@@ -39,7 +39,7 @@ export class RequestAnalysisPage implements OnInit {
   ) {}
   
   ngOnInit() {
-    this.loadQuotaStatus();
+    // Don't load quota on init - only check when submitting
     this.setupSearch();
   }
   
@@ -156,7 +156,7 @@ export class RequestAnalysisPage implements OnInit {
    */
   isFormValid(): boolean {
     const validation = this.customRequestService.validateTicker(this.ticker);
-    return validation.valid && this.quotaStatus !== null && this.quotaStatus.quotaRemaining > 0;
+    return validation.valid;
   }
   
   /**
@@ -186,12 +186,6 @@ export class RequestAnalysisPage implements OnInit {
       return;
     }
     
-    // Check quota
-    if (!this.quotaStatus || this.quotaStatus.quotaRemaining <= 0) {
-      this.showUpgradePrompt();
-      return;
-    }
-    
     const loading = await this.loadingController.create({
       message: 'Submitting request...',
       spinner: 'crescent'
@@ -201,22 +195,7 @@ export class RequestAnalysisPage implements OnInit {
     this.loading = true;
     
     try {
-      // Check and decrement quota
-      const quotaResult = await this.customRequestService
-        .checkAndDecrementQuota(this.ticker)
-        .toPromise();
-      
-      if (!quotaResult || !quotaResult.success) {
-        await loading.dismiss();
-        this.showToast(
-          quotaResult?.message || 'No quota remaining',
-          'warning'
-        );
-        this.showUpgradePrompt();
-        return;
-      }
-      
-      // Submit custom request
+      // Submit custom request (quota check happens in Cloud Function)
       const result = await this.customRequestService
         .submitCustomRequest(this.ticker, this.assetType)
         .toPromise();
@@ -229,9 +208,6 @@ export class RequestAnalysisPage implements OnInit {
           `${this.ticker} analysis is being prepared! We'll notify you when it's ready.`,
           'success'
         );
-        
-        // Reload quota
-        this.loadQuotaStatus();
         
         // Reset form
         setTimeout(() => {
@@ -249,6 +225,10 @@ export class RequestAnalysisPage implements OnInit {
       
       if (error.code === 'already-exists') {
         message = 'You already have a pending request for this ticker.';
+      } else if (error.code === 'resource-exhausted' || error.message?.includes('quota')) {
+        message = 'No reports remaining. Upgrade to Premium for more!';
+        this.showUpgradePrompt();
+        return;
       }
       
       this.showToast(message, 'danger');
