@@ -250,7 +250,6 @@
 
 .main-content {
   min-height: 100vh;
-  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   background: var(--ai-bg-secondary);
@@ -263,6 +262,7 @@
     margin-left: var(--ai-sidebar-width);
     padding-bottom: 0;
     width: calc(100% - var(--ai-sidebar-width));
+    max-width: calc(100% - var(--ai-sidebar-width)); // Prevent overflow
   }
 }
 

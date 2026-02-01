@@ -69,7 +69,7 @@ export class FirestoreService {
         .then(docSnap => {
           if (docSnap.exists()) {
             const data = convertTimestamps(docSnap.data());
-            observer.next({ id: docSnap.id, ...data } as T);
+            observer.next({ ...data, id: docSnap.id } as T);
           } else {
             observer.next(null);
           }
@@ -92,7 +92,7 @@ export class FirestoreService {
           const items: T[] = [];
           querySnapshot.forEach(doc => {
             const data = convertTimestamps(doc.data());
-            items.push({ id: doc.id, ...data } as T);
+            items.push({ ...data, id: doc.id } as T);
           });
           observer.next(items);
           observer.complete();
@@ -114,7 +114,7 @@ export class FirestoreService {
           const items: T[] = [];
           querySnapshot.forEach(doc => {
             const data = convertTimestamps(doc.data());
-            items.push({ id: doc.id, ...data } as T);
+            items.push({ ...data, id: doc.id } as T);
           });
           observer.next(items);
         },
