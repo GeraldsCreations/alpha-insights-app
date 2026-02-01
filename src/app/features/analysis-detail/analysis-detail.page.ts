@@ -38,11 +38,16 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
+    console.log('[AnalysisDetail] Component initialized - FIX v2.0');
+    
     // Subscribe to route params to handle navigation between analyses
     this.route.paramMap
       .pipe(takeUntil(this.destroy$))
       .subscribe(params => {
-        this.postId = params.get('id') || '';
+        const newId = params.get('id') || '';
+        console.log('[AnalysisDetail] Route param changed:', { oldId: this.postId, newId });
+        
+        this.postId = newId;
         
         if (this.postId) {
           this.loadPost();
@@ -62,6 +67,7 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
    * Load post from Firestore
    */
   loadPost() {
+    console.log('[AnalysisDetail] Loading post:', this.postId);
     this.isLoading = true;
     this.errorMessage = '';
     
@@ -69,6 +75,7 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (post) => {
+          console.log('[AnalysisDetail] Post loaded:', post ? post.ticker : 'null');
           if (post) {
             this.post = post;
             this.parseVerdicts();
@@ -79,7 +86,7 @@ export class AnalysisDetailPage implements OnInit, OnDestroy {
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Error loading post:', error);
+          console.error('[AnalysisDetail] Error loading post:', error);
           this.errorMessage = 'Failed to load analysis';
           this.isLoading = false;
           this.showToast('Failed to load analysis', 'danger');
