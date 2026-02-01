@@ -3,6 +3,12 @@ import { Component, Input, OnInit } from '@angular/core';
 export interface VerdictData {
   timeframe: string;
   verdict: 'BUY' | 'SELL' | 'HOLD' | 'UNKNOWN';
+  confidence: number;
+}
+
+export interface VerdictDataRaw {
+  timeframe: string;
+  verdict: 'BUY' | 'SELL' | 'HOLD' | 'UNKNOWN';
   confidence: number | string; // Accept both number and "High/Medium/Low" string
 }
 
@@ -13,7 +19,7 @@ export interface VerdictData {
   standalone: false
 })
 export class VerdictTimelineComponent implements OnInit {
-  @Input() verdicts: VerdictData[] = [];
+  @Input() verdicts: VerdictDataRaw[] = [];
   
   displayVerdicts: VerdictData[] = [];
 
