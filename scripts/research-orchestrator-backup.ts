@@ -134,24 +134,24 @@ function getAgentPipeline(ticker: string, assetType: 'crypto' | 'stock' | 'commo
     },
     {
       id: 'technical',
-      name: 'Technical Analyst - ENHANCED',
-      roleFile: `${agentRolesDir}/technical-analyst-enhanced.md`,
+      name: 'Technical Analyst',
+      roleFile: `${agentRolesDir}/technical-analyst.md`,
       outputFile: `${outputDir}/${filePrefix}-technical-analysis.md`,
-      timeoutMinutes: 8  // Increased for deeper analysis
+      timeoutMinutes: 5
     },
     {
       id: 'news',
-      name: 'News Analyst - ENHANCED',
-      roleFile: `${agentRolesDir}/news-analyst-enhanced.md`,
+      name: 'News Analyst',
+      roleFile: `${agentRolesDir}/news-analyst.md`,
       outputFile: `${outputDir}/${filePrefix}-news-analysis.md`,
-      timeoutMinutes: 8  // Increased for web research + tables
+      timeoutMinutes: 5
     },
     {
       id: 'price',
-      name: 'Price Analysis Specialist - ENHANCED',
-      roleFile: `${agentRolesDir}/price-analysis-enhanced.md`,
+      name: 'Price Analysis Specialist',
+      roleFile: `${agentRolesDir}/price-analysis-specialist.md`,
       outputFile: `${outputDir}/${filePrefix}-price-analysis.md`,
-      timeoutMinutes: 8  // Increased for risk analysis
+      timeoutMinutes: 5
     },
     {
       id: 'report',
@@ -163,11 +163,11 @@ function getAgentPipeline(ticker: string, assetType: 'crypto' | 'stock' | 'commo
     },
     {
       id: 'verdicts',
-      name: 'Verdict Analyst - ENHANCED',
-      roleFile: `${agentRolesDir}/verdict-analyst-enhanced.md`,
+      name: 'Verdict Analyst',
+      roleFile: `${agentRolesDir}/verdict-analyst.md`,
       outputFile: `${outputDir}/${filePrefix}-verdicts.md`,
       dependsOn: ['report'],
-      timeoutMinutes: 15  // Increased for comprehensive risk/scenario analysis
+      timeoutMinutes: 10
     }
   ];
 }
