@@ -60,6 +60,15 @@ interface ResearchDocument {
   // Full article content (markdown)
   article: string;
   
+  // Content object for UI (separate sections)
+  content: {
+    detailedAnalysis: string;
+    technicalAnalysis: string;
+    newsSummary: string;
+    priceAnalysis: string;
+    verdicts: string;
+  };
+  
   // Verdicts data
   verdicts: TimeframeVerdict[];
   
@@ -387,6 +396,16 @@ async function publishToFirestore(requestId: string, ticker: string, assetType: 
     timestamp: now,
     
     article,
+    
+    // Content object for UI
+    content: {
+      detailedAnalysis: files.report,
+      technicalAnalysis: files.technical,
+      newsSummary: files.news,
+      priceAnalysis: files.price,
+      verdicts: files.verdicts
+    },
+    
     verdicts,
     
     recommendation,
