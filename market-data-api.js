@@ -14,7 +14,13 @@ const https = require('https');
  */
 function fetchJSON(url) {
   return new Promise((resolve, reject) => {
-    https.get(url, (res) => {
+    const options = {
+      headers: {
+        'User-Agent': 'Alpha-Insights/1.0 (Market Research Bot)'
+      }
+    };
+    
+    https.get(url, options, (res) => {
       let data = '';
       res.on('data', (chunk) => { data += chunk; });
       res.on('end', () => {
