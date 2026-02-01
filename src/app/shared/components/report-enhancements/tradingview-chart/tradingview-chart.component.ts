@@ -26,7 +26,16 @@ export class TradingViewChartComponent implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     if (this.widget) {
-      this.widget.remove();
+      try {
+        // Check if the widget's iframe still exists in DOM before removing
+        if (this.widget.iframe && this.widget.iframe.parentNode) {
+          this.widget.remove();
+        }
+      } catch (error) {
+        // Silently catch errors during widget cleanup
+        // This can happen if the DOM was already destroyed
+        console.debug('TradingView widget cleanup error (safe to ignore):', error);
+      }
     }
   }
 

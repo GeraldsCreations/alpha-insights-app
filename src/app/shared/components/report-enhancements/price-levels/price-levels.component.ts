@@ -41,14 +41,14 @@ export class PriceLevelsComponent implements OnInit {
   validateAndFixPrices() {
     // If stop is 0 or negative, it's broken
     if (this.stop <= 0) {
-      console.error('Invalid stop loss:', this.stop);
+      console.warn(`[${this.ticker}] Invalid stop loss (${this.stop}), calculating from entry`);
       // Set a reasonable stop based on entry (e.g., 5% below for long)
       this.stop = this.entry * 0.95;
     }
 
     // If target is 0 or negative, it's broken
     if (this.target <= 0) {
-      console.error('Invalid target:', this.target);
+      console.warn(`[${this.ticker}] Invalid target (${this.target}), calculating from entry`);
       // Set a reasonable target based on entry (e.g., 10% above for long)
       this.target = this.entry * 1.10;
     }
@@ -87,8 +87,6 @@ export class PriceLevelsComponent implements OnInit {
         [this.entry, this.target] = [this.target, this.entry];
       }
     }
-
-    console.log('Validated prices:', { entry: this.entry, target: this.target, stop: this.stop });
   }
 
   calculateLevels() {
