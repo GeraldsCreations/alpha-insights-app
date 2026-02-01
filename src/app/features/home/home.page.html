@@ -88,7 +88,9 @@
           
           <div class="action-buttons">
             <app-bookmark-button 
-              [postId]="post.id" 
+              [postId]="post.id"
+              [ticker]="post.ticker"
+              [title]="post.title"
               [showToast]="false">
             </app-bookmark-button>
             <app-share-button [post]="post"></app-share-button>

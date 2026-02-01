@@ -41,6 +41,8 @@ import { BookmarkService } from '../../core/services/bookmark.service';
 })
 export class BookmarkButtonComponent implements OnInit, OnDestroy {
   @Input() postId!: string;
+  @Input() ticker!: string;
+  @Input() title!: string;
   @Input() showToast = true;
 
   private destroy$ = new Subject<void>();
@@ -86,14 +88,14 @@ export class BookmarkButtonComponent implements OnInit, OnDestroy {
     this.isLoading = true;
 
     try {
-      const newState = await this.bookmarkService.toggleBookmark(this.postId).toPromise();
+      const newState = await this.bookmarkService.toggleBookmark(
+        this.postId,
+        this.ticker,
+        this.title,
+        this.showToast
+      );
       
-      if (this.showToast) {
-        const message = newState 
-          ? 'Added to bookmarks' 
-          : 'Removed from bookmarks';
-        this.showToastMessage(message);
-      }
+      // Toast is now handled by the service if showToast is true
     } catch (error) {
       console.error('Error toggling bookmark:', error);
       if (this.showToast) {

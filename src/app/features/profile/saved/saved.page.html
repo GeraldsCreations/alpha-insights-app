@@ -71,7 +71,11 @@
       
       <ion-row class="post-actions">
         <ion-col>
-          <app-bookmark-button [postId]="post.id"></app-bookmark-button>
+          <app-bookmark-button 
+            [postId]="post.id"
+            [ticker]="post.ticker"
+            [title]="post.title">
+          </app-bookmark-button>
         </ion-col>
         <ion-col>
           <app-share-button [post]="post"></app-share-button>

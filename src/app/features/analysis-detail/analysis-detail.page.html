@@ -7,7 +7,9 @@
     <ion-buttons slot="end">
       <app-bookmark-button 
         *ngIf="post" 
-        [postId]="post.id" 
+        [postId]="post.id"
+        [ticker]="post.ticker"
+        [title]="post.title"
         [showToast]="true">
       </app-bookmark-button>
       <app-share-button *ngIf="post" [post]="post"></app-share-button>
