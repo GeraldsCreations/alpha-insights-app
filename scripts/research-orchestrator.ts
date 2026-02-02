@@ -118,7 +118,7 @@ interface OrchestrationResult {
  */
 function getAgentPipeline(ticker: string, assetType: 'crypto' | 'stock' | 'commodity', triggerId?: string): AgentTask[] {
   const workspaceDir = '/root/.openclaw/workspace';
-  const agentRolesDir = `${workspaceDir}/agents/alpha-insights-team/research-team`;
+  const agentRolesDir = `${workspaceDir}/alpha-insights-app/agents/research-team`;
   const outputDir = `${workspaceDir}/alpha-insights-app/research-output`;
   
   // Use trigger ID as prefix to allow multiple concurrent requests for same ticker
